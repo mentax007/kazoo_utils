@@ -4,6 +4,21 @@
 ## pip-python install couchdb
 ## pip-python install argparse
 
+def get_accountdb_by_name(account_name):
+    print " Looking for DB name for %s account .... " % account_name
+    cleanaccount =  re.sub(r"[^A-Za-z0-9]","",account_name).lower()
+    print "\n RegExed account %s" % (cleanaccount)
+    db = server['accounts']
+    for row in db.view('_design/accounts/_view/listing_by_name'):
+        print "\n %s %s\t ..... \t" % (row.key, row.id),
+        if row.key == cleanaccount:
+            print "Huray, we've found it:\n\n Account name: %s \t Account ID: %s\n" % (cleanaccount,row.id)
+            account_id = row.id
+            dbname = 'account/' + account_id[:2] + '/' + account_id[2:4] + '/' + account_id[4:]
+            return dbname
+        else:
+            print "Not the case"
+
 def remove_cdrs(account_db_name):
     print " Cleaning %s \n" % account_db_name
     try:
@@ -32,21 +47,17 @@ if __name__ == '__main__':
 
     myargs = parser.parse_args()
 
+    my_url = 'http://localhost:5984/'
+
     if myargs.accname:
-        cleanaccount =  re.sub(r"[^a-z0-9]","",myargs.accname)
-        print "\nLooking for %s" % (cleanaccount)
-        server = couchdb.Server('http://localhost:5984/')
-        db = server['accounts']
-	for row in db.view('_design/accounts/_view/listing_by_name'):
-            print "\n %s %s\t ..... \t" % (row.key, row.id),
-            if row.key == cleanaccount:
-                print "Huray, we've found it:\n\n Account name: %s \t Account ID: %s\n" % (cleanaccount,row.id)
-                account_id = row.id
-                dbname = 'account/' + account_id[:2] + '/' + account_id[2:4] + '/' + account_id[4:]
-                remove_cdrs(dbname)
-            else:
-                print "Not the case"
+        server = couchdb.Server(my_url)
+        found_dbname = get_accountdb_by_name(myargs.accname)
+        if found_dbname:
+            remove_cdrs(found_dbname)
+        else:
+            print "\n No DB found"
     elif myargs.dbname:
+        server = couchdb.Server(my_url)
         remove_cdrs(myargs.dbname)
     else:
         print "Get help with -h option"
