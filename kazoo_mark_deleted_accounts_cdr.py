@@ -4,6 +4,40 @@
 ## pip-python install couchdb
 ## pip-python install argparse
 
+## function couchdb_pager for better big views handling 
+## http://blog.marcus-brinkmann.de/2011/09/17/a-better-iterator-for-python-couchdb/
+
+def couchdb_pager(db, view_name='_all_docs',
+                  startkey=None, startkey_docid=None,
+                  endkey=None, endkey_docid=None, bulk=500):
+    # Request one extra row to resume the listing there later.
+    options = {'limit': bulk + 1}
+    if startkey:
+        options['startkey'] = startkey
+        if startkey_docid:
+            options['startkey_docid'] = startkey_docid
+    if endkey:
+        options['endkey'] = endkey
+        if endkey_docid:
+            options['endkey_docid'] = endkey_docid
+    done = False
+    while not done:
+        view = db.view(view_name, **options)
+        rows = []
+        # If we got a short result (< limit + 1), we know we are done.
+        if len(view) <= bulk:
+            done = True
+            rows = view.rows
+        else:
+            # Otherwise, continue at the new start position.
+            rows = view.rows[:-1]
+            last = view.rows[-1]
+            options['startkey'] = last.key
+            options['startkey_docid'] = last.id
+
+        for row in rows:
+            yield row.id
+
 def get_accountdb_by_name(account_name):
     print " Looking for DB name for %s account .... " % account_name
     cleanaccount =  re.sub(r"[^A-Za-z0-9]","",account_name).lower()
@@ -23,12 +57,12 @@ def remove_cdrs(account_db_name):
     print " Cleaning %s \n" % account_db_name
     try:
         db2 = server[account_db_name]
-        for row in db2.view('_design/cdrs/_view/listing_by_owner'):
+        for row in couchdb_pager(db2,'_design/cdrs/_view/crossbar_listing'):
+            print "\nWill try to delete %s fetched by crossbar_listing view" % (row)
+            del db2[row]
+        for row in couchdb_pager(db2,'_design/cdrs/_view/listing_by_owner'):
             print "\nWill try to delete %s fetched by listing_by_owner view" % (row.id)
-            del db2[row.id]
-        for row in db2.view('_design/cdrs/_view/crossbar_listing'):
-            print "\nWill try to delete %s fetched by crossbar_listing view" % (row.id)
-            del db2[row.id]
+            del db2[row]
     except:
         print "DB2 operations error"
     print "\n Stop machine\n"
@@ -47,7 +81,7 @@ if __name__ == '__main__':
 
     myargs = parser.parse_args()
 
-    my_url = 'http://localhost:5984/'
+    my_url = 'http://localhost:15984/'
 
     if myargs.accname:
         server = couchdb.Server(my_url)
