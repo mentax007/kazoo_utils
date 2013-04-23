@@ -34,8 +34,6 @@ if __name__ == '__main__':
     import argparse
     import couchdb
     import time
-    import re
-    import sys
     import os
 
     parser = argparse.ArgumentParser(description="Lift KAZOO numbers to the cache.")
