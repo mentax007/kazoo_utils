@@ -1,16 +1,7 @@
 #!/usr/bin/python26
 
 ##
-## An attempt to get numbers into cache (but it seems it doesnt helps us :) )
-##
-## According to wiki: https://2600hz.atlassian.net/wiki/display/docs/Stepswitch+SUP+Commands
-##
-## sup stepswitch_maintenance lookup_number NUMBER - 
-##
-## When provided with a number Stepswitch will return the known parameters of that number. 
-## These are drawn from the local cache if present or looked up and cached if not. 
-## This provides insight into what account a number is associated with for inbound calls 
-## as well as if outbound calls to this number will stay on-net.
+## Another attempt to keep numbers in cache - just generate a call and immediately cancel it.
 ##
 
 ## yum install python-pip
