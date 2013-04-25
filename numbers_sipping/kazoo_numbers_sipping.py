@@ -1,7 +1,10 @@
-#!/usr/bin/python26
+#!/usr/bin/env python26
 
 ##
 ## Another attempt to keep numbers in cache - just generate a call and immediately cancel it.
+##
+## For crontab do not forget to export TERM for sipp:
+## 20 */4 * * *  export TERM=xterm; /usr/bin/python26 /usr/local/bin/kazoo_numbers_sipping.py -ws whapps_server -ss fs_server
 ##
 
 ## yum install python-pip
@@ -10,17 +13,19 @@
 
 def process_db(nums_db):
     curr_db = server[nums_db]
-    for row in curr_db.view('_design/numbers/_view/status'):
-        print "\n key: %s id: %s" % (row.key, row.id)
-        ping_the_number(row.id)
+    for doc in curr_db.view('_design/numbers/_view/status'):
+        print "\n Number: %s Status: %s" % (doc.id, doc.key[0])
+        if ( doc.key[0] == 'in_service' ):
+            print " Ping it..."
+            ping_the_number(doc.id)
 
 def ping_the_number(number):
-    sup_cmd = "/usr/bin/sipp %s -sn uac -m 1 -sf /usr/share/sipp/INVITE-BYE.xml -s %s" %(myargs.sipserver, number)
+    sup_cmd = "/usr/bin/sipp %s -sn uac -trace_err -m 1 -sf /usr/share/sipp/INVITE-BYE.xml -s %s" %(myargs.sipserver, number)
     print sup_cmd
     os.system(sup_cmd)
-    time.sleep(3)
+    time.sleep(9)
     os.system(sup_cmd)
-    time.sleep(2)
+    time.sleep(7)
 
 if __name__ == '__main__':
 
