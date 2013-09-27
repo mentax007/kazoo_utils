@@ -1,1 +1,6 @@
-yum install nc zip unzip gcc libxslt libstdc++-devel
+yum -y install nc zip unzip gcc libxslt libstdc++-devel
+cd /opt
+mv kazoo kazoo-stock
+git clone -b KAZOO-243 https://github.com/2600hz/kazoo.git
+cd kazoo
+make
