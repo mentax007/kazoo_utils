@@ -1,5 +1,8 @@
 #!/bin/bash
 
+KAZOO_UI_DIR="/var/www/html/v3"
+CROSSBAR_SERVER="94.125.5.27"
+
 echo "Deleting previous installation"
 
 rm -rf /var/www/html/v3
@@ -32,4 +35,9 @@ sed -i "/'resource': false,/d" /var/www/html/v3/whapps/voip/voip.js
 #########  Get rid some staff in myaccount  ####################################
 sed -i "/'billing': false,/d" /var/www/html/v3/whapps/myaccount/myaccount.js 
 sed -i "/'report': false,/d" /var/www/html/v3/whapps/myaccount/myaccount.js 
+#########  Get rid some Emergency  ####################################
+## Account
+sed -i "/_emergency/d" /var/www/html/v3/whapps/voip/account/account.js 
+sed -i "/form_data.caller_id.emergency.number/d" /var/www/html/v3/whapps/voip/account/account.js 
+sed -i "/mergency/d" /var/www/html/v3/whapps/voip/account/tmpl/edit.html
 ################################################################################
