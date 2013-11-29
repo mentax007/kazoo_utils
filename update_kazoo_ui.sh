@@ -26,7 +26,7 @@ git clone https://github.com/2600hz/kazoo_ui.git $KAZOO_UI_DIR
 
 echo "Master `date '+%Y%m%d %H:%M'`" > $KAZOO_UI_DIR/VERSION
 
-wget http://onnet.su/templates/asterx/favicon.ico -O $KAZOO_UI_DIR/favicon.ico
+wget https://raw.github.com/onnet/kazoo_utils/master/tmp/OnNet36x36.png -O $KAZOO_UI_DIR/img/wsLogo.png
 
 ################################
 ######  Config.js tweaks #######
