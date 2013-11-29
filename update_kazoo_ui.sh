@@ -24,6 +24,10 @@ echo "Retrieving KAZOO_UI master"
 
 git clone https://github.com/2600hz/kazoo_ui.git $KAZOO_UI_DIR
 
+echo "Master `date '+%Y%m%d %H:%M'`" > $KAZOO_UI_DIR/VERSION
+
+wget http://onnet.su/templates/asterx/favicon.ico -O $KAZOO_UI_DIR/favicon.ico
+
 ################################
 ######  Config.js tweaks #######
 ################################
@@ -37,7 +41,7 @@ sed -i "s/api.2600hz.com/$CROSSBAR_SERVER/g" $KAZOO_UI_DIR/config/config.js
 ###########################################################
 
 sed -i "s/hide_registration: false/hide_registration: true/g" $KAZOO_UI_DIR/config/config.js
-sed -i "s/company_name: '2600hz'/company_name: 'OnNet'/g" $KAZOO_UI_DIR/config/config.js
+sed -i "s/company_name: '2600hz'/company_name: 'OnNet - Virtual Office'/g" $KAZOO_UI_DIR/config/config.js
 
 #############################################################
 ###### Change country code in number_manager's regexps ######
@@ -56,6 +60,7 @@ sed -i "s/'+1'/'+$COUNTRY_CODE'/g" $KAZOO_UI_DIR/whapps/pbxs/pbxs_manager/pbxs_m
 ####################################################i###################################
 ###### Remove unused at KAZOO_UI elements. For example:                           ######
 ###### - we do not use built in billing;                                          ######
+###### - it is not common to use Directory in SOHO segment in Russia;             ######
 ###### - we do not provide an ability to route calls to third party carriers yet; ######
 ###### - we do not provide subaccounts yet.                                       ######
 ########################################################################################
@@ -67,7 +72,7 @@ echo "Removing unused elements..."
 sed -i "/'credits': false/d" $KAZOO_UI_DIR/whapps/myaccount/myaccount.js
 sed -i "s/'statistics': false,/'statistics': false/g" $KAZOO_UI_DIR/whapps/myaccount/myaccount.js
 
-######### Get rid of Carrier menu in PBX Advanced settings ########
+######### Get rid of Carrier and Directory menu in PBX Advanced settings ########
 
 sed -i "/'resource': false,/d" $KAZOO_UI_DIR/whapps/voip/voip.js
 sed -i "/'directory': false/d" $KAZOO_UI_DIR/whapps/voip/voip.js
