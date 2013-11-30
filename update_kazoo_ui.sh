@@ -13,6 +13,7 @@
 KAZOO_UI_DIR="/var/www/html/v3"
 CROSSBAR_SERVER="94.125.5.27"
 COUNTRY_CODE="7"
+PROVISIONING_SERVER="p.onnet.su"
 
 #########################################
 
@@ -60,7 +61,7 @@ sed -i "s/'+1'/'+$COUNTRY_CODE'/g" $KAZOO_UI_DIR/whapps/pbxs/pbxs_manager/pbxs_m
 ####################################################i###################################
 ###### Remove unused at KAZOO_UI elements. For example:                           ######
 ###### - we do not use built in billing;                                          ######
-###### - it is not common to use Directory in SOHO segment in Russia;             ######
+###### - it is not common to use Directory in Russian SOHO segmenta;              ######
 ###### - we do not provide an ability to route calls to third party carriers yet; ######
 ###### - we do not provide subaccounts yet.                                       ######
 ########################################################################################
@@ -101,5 +102,16 @@ sed -i "/mergency/d" $KAZOO_UI_DIR/whapps/voip/user/tmpl/edit.html
 sed -i "/_emergency/d" $KAZOO_UI_DIR/whapps/voip/device/device.js 
 sed -i "/form_data.caller_id.emergency.number/d" $KAZOO_UI_DIR/whapps/voip/device/device.js 
 sed -i "/mergency/d" $KAZOO_UI_DIR/whapps/voip/device/tmpl/edit.html
+
+########################################################################################
+##########  Add phone provisionong                                          ############
+########################################################################################
+
+git clone git://github.com/2600hz/phone.git /var/www/html/v3/whapps/voip/phone
+
+sed -i "7i\       " $KAZOO_UI_DIR/config/config.js
+sed -i "7i\        provisioner_url: 'http://$PROVISIONING_SERVER'," $KAZOO_UI_DIR/config/config.js
+sed -i "7i\        /* Provisioning */" $KAZOO_UI_DIR/config/config.js
+sed -i "7i\       " $KAZOO_UI_DIR/config/config.js
 
 ########################################################################################
