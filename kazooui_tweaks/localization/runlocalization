@@ -1,0 +1,9 @@
+###  Just test
+WORK_DIR="/root/kazoo_utils/kazooui_tweaks/localization"
+KAZOO_UI_DIR="/var/www/html/v3"
+updatedb
+awk '{ print length(), $0}' $WORK_DIR/RusLocalize | sort -n -r | sudo cut -f2- -d' ' > $WORK_DIR/RusLocalize.sort
+chmod a+x $WORK_DIR/RusLocalize.sort
+locate ".html" | grep $KAZOO_UI_DIR | awk -v WD=$WORK_DIR '{print WD"/RusLocalize.sort " $1}' | sh 
+locate ".js" | grep $KAZOO_UI_DIR | awk -v WD=$WORK_DIR '{print WD"/RusLocalize.sort " $1}' | sh
+rm $WORK_DIR/RusLocalize.sort
