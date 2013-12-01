@@ -27,7 +27,7 @@ git clone https://github.com/2600hz/kazoo_ui.git $KAZOO_UI_DIR
 
 echo "Master `date '+%Y%m%d %H:%M'`" > $KAZOO_UI_DIR/VERSION
 
-wget https://raw.github.com/onnet/kazoo_utils/master/tmp/OnNet36x36.png -O $KAZOO_UI_DIR/img/wsLogo.png
+wget https://raw.github.com/onnet/mod_zonnet/b9e5f3cbe4d9f320027bc8d048c2b0a4d172895a/lib/images/OnNet36x36.png -O $KAZOO_UI_DIR/img/wsLogo.png
 
 ################################
 ######  Config.js tweaks #######
