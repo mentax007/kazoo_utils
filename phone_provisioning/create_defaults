@@ -1,0 +1,9 @@
+curl -i -H "Accept: application/json" -H "Content-Type: application/json" -X PUT -d '{"settings": {}}' http://127.0.0.1/api/phones/cisco
+curl -i -H "Accept: application/json" -H "Content-Type: application/json" -X PUT -d '{"settings": {}}' http://127.0.0.1/api/phones/cisco/spa1xx
+curl -i -H "Accept: application/json" -H "Content-Type: application/json" -X PUT -d '{"settings": {}}' http://127.0.0.1/api/phones/cisco/spa1xx/112
+curl -i -H "Accept: application/json" -H "Content-Type: application/json" -X PUT -d '{"settings": {}}' http://127.0.0.1/api/phones/cisco/spa1xx/121
+curl -i -H "Accept: application/json" -H "Content-Type: application/json" -X PUT -d '{"settings": {}}' http://127.0.0.1/api/phones/cisco/spa5xx
+curl -i -H "Accept: application/json" -H "Content-Type: application/json" -X PUT -d '{"settings": {}}' http://127.0.0.1/api/phones/cisco/spa5xx/525g
+curl -i -H "Accept: application/json" -H "Content-Type: application/json" -X PUT -d '{"settings": {}}' http://127.0.0.1/api/phones/cisco/spa9xx
+curl -i -H "Accept: application/json" -H "Content-Type: application/json" -X PUT -d '{"settings": {}}' http://127.0.0.1/api/phones/cisco/spa9xx/922
+curl -i -H "Accept: application/json" -H "Content-Type: application/json" -X PUT -d '{"settings": {}}' http://127.0.0.1/api/phones/cisco/spa9xx/941
