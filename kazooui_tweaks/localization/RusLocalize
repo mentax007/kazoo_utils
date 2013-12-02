@@ -561,7 +561,13 @@ sed -i 's/>Account Name</>Учетная запись</g' $1
 ###sed -i 's///g' $1
 ###sed -i 's///g' $1
 ###sed -i 's///g' $1
-###sed -i 's///g' $1
+###sed -i "s///g" $1
+###sed -i "s///g" $1
+###sed -i "s///g" $1
+###sed -i "s///g" $1
+###sed -i "s///g" $1
+sed -i "s/label: 'Hosted PBX'/label: 'Виртуальная АТС'/g" $1
+sed -i "s/label: 'PBX Connector'/label: 'Внешние АТС'/g" $1
 sed -i 's/"Last Name"/"Фамилия"/g' $1
 sed -i 's/"First Name"/"Имя"/g' $1
 sed -i 's/"Username"/"Имя пользователя"/g' $1
@@ -594,7 +600,7 @@ sed -i "s/label: 'Groups'/label: 'Группы'/g" $1
 sed -i "s/label: 'Bulk Edit'/label: 'Быстрое редактирование'/g" $1
 sed -i "s/new_entity_label: 'Add Group'/new_entity_label: 'Создать'/g" $1
 sed -i "s/new_entity_label: 'Add Server'/new_entity_label: 'Создать'/g" $1
-sed -i "s/>Edit settings for />Установите настройки АТС /g" $1
+sed -i "s/>Edit settings for />Конфигурация АТС /g" $1
 sed -i "s/title: 'Edit Settings of '/title: 'Редактор настроек '/g" $1
 sed -i 's/>Name your PBX</>Название этой АТС</g' $1
 sed -i 's/>Set up your PBX</>Настройка подключения АТС</g' $1
