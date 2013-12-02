@@ -33,6 +33,8 @@ wget https://raw.github.com/onnet/mod_zonnet/master/lib/images/logo_for_kazoo.pn
 
 wget https://raw.github.com/onnet/mod_zonnet/master/lib/images/big_onnet_img_for_kazoo.png -O $KAZOO_UI_DIR/config/images/onnet.png
 
+wget https://raw.github.com/onnet/kazoo_utils/master/kazooui_tweaks/files/left_welcome.html -O $KAZOO_UI_DIR/config/tmpl/left_welcome.html
+
 ################################
 ######  Config.js tweaks #######
 ################################
