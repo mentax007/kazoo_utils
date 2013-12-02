@@ -84,12 +84,18 @@ sed -i "s/'cdr': false,/'cdr': false/g" $KAZOO_UI_DIR/whapps/voip/voip.js
 sed -i "/'billing': false,/d" $KAZOO_UI_DIR/whapps/myaccount/myaccount.js 
 sed -i "/'report': false,/d" $KAZOO_UI_DIR/whapps/myaccount/myaccount.js 
 
-#########  Get rid of Emergency Fields as we do not use them  ##########################
+#########  Get rid of Emergency and Billing Fields as we do not use them  ##################
 ## Account
 
 sed -i "/_emergency/d" $KAZOO_UI_DIR/whapps/voip/account/account.js 
 sed -i "/form_data.caller_id.emergency.number/d" $KAZOO_UI_DIR/whapps/voip/account/account.js 
+sed -i "/name: '#contact_billing_email'/d" $KAZOO_UI_DIR/whapps/voip/account/account.js 
+sed -i "/name: '#contact_billing_number'/d" $KAZOO_UI_DIR/whapps/voip/account/account.js 
 sed -i "/mergency/d" $KAZOO_UI_DIR/whapps/voip/account/tmpl/edit.html
+sed -i "/Billing Contact/d" $KAZOO_UI_DIR/whapps/voip/account/tmpl/edit.html
+sed -i "/contact_billing_number/d" $KAZOO_UI_DIR/whapps/voip/account/tmpl/edit.html
+sed -i "/contact_billing_email/d" $KAZOO_UI_DIR/whapps/voip/account/tmpl/edit.html
+sed -i "40,75{;/<hr /d;}" $KAZOO_UI_DIR/whapps/voip/account/tmpl/edit.html
 
 ## User
 
