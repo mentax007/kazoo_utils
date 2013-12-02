@@ -586,3 +586,20 @@ sed -i 's/"sInfo": "Showing _START_ to _END_ of _TOTAL_ entries"/"sInfo": "По�
 sed -i 's/"sInfoEmpty": "Showing 0 to 0 of 0 entries"/"sInfoEmpty": "Показано 0 записей"/g' $1
 sed -i 's/"sEmptyTable": "No data available in table"/"sEmptyTable": "Данные отсутствуют"/g' $1
 sed -i 's/"Feature Codes"/"Функции"/g' $1
+sed -i "s/'App Store'/'Приложения'/g" $1
+sed -i "s/desc: 'Manage your pbxs'/desc: 'Подключайте свои АТС'/g" $1
+sed -i "s/desc: 'Let the user manage is own vmbox ...'/desc: 'Позвольте пользователю управлять своим номером ...'/g" $1
+sed -i "s/desc: 'Manage vmboxes, callflows ...'/desc: 'Управляйте маршрутизацией, пользователями, устройствами ...'/g" $1
+sed -i "s/label: 'Groups'/label: 'Группы'/g" $1
+sed -i "s/label: 'Bulk Edit'/label: 'Быстрое редактирование'/g" $1
+sed -i "s/new_entity_label: 'Add Group'/new_entity_label: 'Создать'/g" $1
+sed -i "s/new_entity_label: 'Add Server'/new_entity_label: 'Создать'/g" $1
+sed -i "s/>Edit settings for />Установите настройки АТС /g" $1
+sed -i "s/title: 'Edit Settings of '/title: 'Редактор настроек '/g" $1
+sed -i 's/>Name your PBX</>Название этой АТС</g' $1
+sed -i 's/>Set up your PBX</>Настройка подключения АТС</g' $1
+sed -i 's/>Server\/Realm</>Сервер\/Реалм</g' $1
+sed -i 's/>Compatibility mode</>Режим совместимости</g' $1
+sed -i 's/>This PBX will be known as </>Имя АТС </g' $1
+sed -i 's/>Currently selected: </>Используемый тип АТС: </g' $1
+sed -i 's/>We support all top IP-PBX Manufacturers. Select one below.</>Мы поддерживаем АТС большинства известных производителей. Выберите тип Вашей АТС.</g' $1
