@@ -609,3 +609,10 @@ sed -i 's/>Compatibility mode</>Режим совместимости</g' $1
 sed -i 's/>This PBX will be known as </>Имя АТС </g' $1
 sed -i 's/>Currently selected: </>Используемый тип АТС: </g' $1
 sed -i 's/>We support all top IP-PBX Manufacturers. Select one below.</>Мы поддерживаем АТС большинства известных производителей. Выберите тип Вашей АТС.</g' $1
+sed -i 's/"Click if you want to see the advanced view by default."/"Отметьте если хотите видеть зкспертные настройки включенными по умолчанию."/g' $1
+sed -i 's/"Select the app you want to display at login."/"Выберите приложение, которое Вы хотели бы использовать сразу после входа в панель управления."/g' $1
+sed -i 's/>Change your email</>Сменить email</g' $1
+sed -i 's/>Change your password</>Новый пароль</g' $1
+sed -i 's/>Confirm your password</>Подтвердить пароль</g' $1
+sed -i 's/>Advanced View</>Показывать экспертные настройки</g' $1
+sed -i 's/>Primary App</>Загружать при входе</g' $1
