@@ -602,3 +602,12 @@ sed -i 's/>"E-mail address"</>"Адрес E-mail"</g' $1
 sed -i 's/>Pass Realm in INVITE</>Передавать Реалм в INVITE</g' $1
 sed -i 's/"Define the contact e-mail address of this Account for technical issues."/"Введите номер телефона для контакта для этой учетной записи на случай возникновения технических вопросов."/g' $1
 sed -i 's/"Define the contact number of this Account for technical issues."/"Введите адрес электронной почты для этой учетной записи на случай возникновения технических вопросов."/g' $1
+sed -i "s/title: 'Select Endpoint'/title: 'Выберите объект'/g" $1
+sed -i "s/title: 'Callflow'/title: 'Маршрут'/g" $1
+sed -i "s/name: 'Callflow'/name: 'Маршрут'/g" $1
+sed -i "s/winkstart.alert('info'/winkstart.alert('Информация'/g" $1
+sed -i 's/"sLengthMenu": "Show _MENU_ entries"/"sLengthMenu": "Показать _MENU_ записей"/g' $1
+sed -i 's/Connect a caller to another callflow.../>Направить вызов на другой маршрут...</g' $1
+sed -i 's/>Which callflow?</>Выберите маршрут</g' $1
+sed -i 's/>Which endpoint?</>Выберите группу абонентов для перехвата</g' $1
+sed -i 's/>Setting group pick-up...</>Настройка перехвата вызовов...</g' $1
