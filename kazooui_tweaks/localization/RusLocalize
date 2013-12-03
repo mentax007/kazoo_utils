@@ -1,9 +1,3 @@
-###sed -i "s///g" $1
-###sed -i "s///g" $1
-###sed -i "s///g" $1
-###sed -i "s///g" $1
-###sed -i "s///g" $1
-###sed -i "s///g" $1
 sed -i "s/Forward Calls To:/Перенаправить на:/g" $1
 sed -i "s/Send Voicemail to Email:/Отправлять на email:/g" $1
 sed -i "s/Email Address:/Email адрес:/g" $1
@@ -549,23 +543,6 @@ sed -i 's/>Invite Format:</>Invite формат:</g' $1
 sed -i 's/>Expire Seconds:</>Expire, сек:</g' $1
 sed -i 's/>Password</>Пароль</g' $1
 sed -i 's/>Account Name</>Учетная запись</g' $1
-#sed -i 's/></></g' $1
-#sed -i 's/></></g' $1
-#sed -i 's/></></g' $1
-#sed -i 's/></></g' $1
-#sed -i 's/></></g' $1
-#sed -i 's/></></g' $1
-###sed -i 's///g' $1
-###sed -i 's///g' $1
-###sed -i 's///g' $1
-###sed -i 's///g' $1
-###sed -i 's///g' $1
-###sed -i 's///g' $1
-###sed -i "s///g" $1
-###sed -i "s///g" $1
-###sed -i "s///g" $1
-###sed -i "s///g" $1
-###sed -i "s///g" $1
 sed -i "s/label: 'Hosted PBX'/label: 'Виртуальная АТС'/g" $1
 sed -i "s/label: 'PBX Connector'/label: 'Внешние АТС'/g" $1
 sed -i 's/"Last Name"/"Фамилия"/g' $1
@@ -616,3 +593,12 @@ sed -i 's/>Change your password</>Новый пароль</g' $1
 sed -i 's/>Confirm your password</>Подтвердить пароль</g' $1
 sed -i 's/>Advanced View</>Показывать экспертные настройки</g' $1
 sed -i 's/>Primary App</>Загружать при входе</g' $1
+sed -i "s/Select the media file that you want to be played by default when it's not set on a user or a device./Выберите музыкальный файл, который будет проигрываться по умолчанию, если у пользователя или устройства не выбрана своя мелодия./g" $1
+sed -i 's/>Technical Contact</>Контакт по техническим вопросам</g' $1
+sed -i 's/>Hosted PBX</>Виртуальная АТС</g' $1
+sed -i 's/>User Portal</>Личный кабинет</g' $1
+sed -i 's/>PBX Connector</>Внешние АТС</g' $1
+sed -i 's/>"E-mail address"</>"Адрес E-mail"</g' $1
+sed -i 's/>Pass Realm in INVITE</>Передавать Реалм в INVITE</g' $1
+sed -i 's/"Define the contact e-mail address of this Account for technical issues."/"Введите номер телефона для контакта для этой учетной записи на случай возникновения технических вопросов."/g' $1
+sed -i 's/"Define the contact number of this Account for technical issues."/"Введите адрес электронной почты для этой учетной записи на случай возникновения технических вопросов."/g' $1
