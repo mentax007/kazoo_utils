@@ -130,8 +130,8 @@ sed -i "7i\       " $KAZOO_UI_DIR/config/config.js
 ##########  Running localization if needed                                  ############
 ########################################################################################
 
-# echo "Running localozation. Could be way too long ..."
+echo "Running localozation. Could be way too long ..."
 
-# nohup localization/runlocalization &
+nohup localization/runlocalization &
 
 ########################################################################################
