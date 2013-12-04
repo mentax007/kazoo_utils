@@ -127,3 +127,11 @@ sed -i "7i\        /* Provisioning */" $KAZOO_UI_DIR/config/config.js
 sed -i "7i\       " $KAZOO_UI_DIR/config/config.js
 
 ########################################################################################
+##########  Running localization if needed                                  ############
+########################################################################################
+
+# echo "Running localozation. Could be way too long ..."
+
+# nohup localization/runlocalization &
+
+########################################################################################
