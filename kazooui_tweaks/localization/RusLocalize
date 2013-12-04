@@ -547,8 +547,6 @@ sed -i "s/label: 'Hosted PBX'/label: 'Виртуальная АТС'/g" $1
 sed -i "s/label: 'PBX Connector'/label: 'Внешние АТС'/g" $1
 sed -i 's/"Last Name"/"Фамилия"/g' $1
 sed -i 's/"First Name"/"Имя"/g' $1
-sed -i 's/"Username"/"Имя пользователя"/g' $1
-sed -i 's/"Password"/"Пароль пользователя"/g' $1
 sed -i 's/"Domain name or IP address"/"Доменное имя или IP адрес"/g' $1
 sed -i 's/"Member timeout (s)"/"Время ожидания агента (сек)"/g' $1
 sed -i 's/"Queue timeout (s)"/"Время ожидания в очереди (сек)"/g' $1
