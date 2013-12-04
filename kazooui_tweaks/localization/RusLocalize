@@ -419,7 +419,7 @@ sed -i "s/'Call-Forward'/'Переадресация вызова'/g" $1
 sed -i "s/'Feature Codes'/'Функции'/g" $1
 sed -i "s/'Resources'/'Ресурсы'/g" $1
 sed -i "s/'Callflows'/'Маршрутизация'/g" $1
-sed -i "s/'VoIP Services'/'Голосовые услуги'/g" $1
+sed -i "s/'VoIP Services'/'Виртуальный офис'/g" $1
 sed -i "s/Realm of this account/Домен этой учетной записи/g" $1
 sed -i "s/Name of this account/Имя этой учетной записи/g" $1
 sed -i "s/'Please confirm'/'Пожалуйста подтвердите'/g" $1
@@ -453,7 +453,7 @@ sed -i 's/>Create Account</>Создать учетную запись</g' $1
 sed -i 's/>Edit Account</>Редактировать учетную запись</g' $1
 sed -i 's/>Realm (unique):</>Реалм (уникальный):</g' $1
 sed -i 's/>Use account</>Войти</g' $1
-sed -i 's/"VoIP Services"/"Голосовые услуги"/g' $1
+sed -i 's/"VoIP Services"/"Виртуальный офис"/g' $1
 sed -i 's/>Feature Codes</>Функции</g' $1
 sed -i 's/>Enable Call-Forward ?</>Включить переадресацию?</g' $1
 sed -i 's/>Manage Conferences</>Управление конференциями</g' $1
@@ -543,7 +543,7 @@ sed -i 's/>Invite Format:</>Invite формат:</g' $1
 sed -i 's/>Expire Seconds:</>Expire, сек:</g' $1
 sed -i 's/>Password</>Пароль</g' $1
 sed -i 's/>Account Name</>Учетная запись</g' $1
-sed -i "s/label: 'Hosted PBX'/label: 'Виртуальная АТС'/g" $1
+sed -i "s/label: 'Hosted PBX'/label: 'Виртуальный офис'/g" $1
 sed -i "s/label: 'PBX Connector'/label: 'Внешние АТС'/g" $1
 sed -i 's/"Last Name"/"Фамилия"/g' $1
 sed -i 's/"First Name"/"Имя"/g' $1
@@ -593,7 +593,7 @@ sed -i 's/>Advanced View</>Показывать экспертные настр�
 sed -i 's/>Primary App</>Загружать при входе</g' $1
 sed -i "s/Select the media file that you want to be played by default when it's not set on a user or a device./Выберите музыкальный файл, который будет проигрываться по умолчанию, если у пользователя или устройства не выбрана своя мелодия./g" $1
 sed -i 's/>Technical Contact</>Контакт по техническим вопросам</g' $1
-sed -i 's/>Hosted PBX</>Виртуальная АТС</g' $1
+sed -i 's/>Hosted PBX</>Виртуальный офис</g' $1
 sed -i 's/>User Portal</>Личный кабинет</g' $1
 sed -i 's/>PBX Connector</>Внешние АТС</g' $1
 sed -i 's/>"E-mail address"</>"Адрес E-mail"</g' $1
