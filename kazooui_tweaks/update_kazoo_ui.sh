@@ -50,6 +50,12 @@ sed -i "s/api.2600hz.com/$CROSSBAR_SERVER/g" $KAZOO_UI_DIR/config/config.js
 sed -i "s/hide_registration: false/hide_registration: true/g" $KAZOO_UI_DIR/config/config.js
 sed -i "s/company_name: '2600hz'/company_name: 'OnNet - Virtual Office'/g" $KAZOO_UI_DIR/config/config.js
 
+################################################################################
+###### Change default infite_format in pbx_manager to 'e164_without_plus' ######
+################################################################################
+
+sed -i "s/inbound_format: 'e.164',/inbound_format: 'e164_without_plus',/g" $KAZOO_UI_DIR/whapps/pbxs/pbxs_manager/pbxs_manager.js
+
 #############################################################
 ###### Change country code in number_manager's regexps ######
 #############################################################
@@ -131,7 +137,7 @@ sed -i "7i\       " $KAZOO_UI_DIR/config/config.js
 ########################################################################################
 
 ###### Make menu whapp widgets a bit wider 
-sed -i "7,12{;s/width: 120px;/width: 120px/;}" $KAZOO_UI_DIR/whapps/core/whappnav/css/whappnav.css
+sed -i "7,12{;s/width: 120px;/width: 120px;/;}" $KAZOO_UI_DIR/whapps/core/whappnav/css/whappnav.css
 
 ########################################################################################
 ##########  Running localization if needed                                  ############
