@@ -137,7 +137,7 @@ sed -i "7i\       " $KAZOO_UI_DIR/config/config.js
 ########################################################################################
 
 ###### Make menu whapp widgets a bit wider 
-sed -i "7,12{;s/width: 120px;/width: 120px;/;}" $KAZOO_UI_DIR/whapps/core/whappnav/css/whappnav.css
+sed -i "7,12{;s/width: 120px;/width: 160px;/;}" $KAZOO_UI_DIR/whapps/core/whappnav/css/whappnav.css
 
 ########################################################################################
 ##########  Running localization if needed                                  ############
