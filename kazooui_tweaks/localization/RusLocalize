@@ -609,3 +609,5 @@ sed -i 's/Connect a caller to another callflow.../>Направить вызов
 sed -i 's/>Which callflow?</>Выберите маршрут</g' $1
 sed -i 's/>Which endpoint?</>Выберите группу абонентов для перехвата</g' $1
 sed -i 's/>Setting group pick-up...</>Настройка перехвата вызовов...</g' $1
+sed -i "s/+1555-555-5555/(812) 363-45-00/g" $1
+sed -i 's/"E-mail address"/"Адрес электронной почты"/g' $1
