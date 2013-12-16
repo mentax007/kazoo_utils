@@ -611,3 +611,9 @@ sed -i 's/>Which endpoint?</>Выберите группу абонентов д
 sed -i 's/>Setting group pick-up...</>Настройка перехвата вызовов...</g' $1
 sed -i "s/+1555-555-5555/+78123634500/g" $1
 sed -i 's/"E-mail address"/"Адрес электронной почты"/g' $1
+sed -i "s/Alternative Number/Альтернативный номер/g" $1
+sed -i "s/ailover SIP Address/Альтернативный SIP маршрут/g" $1
+sed -i "s/If your phone system is unreachable for any reason, we can redirect a caller to an alternate phone number or VoIP device. If the Failover number is an external number this call will cost you for both inbound and outbound./Если Ваша АТС недоступна в этот момент, мы можем переадресовать звонок на другой номер или SIP устройство. Если альтернативный номер является внешним, он будет тарифицирован в соответствии с Вашим тарифом./g" $1
+sed -i "s/'Setup Failover'/'Настройка альтернативного маршрута'/g" $1
+sed -i 's/>Activate</>Активировать</g' $1
+sed -i 's/>Choose a type of failover:</>Выберите тип альтернативного маршрута:</g' $1

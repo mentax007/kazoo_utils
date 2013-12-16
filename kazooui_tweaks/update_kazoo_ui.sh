@@ -80,6 +80,13 @@ sed -i "s/'+1'/'+$COUNTRY_CODE'/g" $KAZOO_UI_DIR/whapps/pbxs/pbxs_manager/pbxs_m
 
 echo "Removing unused elements..."
 
+##### Remove CID and E911 dialog boxes as we unfortunetely still can not provide this service #####
+
+> $KAZOO_UI_DIR/whapps/pbxs/pbxs_manager/tmpl/e911_dialog.html
+> $KAZOO_UI_DIR/whapps/pbxs/pbxs_manager/tmpl/cnam_dialog.html
+#> $KAZOO_UI_DIR/
+#> $KAZOO_UI_DIR/
+
 #########  Get rid of Credit widget  ###################################################
 
 sed -i "/'credits': false/d" $KAZOO_UI_DIR/whapps/myaccount/myaccount.js
@@ -125,12 +132,12 @@ sed -i "/mergency/d" $KAZOO_UI_DIR/whapps/voip/device/tmpl/edit.html
 ##########  Add phone provisionong                                          ############
 ########################################################################################
 
-git clone git://github.com/2600hz/phone.git /var/www/html/v3/whapps/voip/phone
+#git clone git://github.com/2600hz/phone.git /var/www/html/v3/whapps/voip/phone
 
-sed -i "7i\       " $KAZOO_UI_DIR/config/config.js
-sed -i "7i\        provisioner_url: 'http://$PROVISIONING_SERVER'," $KAZOO_UI_DIR/config/config.js
-sed -i "7i\        /* Provisioning */" $KAZOO_UI_DIR/config/config.js
-sed -i "7i\       " $KAZOO_UI_DIR/config/config.js
+#sed -i "7i\       " $KAZOO_UI_DIR/config/config.js
+#sed -i "7i\        provisioner_url: 'http://$PROVISIONING_SERVER'," $KAZOO_UI_DIR/config/config.js
+#sed -i "7i\        /* Provisioning */" $KAZOO_UI_DIR/config/config.js
+#sed -i "7i\       " $KAZOO_UI_DIR/config/config.js
 
 ########################################################################################
 ##########  Some css changes                                                ############
@@ -143,8 +150,8 @@ sed -i "7,12{;s/width: 120px;/width: 160px;/;}" $KAZOO_UI_DIR/whapps/core/whappn
 ##########  Running localization if needed                                  ############
 ########################################################################################
 
-echo "Running localozation. Could be way too long ..."
+#echo "Running localozation. Could be way too long ..."
 
-nohup localization/runlocalization &
+#nohup localization/runlocalization &
 
 ########################################################################################
