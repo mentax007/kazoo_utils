@@ -107,9 +107,9 @@ echo Done
 
 echo Freeswitch kazoo.conf.xml editing
 
+LineNum=`sed -n '/name="nodename"/{;=;}' /etc/kazoo/freeswitch/autoload_configs/kazoo.conf.xml`
 sed -i '/name="nodename"/d' /etc/kazoo/freeswitch/autoload_configs/kazoo.conf.xml
-sed -i 's/freeswitch@fs01.some.server.com/freeswitch@'$HOSTNAME'/g' /etc/kazoo/freeswitch/autoload_configs/kazoo.conf.xml
-sed -i '9i\        <param name="nodename" value="freeswitch@'$HOSTNAME'" />' /etc/kazoo/freeswitch/autoload_configs/kazoo.conf.xml
+sed -i $LineNum'i\        <param name="nodename" value="freeswitch@'$HOSTNAME'" />' /etc/kazoo/freeswitch/autoload_configs/kazoo.conf.xml
 
 echo Done
 
