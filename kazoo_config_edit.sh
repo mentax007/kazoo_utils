@@ -8,16 +8,17 @@
 ##############################################
 ## Create /etc/kz_vars/kazoo_config_edit.vars:
 #
-#RABBIT_IP="94.125.4.100"
+#RABBIT_IP="192.168.4.100"
+#HOMER_IP="192.168.4.99"
 #
-#DB1="kz4100.onnet.su 94.125.4.100"
+#DB1="kz4100.onnet.su 192.168.4.100"
 #FS1="kz4100.onnet.su"
 #
 ## In case of cluster add:
 ##
-##DB2="kz4103.onnet.su 94.125.4.103"
-##DB3="kz4104.onnet.su 94.125.4.104"
-##DB4="kz4105.onnet.su 94.125.4.105"
+##DB2="kz4103.onnet.su 192.168.4.103"
+##DB3="kz4104.onnet.su 192.168.4.104"
+##DB4="kz4105.onnet.su 192.168.4.105"
 ##
 ##FS2="kz4101.onnet.su"
 ##############################################
@@ -113,4 +114,27 @@ sed -i $LineNum'i\        <param name="nodename" value="freeswitch@'$HOSTNAME'" 
 
 echo Done
 
+echo Addind Homer functionality
+echo Kamailio..
+cat <<EOF >> /etc/kazoo/kamailio/local.cfg
+
+#############################################################
+################## Homer addition  ##########################
+#############################################################
+loadmodule "siptrace.so"
+# check IP and port of your capture node
+modparam("siptrace", "duplicate_uri","sip:$HOMER_IP:9060");
+modparam("siptrace", "hep_on",1);
+modparam("siptrace", "trace_to_database","0");
+modparam("siptrace", "trace_flag",22);
+modparam("siptrace", "trace_on", 1);
+#############################################################
+EOF
+
+echo FS...
+sed -i '9i\        param name="capture-server" value="udp:'$HOMER_IP':9060"/>'	/etc/kazoo/freeswitch/autoload_configs/sofia.conf.xml
+LineNumSipTrace=`sed -n '/sip-trace/{;=;}' /etc/kazoo/freeswitch/sip_profiles/sipinterface_1.xml`
+sed -i $LineNumSipTrace'i\        <param name="sip-capture" value="yes"/>' /etc/kazoo/freeswitch/autoload_configs/kazoo.conf.xml
+
+echo Done
 
