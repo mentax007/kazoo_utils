@@ -1,0 +1,418 @@
+<!-- Writen by Vladisalv Dushenkov Accaunt Creation Automatition vlad@onnet.su -->
+
+<!DOCTYPE html>
+<html>
+    <head>
+         <meta charset="utf-8">
+         <title>Авторизация</title>
+     <script src="http://portal.onnet.su/js/external/jquery-1.6.2.min.js"></script>
+     <script src="http://portal.onnet.su/js/external/md5_generator.js"></script>
+	 <style>
+	 td {vertical-align: top;}
+	 </style>
+     </head>
+
+
+     <script src="http://portal.onnet.su/js/external/jquery.cookie.js"></script>
+  <!--   <script src="http://portal.onnet.su/js/external/tmpl/jquery.tmpl.js"></script> -->
+   </head>
+   <body>
+     <!-- Форма авторизации -->
+     <div id="list_fields">
+		<table style="width: 100%; text-align: center;">
+			<tr>
+				<td>Администратор:</td>
+				<td>Клиент:</td>
+				<td>SIP-линия</td>
+			</tr>
+			<tr>
+				<td><p>
+         Логин*: <input id="login" type=text>
+      </p>
+      <p>
+        Пароль*: <input id="password" type=password>
+      </p>
+      <p>
+        Аккаунт*: <input id="account_name" type=text>
+      </p>
+	  <p>
+        Сервис*:
+		<input type="radio" name="service" value="Office" checked="checked" onclick="service_check()"> Виртуальный офис<br />
+		<input type="radio" name="service" value="FreePBX"  onclick="service_check()"> Виртуальная АТС<br />
+      </p>
+	  </td>
+				<td><p>
+	  Аккаунт*: <input id="account" type=text value="">
+	 </p>
+	 <p>
+        Домен (realm)*: <input id="realm" type=text value="">.sip.onnet.su
+      </p>
+	  <p>
+        Номер телефона*: <input id="number" type=text>
+      </p>
+	  <div id="office">
+	  <p>
+        Эл. почта*: <input id="email" type=text>
+      </p>
+	  <p>
+         Пароль Администратора*: <input id="admin_passwd" type=password>
+      </p>
+	  <p>
+        Номер для переадресации: <input id="recall_number" type=text>
+      </p>
+	  </div>
+	  </td>
+				<td><p>
+         Логин*: <input id="sip_username" type=text>
+      </p>
+      <p>
+        Пароль*: <input id="sip_password" type=text>
+      </p>
+	  <p id="info">
+	  </p></td>
+			</tr>
+		</table>
+	
+	  <div style="width: 100%; text-align: center">
+	  <button id="login_btn">Создать Аккаунт</button>
+      <p>
+        * - обязательно для заполнения (если что-то пошло не так, включите отладчик)
+      </p>
+     </div>
+
+	 <script type="text/javascript">
+	 
+	 function service_check() {
+	 services = $(":radio[name=service]").filter(":checked").val();
+	 if ( services == "Office" ) {
+			$("#office").css("display","block");
+			}
+			if ( services == "FreePBX" ) {
+			$("#office").css("display","none");
+			}
+	 }
+	 
+	 function randomString(length, chars) {
+		var result = '';
+		for (var i = length; i > 0; --i) result += chars[Math.round(Math.random() * (chars.length - 1))];
+		return result;
+	}
+	var sip_user = "user_" + randomString(8, '0123456789abcdefghijklmnopqrstuvwxyz');
+	var sip_passwd = randomString(16, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
+	$("#sip_username").val(sip_user);
+	$("#sip_password").val(sip_passwd);
+
+       // При нажатии на кнопку "Войти" запускать функцию "userAuth"
+       $("#login_btn").click(userAuth);
+ 
+       function userAuth() {
+         // Для введенных значений логина/пароля/имени_аккаунта присваиваем соответствующие переменные
+		   login_username = $("#login").val();
+           login_password = $("#password").val();
+           login_account_name = $("#account_name").val();
+           // Создаем переменную "hashed_creds" в которую помещаем MD5 хеш логина и пароля
+           hashed_creds = $.md5(login_username + ':' + login_password);
+           // Создаем переменную "authParameters" в которую помещаем строку JSON, состоящую из необходимых параметров
+           authParameters = JSON.stringify ({
+             "data":{
+               "credentials":hashed_creds,
+               "account_name":login_account_name
+             }
+           });
+         // Авторизация: Отправляем PUT запрос используя метод ajax  
+         $.ajax({
+          type: "PUT",
+          url: "http://94.125.5.32:8000/v1" + "/user_auth",
+          data: authParameters,
+          contentType: "application/json; charset=utf-8",
+          dataType: "json",
+          headers: {
+            "Content-Type": "application/json", 
+          },
+          success: function(data_auth) {
+			services = $(":radio[name=service]").filter(":checked").val();
+			if ( services == "Office" ) {
+				OfficeCreate(data_auth.auth_token,data_auth.data.account_id);
+			}
+			if ( services == "FreePBX" ) {
+				ATSCreate(data_auth.auth_token,data_auth.data.account_id);
+			}
+		}
+		});
+	   };
+ 
+		function pbxInfo() {  // Отображает информацию об АТС (имя аккаунта, список абонентов)
+         account_username = $("#account").val();
+		 account_realm = $("#realm").val() + ".sip.onnet.su";
+		 admin_passwd = $("#admin_passwd").val();
+		 sip_username = $("#sip_username").val();
+         sip_password = $("#sip_password").val();
+		 services = $(":radio[name=service]").filter(":checked").val();
+			if ( services == "Office" ) {
+			info = "<div style='text-align: left; width: 200px; margin: 0 auto;'>Логин: admin <br />Пароль: " + admin_passwd + "<br />Аккаунт: " + account_username + "<br /><br />Параметры SIP устройства:<br />SIP-сервер: " + account_realm + "<br />Логин: " + sip_username + "<br />Пароль: " + sip_password + "</div>";
+			}
+			if ( services == "FreePBX" ) {
+			info = "<div style='text-align: left; width: 200px; margin: 0 auto;'>username=" + sip_username + "<br />type=friend<br />secret=" + sip_password + "<br />qualify=yes<br />nat=no<br />insecure=port,invite<br />host=" + account_realm + "<br />fromdomain=" + account_realm + "<br />canreinvite=no<br /><br />" + sip_username + ":" + sip_password + "@" + account_realm + "/" + account_realm + "</div>";
+			}
+             // Подставляем содержимое параметра name (имя аккаунта) в тег с id=name
+            $("#info").html(info);  
+         }
+ 
+		function OfficeCreate(auth_token,account_id) {  // Создает Администратора (пользователь + устройство + номер)
+         // Создаем переменные из введенных значений
+		   account_username = $("#account").val();
+		   account_realm = $("#realm").val() + ".sip.onnet.su";
+		   email = $("#email").val();
+           if ($("#recall_number").val() == "") {
+				first_name = "admin";
+				forward = false;
+				forward_number = "";
+			}
+			else {
+				first_name = $("#recall_number").val();
+				forward = true;
+				forward_number = $("#recall_number").val();
+			}
+			admin_passwd = $("#admin_passwd").val();
+			number = $("#number").val();			          
+          
+			accountParameters = JSON.stringify ({"data":{"notifications":{"voicemail_to_email":{},"deregister":{}},"apps":[],"name":account_username,"realm":account_realm,"available_apps":["voip","userportal"],"billing_id":account_id},});
+			
+			// Отправляем PUT запрос используя метод ajax  
+         $.ajax({
+          type: "PUT",
+          url: "http://94.125.5.32:8000/v1" + "/accounts/" + account_id,
+          data: accountParameters,
+          contentType: "application/json; charset=utf-8",
+          dataType: "json",
+          headers: {
+            "Content-Type": "application/json",
+			"X-Auth-Token": auth_token
+          },
+          success: function(data) {
+		  //alert(data.data.id);
+			account_id = data.data.id;
+			userParameters = JSON.stringify ({
+				"data":{"apps":{"voip":{"label":"VoIP Services","icon":"device","api_url":"http://94.125.5.32:8000/v1"}},"call_forward":{"substitute":true,"enabled":forward,"number":forward_number,"require_keypress":false,"keep_caller_id":false,"direct_calls_only":false},"call_restriction":{"closed_groups":{"action":"inherit"},"tollfree_us":{"action":"inherit"},"did_us":{"action":"inherit"}},"caller_id":{"internal":{"number":number},"external":{"number":number}},"hotdesk":{"enabled":false,"id":"","require_pin":false,"keep_logged_in_elsewhere":false},"contact_list":{"exclude":false},"music_on_hold":{},"username":"admin","first_name":first_name,"last_name":"admin","email":email,"priv_level":"admin","vm_to_email_enabled":true,"fax_to_email_enabled":true,"verified":false,"timezone":"Europe/Moscow","record_call":false,"password":admin_passwd}        
+          });
+		  
+         // Создаем пользователя
+         $.ajax({
+          type: "PUT",
+          url: "http://94.125.5.32:8000/v1/accounts/" + account_id + "/users",
+          data: userParameters,
+          contentType: "application/json; charset=utf-8",
+          dataType: "json",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Auth-Token": auth_token 
+          },
+          success: function(data) {  // При удачном завершении запроса, создаем устройство для данного пользователя
+             sip_username = $("#sip_username").val();
+             sip_password = $("#sip_password").val();
+             sip_realm = $("#realm").val() + ".sip.onnet.su";
+            deviceParameters = JSON.stringify ({
+              "data":{"enabled":true,"caller_id":{"external":{"name":"","number":number},"internal":{"name":"","number":number}},"ringtones":{},"call_restriction":{"closed_groups":{"action":"inherit"},"tollfree_us":{"action":"inherit"},"did_us":{"action":"inherit"}},"media":{"peer_to_peer":"auto","audio":{"codecs":["PCMA"]},"video":{"codecs":[]},"fax":{"option":"false"},"fax_option":"false"},"sip":{"method":"password","invite_format":"username","username":sip_username,"password":sip_password,"expire_seconds":"360"},"contact_list":{"exclude":false},"call_forward":{"enabled":false},"music_on_hold":{},"device_type":"softphone","provision":{},"name":"admin","owner_id":account_id,"suppress_unregister_notifications":true}         
+            }); 
+            // Создаем устройство
+            $.ajax({
+              type: "PUT",
+              url: "http://94.125.5.32:8000/v1/accounts/" + account_id + "/devices",
+              data: deviceParameters,
+              contentType: "application/json; charset=utf-8",
+              dataType: "json",
+              headers: {
+                "Content-Type": "application/json",
+                "X-Auth-Token": auth_token 
+              },
+              success: function(data) {  // При удачном завершении запроса, создаем номер дозвона до данного устройства
+				var number =  $("#number").val();
+                // Создаем номер
+                $.ajax({
+                  type: "PUT",
+                  url: "http://94.125.5.32:8000/v1/accounts/" + account_id + "/phone_numbers/" + number,
+                  data: "",
+                  contentType: "application/json; charset=utf-8",
+                  dataType: "json",
+                  headers: {
+                    "Content-Type": "application/json", 
+                    "X-Auth-Token": auth_token
+                  },
+                });
+				// Активируем номер
+				$.ajax({
+                  type: "PUT",
+                  url: "http://94.125.5.32:8000/v1/accounts/" + account_id + "/phone_numbers/" + number + "/activate",
+                  data: "",
+                  contentType: "application/json; charset=utf-8",
+                  dataType: "json",
+                  headers: {
+                    "Content-Type": "application/json", 
+                    "X-Auth-Token": auth_token
+                  },
+                });
+				
+                callflowParameters = JSON.stringify ({
+                  "data":{"numbers":[number],"flow":{"data":{"id":data.data.id,"timeout":"15","can_call_self":false},"module":"device","children":{"_":{"data":{"id":data.data.owner_id,"timeout":"60","can_call_self":false},"module":"user","children":{}}}}}
+				  
+                });
+                // Создаем правило дозвона
+                $.ajax({
+                  type: "PUT",
+                  url: "http://94.125.5.32:8000/v1/accounts/" + account_id + "/callflows",
+                  data: callflowParameters,
+                  contentType: "application/json; charset=utf-8",
+                  dataType: "json",
+                  headers: {
+                    "Content-Type": "application/json", 
+                    "X-Auth-Token": auth_token
+                  },
+                });
+				carrierParameters = JSON.stringify ({
+                  "data":{"featurecode":{},"numbers":["no_match"],"flow":{"children":{},"data":{},"module":"offnet"}}
+                });
+				$.ajax({
+                  type: "PUT",
+                  url: "http://94.125.5.32:8000/v1/accounts/" + account_id + "/callflows",
+                  data: carrierParameters,
+                  contentType: "application/json; charset=utf-8",
+                  dataType: "json",
+                  headers: {
+                    "Content-Type": "application/json", 
+                    "X-Auth-Token": auth_token
+                  },
+                });
+                // Отображаем сообщение "Мы сделали это!"
+                alert("Created!");
+                // Показываем страницу с информацией об АТС
+                pbxInfo();
+              }
+            })
+          }
+        });
+		}
+		})
+		};
+   
+	   function ATSCreate(auth_token,account_id) {  // Создает Аккаунт + Администратора + PBXConnector + Номер)
+         // Создаем переменные из введенных значений
+		account_username = $("#account").val();
+		account_realm = $("#realm").val() + ".sip.onnet.su";
+		email = $("#email").val();
+		sip_username = $("#sip_username").val();
+		sip_password = $("#sip_password").val();
+		sip_realm = $("#realm").val() + ".sip.onnet.su";
+		numbers = $("#number").val();
+		number = numbers.split(",");
+          
+		accountParameters = JSON.stringify ({"data":{"notifications":{"voicemail_to_email":{},"deregister":{}},"apps":[],"name":account_username,"realm":	account_realm,"available_apps":[],"billing_id":account_id},});
+			
+			// Отправляем PUT запрос используя метод ajax  
+        $.ajax({
+          type: "PUT",
+          url: "http://94.125.5.32:8000/v1" + "/accounts/" + account_id,
+          data: accountParameters,
+          contentType: "application/json; charset=utf-8",
+          dataType: "json",
+          headers: {
+            "Content-Type": "application/json",
+			"X-Auth-Token": auth_token
+          },
+          success: function(data) {
+			account_idnum = data.data.id;
+			connector =  JSON.stringify ({
+				"data":{"account":{"credits":{"prepay":"0.00"},"trunks":"0","inbound_trunks":"0","auth_realm":sip_realm},"billing_account_id":account_idnum,"DIDs_Unassigned":{},"servers":[]}
+				});
+				// Создаем PBX Connector
+				$.ajax({
+					type: "PUT",
+					url: "http://94.125.5.32:8000/v1/accounts/" + account_idnum + "/connectivity",
+					data: connector,
+					contentType: "application/json; charset=utf-8",
+					dataType: "json",
+					headers: {
+					"Content-Type": "application/json", 
+					"X-Auth-Token": auth_token
+					},
+				success: function(data) {
+					connectivity_idnum = data.data.id;
+			//Созlаем номер
+					for (i=0; i< number.length; ++i ) {
+					// Создаем номер
+						$.ajax({
+						type: "PUT",
+						url: "http://94.125.5.32:8000/v1/accounts/" + account_idnum + "/phone_numbers/" + number[i],
+						data: "",
+						contentType: "application/json; charset=utf-8",
+						dataType: "json",
+						headers: {
+							"Content-Type": "application/json", 
+							"X-Auth-Token": auth_token
+						},
+						success: function(data) {  
+							// Активируем номер
+							data.data.id = /(\d+)/.exec(data.data.id);
+							$.ajax({
+							type: "PUT",
+							url: "http://94.125.5.32:8000/v1/accounts/" + account_idnum + "/phone_numbers/" + data.data.id[0] + "/activate",
+							data: "",
+							contentType: "application/json; charset=utf-8",
+							dataType: "json",
+							headers: {
+								"Content-Type": "application/json", 
+								"X-Auth-Token": auth_token
+							}
+							});
+						}
+						});
+					
+					} //For
+					numberpbx = "";
+					numberpbx1 = "";
+					numberpbx2 = "";
+					if (number.length == 1) {
+						numberpbx = '{+' + number[0]+':{}}';
+						numberpbx1 = '"{+' + number[0]+':{}}"';
+						numberpbx2 = '{"+' + number[0]+'":{}}';	
+					}
+					else {
+						for (i=1; i < number.length; ++i) {
+							numberpbx = numberpbx + '+' + number[i]+':{},';
+							numberpbx1 = numberpbx1 + '+' + number[i]+':{},';
+							numberpbx2 = numberpbx2+ '"+' + number[i]+'":{},';		
+						}
+						numberpbx = '{' + numberpbx + '+' + number[0]+':{}}';
+						numberpbx1 = '"{' + numberpbx1 + '+' + number[0]+':{}}"';
+						numberpbx2 = '{' + numberpbx2+ '"+' + number[0]+'":{}}';
+					}
+					PBXConnectorParameters = JSON.stringify ({
+						"data":{"account":{"credits":{"prepay":"0.00"},"trunks":"0","inbound_trunks":"0","auth_realm":sip_realm},"billing_account_id":account_idnum,"DIDs_Unassigned":{},"servers":[{"DIDs":numberpbx,"options":{"enabled":true,"inbound_format":"e164_without_plus","international":false,"caller_id":{},"e911_info":{},"failover":{},"media_handling":"bypass"},"permissions":{"users":[]},"monitor":{"monitor_enabled":false},"auth":{"auth_user":sip_username,"auth_password":sip_password,"auth_method":"Password"},"server_name":"OnNet-PBX","server_type":"FreePBX"}],"id":connectivity_idnum}
+					});
+					PBXConnectorParameters1 = PBXConnectorParameters.replace(numberpbx1,numberpbx2);
+ 
+					// Обновляем PBX Connector + Номера
+					$.ajax({
+						type: "POST",
+						url: "http://94.125.5.32:8000/v1/accounts/" + account_idnum + "/connectivity/" + connectivity_idnum,
+						data: PBXConnectorParameters1,
+						contentType: "application/json; charset=utf-8",
+						dataType: "json",
+						headers: {
+							"Content-Type": "application/json",
+							"X-Auth-Token": auth_token 
+						},
+					success: function() {
+						// Отображаем сообщение "Мы сделали это!"
+						alert("Created!");
+						// Показываем страницу с информацией об АТС
+						pbxInfo();
+					}
+					});
+				}
+			});
+			}
+		});
+		}
+     </script>
+   </body>
+</html>  

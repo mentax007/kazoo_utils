@@ -114,22 +114,24 @@ sed -i $LineNum'i\        <param name="nodename" value="freeswitch@'$HOSTNAME'" 
 
 echo Done
 
-echo Addind Homer functionality
-echo Kamailio..
-cat <<EOF >> /etc/kazoo/kamailio/local.cfg
+echo Homer functionality
+
+#echo Kamailio..
+
+#cat <<EOF >> /etc/kazoo/kamailio/local.cfg
 
 #############################################################
 ################## Homer addition  ##########################
 #############################################################
-loadmodule "siptrace.so"
-# check IP and port of your capture node
-modparam("siptrace", "duplicate_uri","sip:$HOMER_IP:9060");
-modparam("siptrace", "hep_on",1);
-modparam("siptrace", "trace_to_database","0");
-modparam("siptrace", "trace_flag",22);
-modparam("siptrace", "trace_on", 1);
-#############################################################
-EOF
+#loadmodule "siptrace.so"
+## check IP and port of your capture node
+#modparam("siptrace", "duplicate_uri","sip:$HOMER_IP:9060");
+#modparam("siptrace", "hep_on",1);
+#modparam("siptrace", "trace_to_database","0");
+#modparam("siptrace", "trace_flag",22);
+#modparam("siptrace", "trace_on", 1);
+##############################################################
+#EOF
 
 echo FS...
 sed -i '9i\        param name="capture-server" value="udp:'$HOMER_IP':9060"/>'	/etc/kazoo/freeswitch/autoload_configs/sofia.conf.xml
