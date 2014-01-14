@@ -37,12 +37,12 @@
       </p>
 	  <p>
         Сервис*:
-		<input type="radio" name="service" value="Office" checked="checked" onclick="service_check()"> Виртуальный офис<br />
-		<input type="radio" name="service" value="FreePBX"  onclick="service_check()"> Виртуальная АТС<br />
+		<input type="radio" name="service" value="Office" onclick="service_check()"> Виртуальный офис<br />
+		<input type="radio" name="service" value="FreePBX" checked="checked" onclick="service_check()"> Виртуальная АТС<br />
       </p>
 	  </td>
 				<td><p>
-	  Аккаунт*: <input id="account" type=text value="">
+	  Аккаунт*: <input id="account" type=text value="" onblur="realm_set()">
 	 </p>
 	 <p>
         Домен (realm)*: <input id="realm" type=text value="">.sip.onnet.su
@@ -50,7 +50,7 @@
 	  <p>
         Номер телефона*: <input id="number" type=text>
       </p>
-	  <div id="office">
+	  <div id="office" style="display: none;">
 	  <p>
         Эл. почта*: <input id="email" type=text>
       </p>
@@ -82,22 +82,35 @@
 
 	 <script type="text/javascript">
 	 
-	 function service_check() {
+	function service_check() {
 	 services = $(":radio[name=service]").filter(":checked").val();
 	 if ( services == "Office" ) {
-			$("#office").css("display","block");
+				var sip_user = "user_" + randomString(8, '0123456789abcdefghijklmnopqrstuvwxyz');
+				var sip_passwd = randomString(16, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
+				$("#sip_username").val(sip_user);
+				$("#sip_password").val(sip_passwd);
+				$("#office").css("display","block");
 			}
 			if ( services == "FreePBX" ) {
-			$("#office").css("display","none");
+				var sip_user = "pbx_" + randomString(8, '0123456789abcdefghijklmnopqrstuvwxyz');
+				var sip_passwd = randomString(16, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
+				$("#sip_username").val(sip_user);
+				$("#sip_password").val(sip_passwd);
+				$("#office").css("display","none");
 			}
 	 }
 	 
+	function realm_set() {
+		realm=$("#account").val().replace(/ /ig,"").toLowerCase();
+		$("#realm").val(realm);
+	}
+
 	 function randomString(length, chars) {
 		var result = '';
 		for (var i = length; i > 0; --i) result += chars[Math.round(Math.random() * (chars.length - 1))];
 		return result;
 	}
-	var sip_user = "user_" + randomString(8, '0123456789abcdefghijklmnopqrstuvwxyz');
+	var sip_user = "pbx_" + randomString(8, '0123456789abcdefghijklmnopqrstuvwxyz');
 	var sip_passwd = randomString(16, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
 	$("#sip_username").val(sip_user);
 	$("#sip_password").val(sip_passwd);
