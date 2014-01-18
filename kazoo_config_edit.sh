@@ -167,6 +167,7 @@ wget https://raw.github.com/onnet/onnet_util/master/monit.conf
 sed -i 's/change_mo_to_localsysname.onnet.su/'$HOSTNAME'/g' /etc/monit.conf
 chkconfig --add monit
 chkconfig monit on
+service monit restart
 
 echo Done
 
