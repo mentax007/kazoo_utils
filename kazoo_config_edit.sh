@@ -10,6 +10,7 @@
 #
 #RABBIT_IP="192.168.4.100"
 #HOMER_IP="192.168.4.99"
+#KZ_COOKIE="my_test_cookie"
 #
 #DB1="kz4100.onnet.su 192.168.4.100"
 #FS1="kz4100.onnet.su"
@@ -33,6 +34,7 @@ echo DB3: $DB3
 echo DB4: $DB4
 echo FS1: $FS1
 echo FS2: $FS2
+echo KZ_COOKIE: $KZ_COOKIE
 
 
 HOSTNAME=`hostname -f`
@@ -113,6 +115,12 @@ sed -i '/name="nodename"/d' /etc/kazoo/freeswitch/autoload_configs/kazoo.conf.xm
 sed -i $LineNum'i\        <param name="nodename" value="freeswitch@'$HOSTNAME'" />' /etc/kazoo/freeswitch/autoload_configs/kazoo.conf.xml
 
 echo Done
+
+echo Cookies...
+
+sed -i 's/cookie = change_me/cookie = '$KZ_COOKIE'/g' /etc/kazoo/config.ini 
+sed -i 's/-setcookie change_me/-setcookie '$KZ_COOKIE'/g' /etc/kazoo/bigcouch/vm.args 
+sed -i 's/name="cookie" value="change_me"/name="cookie" value="'$KZ_COOKIE'"/g' /etc/kazoo/freeswitch/autoload_configs/kazoo.conf.xml 
 
 echo Homer functionality configuration
 
