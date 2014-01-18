@@ -167,6 +167,11 @@ sed -i $LineNumSipTrace'i\            <param name="sip-capture" value="yes"/>' /
 
 sed -i 's/\/var\/log\/bigcouch.log {/\/var\/log\/bigcouch\/bigcouch.log {/' /etc/logrotate.d/bigcouch.conf
 
+## Also could be worth after upgrade
+/opt/kazoo/utils/sup/sup whapps_maintenance refresh system_schemas
+/opt/kazoo/utils/sup/sup -t 3600 whapps_maintenance migrate
+
+
 ## MONIT
 
 yum -y install wget
