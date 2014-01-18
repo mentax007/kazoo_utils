@@ -159,5 +159,14 @@ sed -i $LineNumSipTrace'i\            <param name="sip-capture" value="yes"/>' /
 
 sed -i 's/\/var\/log\/bigcouch.log {/\/var\/log\/bigcouch\/bigcouch.log {/' /etc/logrotate.d/bigcouch.conf
 
+## MONIT
+
+yum -y install wget
+yum -y install monit --enablerepo=epel
+wget https://raw.github.com/onnet/onnet_util/master/monit.conf
+sed -i 's/change_mo_to_localsysname.onnet.su/'$HOSTNAME'/g' /etc/monit.conf
+chkconfig --add monit
+chkconfig monit on
+
 echo Done
 
