@@ -10,6 +10,10 @@
 #
 #RABBIT_IP="192.168.4.100"
 #HOMER_IP="192.168.4.99"
+#
+### If you changing Bigcouch cookie on already configured system do not forget 
+### to change it at DB doc: system_config -> whistle_couch
+#
 #KZ_COOKIE="my_test_cookie"
 #
 #DB1="kz4100.onnet.su 192.168.4.100"
