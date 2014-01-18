@@ -154,5 +154,10 @@ sed -i '9i\        <param name="capture-server" value="udp:'$HOMER_IP':9060"/>'	
 LineNumSipTrace=`sed -n '/sip-trace/{;=;}' /etc/kazoo/freeswitch/sip_profiles/sipinterface_1.xml`
 sed -i $LineNumSipTrace'i\            <param name="sip-capture" value="yes"/>' /etc/kazoo/freeswitch/sip_profiles/sipinterface_1.xml
 
+
+## Check bigcouch.log rotating
+
+sed -i 's/\/var\/log\/bigcouch.log {/\/var\/log\/bigcouch\/bigcouch.log {/' /etc/logrotate.d/bigcouch.conf
+
 echo Done
 
