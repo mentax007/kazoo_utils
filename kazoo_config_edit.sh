@@ -120,6 +120,10 @@ sed -i $LineNum'i\        <param name="nodename" value="freeswitch@'$HOSTNAME'" 
 
 echo Done
 
+echo RabbitMQ...
+
+sed -i 's/guest:guest@127.0.0.1:5672/guest:guest@'$RABBIT_IP':5672/g' /etc/kazoo/config.ini
+
 echo Cookies...
 
 sed -i 's/cookie = change_me/cookie = '$KZ_COOKIE'/g' /etc/kazoo/config.ini 
