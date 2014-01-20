@@ -120,6 +120,11 @@ sed -i $LineNum'i\        <param name="nodename" value="freeswitch@'$HOSTNAME'" 
 
 echo Done
 
+echo Freeswitch kazoo.conf.xml editing
+
+sed -i 's/param name="enable-t38"        value="true"/param name="enable-t38"        value="false"/g' /etc/kazoo/freeswitch/autoload_configs/spandsp.conf.xml
+sed -i 's/param name="enable-t38-request"        value="true"/param name="enable-t38-request"        value="false"/g' /etc/kazoo/freeswitch/autoload_configs/spandsp.conf.xml
+
 echo RabbitMQ...
 
 sed -i 's/guest:guest@127.0.0.1:5672/guest:guest@'$RABBIT_IP':5672/g' /etc/kazoo/config.ini
