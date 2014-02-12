@@ -10,7 +10,7 @@
 ######  Change your settings here  ######
 #########################################
 
-KAZOO_UI_DIR="/var/www/html/v3"
+KAZOO_UI_DIR="/var/www/html"
 CROSSBAR_SERVER="94.125.5.27"
 COUNTRY_CODE="7"
 PROVISIONING_SERVER="p.onnet.su"
@@ -132,12 +132,12 @@ sed -i "/mergency/d" $KAZOO_UI_DIR/whapps/voip/device/tmpl/edit.html
 ##########  Add phone provisionong                                          ############
 ########################################################################################
 
-#git clone git://github.com/2600hz/phone.git /var/www/html/v3/whapps/voip/phone
+git clone git://github.com/2600hz/phone.git /var/www/html/v3/whapps/voip/phone
 
-#sed -i "7i\       " $KAZOO_UI_DIR/config/config.js
-#sed -i "7i\        provisioner_url: 'http://$PROVISIONING_SERVER'," $KAZOO_UI_DIR/config/config.js
-#sed -i "7i\        /* Provisioning */" $KAZOO_UI_DIR/config/config.js
-#sed -i "7i\       " $KAZOO_UI_DIR/config/config.js
+sed -i "7i\       " $KAZOO_UI_DIR/config/config.js
+sed -i "7i\        provisioner_url: 'http://$PROVISIONING_SERVER'," $KAZOO_UI_DIR/config/config.js
+sed -i "7i\        /* Provisioning */" $KAZOO_UI_DIR/config/config.js
+sed -i "7i\       " $KAZOO_UI_DIR/config/config.js
 
 ########################################################################################
 ##########  Some css changes                                                ############
@@ -150,8 +150,8 @@ sed -i "7,12{;s/width: 120px;/width: 160px;/;}" $KAZOO_UI_DIR/whapps/core/whappn
 ##########  Running localization if needed                                  ############
 ########################################################################################
 
-#echo "Running localozation. Could be way too long ..."
+echo "Running localozation. Could be way too long ..."
 
-#nohup localization/runlocalization &
+nohup localization/runlocalization &
 
 ########################################################################################

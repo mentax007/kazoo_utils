@@ -33,8 +33,8 @@ sed -i "s/>Minimum number of input</>Минимальное количество
 sed -i "s/>Max number of input</>Максимальное количество цифр</g" $1
 sed -i "s/>There is currently no user in this directory</>В данный момент пользователей в данном справочнике нет</g" $1
 sed -i "s/>-- Select --</>-- Выбрать --</g" $1
-sed -i "s/>Change File</><Сменить ролик/g" $1
-sed -i "s/>Download File</><Скачать ролик/g" $1
+sed -i "s/>Change File</>Сменить ролик</g" $1
+sed -i "s/>Download File</>Скачать ролик</g" $1
 sed -i "s/>File input</>Ролик</g" $1
 sed -i "s/List of numbers that users are allowed to dial when hunting (ex: ^\[0-9\]{0,11}\$ is a simple regex catching a group of 0 to 11 numbers)/Список разрешенных для набора номеров при поиске (пример: ^\[0-9\]{0,11}\$ регулярное выражение от 0 до 11 номеров)/g" $1
 sed -i "s/List of numbers that users are not allowed to dial when hunting (ex: ^\[0-9\]{0,11}\$ is a simple regex catching a group of 0 to 11 numbers)/Список запрещенных для набора номеров при поиске (пример: ^\[0-9\]{0,11}\$ регулярное выражение от 0 до 11 номеров)/g" $1

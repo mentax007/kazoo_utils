@@ -190,8 +190,9 @@ sed -i 's/\/var\/log\/bigcouch.log {/\/var\/log\/bigcouch\/bigcouch.log {/' /etc
 ## MONIT
 
 yum -y install wget
-yum -y install monit --enablerepo=epel
+yum -y install monit --enablerepo=epel --nogpgcheck
 wget https://raw.github.com/onnet/onnet_util/master/monit.conf -O /etc/monit.conf
+chmod 0600 /etc/monit.conf
 sed -i 's/change_mo_to_localsysname.onnet.su/'$HOSTNAME'/g' /etc/monit.conf
 chkconfig --add monit
 chkconfig monit on
