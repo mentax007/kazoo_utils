@@ -1,6 +1,6 @@
 ###  Just test
 WORK_DIR="/root/kazoo_utils/kazooui_tweaks/localization"
-KAZOO_UI_DIR="/var/www/html/v3"
+KAZOO_UI_DIR="/var/www/html/"
 updatedb
 awk '{ print length(), $0}' $WORK_DIR/RusLocalize | sort -n -r | sudo cut -f2- -d' ' > $WORK_DIR/RusLocalize.sort
 chmod a+x $WORK_DIR/RusLocalize.sort
