@@ -11,7 +11,7 @@
 #########################################
 
 KAZOO_UI_DIR="/var/www/html"
-CROSSBAR_SERVER="94.125.5.27"
+CROSSBAR_SERVER="94.125.5.32"
 COUNTRY_CODE="7"
 PROVISIONING_SERVER="p.onnet.su"
 
@@ -27,13 +27,13 @@ git clone https://github.com/2600hz/kazoo_ui.git $KAZOO_UI_DIR
 
 echo "Master `date '+%Y%m%d %H:%M'`" > $KAZOO_UI_DIR/VERSION
 
-wget https://raw.github.com/onnet/mod_zonnet/b9e5f3cbe4d9f320027bc8d048c2b0a4d172895a/lib/images/OnNet36x36.png -O $KAZOO_UI_DIR/img/wsLogo.png
+wget --no-check-certificate https://raw.github.com/onnet/mod_zonnet/b9e5f3cbe4d9f320027bc8d048c2b0a4d172895a/lib/images/OnNet36x36.png -O $KAZOO_UI_DIR/img/wsLogo.png
 
-wget https://raw.github.com/onnet/mod_zonnet/master/lib/images/logo_for_kazoo.png -O $KAZOO_UI_DIR/config/images/logo.png
+wget --no-check-certificate https://raw.github.com/onnet/mod_zonnet/master/lib/images/logo_for_kazoo.png -O $KAZOO_UI_DIR/config/images/logo.png
 
-wget https://raw.github.com/onnet/mod_zonnet/master/lib/images/big_onnet_img_for_kazoo.png -O $KAZOO_UI_DIR/config/images/onnet.png
+wget --no-check-certificate https://raw.github.com/onnet/mod_zonnet/master/lib/images/big_onnet_img_for_kazoo.png -O $KAZOO_UI_DIR/config/images/onnet.png
 
-wget https://raw.github.com/onnet/kazoo_utils/master/kazooui_tweaks/files/left_welcome.html -O $KAZOO_UI_DIR/config/tmpl/left_welcome.html
+wget --no-check-certificate https://raw.github.com/onnet/kazoo_utils/master/kazooui_tweaks/files/left_welcome.html -O $KAZOO_UI_DIR/config/tmpl/left_welcome.html
 
 ################################
 ######  Config.js tweaks #######
@@ -132,12 +132,12 @@ sed -i "/mergency/d" $KAZOO_UI_DIR/whapps/voip/device/tmpl/edit.html
 ##########  Add phone provisionong                                          ############
 ########################################################################################
 
-git clone git://github.com/2600hz/phone.git /var/www/html/v3/whapps/voip/phone
+#git clone git://github.com/2600hz/phone.git /var/www/html/v3/whapps/voip/phone
 
-sed -i "7i\       " $KAZOO_UI_DIR/config/config.js
-sed -i "7i\        provisioner_url: 'http://$PROVISIONING_SERVER'," $KAZOO_UI_DIR/config/config.js
-sed -i "7i\        /* Provisioning */" $KAZOO_UI_DIR/config/config.js
-sed -i "7i\       " $KAZOO_UI_DIR/config/config.js
+#sed -i "7i\       " $KAZOO_UI_DIR/config/config.js
+#sed -i "7i\        provisioner_url: 'http://$PROVISIONING_SERVER'," $KAZOO_UI_DIR/config/config.js
+#sed -i "7i\        /* Provisioning */" $KAZOO_UI_DIR/config/config.js
+#sed -i "7i\       " $KAZOO_UI_DIR/config/config.js
 
 ########################################################################################
 ##########  Some css changes                                                ############
