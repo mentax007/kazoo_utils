@@ -10,12 +10,17 @@
 ######  Change your settings here  ######
 #########################################
 
-KAZOO_UI_DIR="/var/www/html"
-CROSSBAR_SERVER="94.125.5.27"
-COUNTRY_CODE="7"
-PROVISIONING_SERVER="p.onnet.su"
+#KAZOO_UI_DIR="/var/www/html"
+#CROSSBAR_SERVER="192.168.1.27"
+#COUNTRY_CODE="7"
+#PROVISIONING_SERVER="p.onnet.su"
 
-#########################################
+#############################
+######  Get Variables  ######
+#############################
+source /etc/kz_vars/kazoo_config_edit.vars
+#############################
+
 
 echo "Deleting previous installation"
 
@@ -150,8 +155,8 @@ sed -i "7,12{;s/width: 120px;/width: 160px;/;}" $KAZOO_UI_DIR/whapps/core/whappn
 ##########  Running localization if needed                                  ############
 ########################################################################################
 
-echo "Running localization. Could be way too long ..."
+#echo "Running localozation. Could be way too long ..."
 
-nohup localization/runlocalization &
+#nohup localization/runlocalization &
 
 ########################################################################################
