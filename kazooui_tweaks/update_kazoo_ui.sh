@@ -10,7 +10,6 @@
 ######  Change your settings here  ######
 #########################################
 
-<<<<<<< HEAD
 #KAZOO_UI_DIR="/var/www/html"
 #CROSSBAR_SERVER="192.168.1.27"
 #COUNTRY_CODE="7"
@@ -21,13 +20,6 @@
 #############################
 source /etc/kz_vars/kazoo_config_edit.vars
 #############################
-=======
-KAZOO_UI_DIR="/var/www/html"
-CROSSBAR_SERVER="94.125.5.32"
-COUNTRY_CODE="7"
-PROVISIONING_SERVER="p.onnet.su"
->>>>>>> 89baff780a5adc2bfeec14e49029589f77b2116a
-
 
 echo "Deleting previous installation"
 
