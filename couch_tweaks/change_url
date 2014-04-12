@@ -1,0 +1,43 @@
+%
+%  While moving accounts from cluster to cluster 
+%  api_url should be changed in user docs in order KazooUI could load its applications
+%
+
+
+change_url() ->
+    {'ok', DbsList} = couch_mgr:db_info(),
+    lists:foreach(fun(DbName) -> maybe_change_url(wh_util:format_account_id(DbName,'encoded')) end, DbsList).
+
+maybe_change_url(<<"account", _:41/binary>> = DbName) ->
+    case couch_mgr:get_results(DbName, <<"users/crossbar_listing">>) of
+    {'ok', JObj} ->
+        lists:foreach(fun(UserObj) ->
+                         check_user_urls(DbName, wh_json:get_value(<<"id">>,UserObj))
+                      end,
+                       JObj);
+    {'error', E} ->
+            io:format("An error occurred: ~p\n", [E])
+        end,
+    timer:sleep(100);
+maybe_change_url(_DbName) ->
+    ok.
+  %  io:format("Skipping ~p\n", [DbName]).
+
+check_user_urls(DbName, UserId) ->
+    {'ok', UserDoc} = couch_mgr:open_doc(DbName, UserId),
+    AccountName = get_account_name_by_db(DbName),
+    Portal = wh_json:get_value([<<"apps">>,<<"userportal">>,<<"api_url">>],UserDoc),
+    Voip = wh_json:get_value([<<"apps">>,<<"voip">>,<<"api_url">>],UserDoc),
+    case Voip =/= 'undefined' andalso Voip =/= <<"http://192.168.1.32:8000/v1">> of
+        true ->
+%              {'ok', _} = couch_mgr:save_doc(DbName, wh_json:set_value([<<"apps">>,<<"voip">>,<<"api_url">>], <<"http://192.168.1.32:8000/v1">>, UserDoc)),
+               io:format("Voip to be changed ~p, Account: ~p, User: ~p\n", [Voip,AccountName,UserId]);
+        _ -> ok
+    end,
+    case Portal =/= 'undefined' andalso Portal =/= <<"http://192.168.1.32:8000/v1">> of
+        true ->
+               {'ok', _} = couch_mgr:save_doc(DbName, wh_json:set_value([<<"apps">>,<<"userportal">>,<<"api_url">>], <<"http://192.168.1.32:8000/v1">>, UserDoc)),
+               io:format("Portal to be changed ~p, Account: ~p, User: ~p\n", [Portal,AccountName,UserId]);
+        _ -> ok
+    end.
+
