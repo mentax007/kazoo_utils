@@ -1,43 +1,34 @@
-%
-%  While moving accounts from cluster to cluster 
-%  api_url should be changed in user docs in order KazooUI could load its applications
-%
-
-
-change_url() ->
+%%
+%% Change app's urls in bulk
+%%
+%% Usage: sup whistle_couch_maintenance change_api_url userportal https://newurl.tld:8443/v1
+%%
+change_api_url(AppName, ApiUrl) ->
     {'ok', DbsList} = couch_mgr:db_info(),
-    lists:foreach(fun(DbName) -> maybe_change_url(wh_util:format_account_id(DbName,'encoded')) end, DbsList).
+    lists:foreach(fun(DbName) -> maybe_change_url(AppName, ApiUrl, wh_util:format_account_id(DbName,'encoded')) end, DbsList).
 
-maybe_change_url(<<"account", _:41/binary>> = DbName) ->
+maybe_change_url(AppName, ApiUrl, <<"account", _:41/binary>> = DbName) ->
     case couch_mgr:get_results(DbName, <<"users/crossbar_listing">>) of
     {'ok', JObj} ->
         lists:foreach(fun(UserObj) ->
-                         check_user_urls(DbName, wh_json:get_value(<<"id">>,UserObj))
+                         check_user_urls(AppName, ApiUrl, DbName, wh_json:get_value(<<"id">>,UserObj))
                       end,
                        JObj);
     {'error', E} ->
             io:format("An error occurred: ~p\n", [E])
         end,
     timer:sleep(100);
-maybe_change_url(_DbName) ->
+maybe_change_url(_AppName, _ApiUrl, _DbName) ->
     ok.
   %  io:format("Skipping ~p\n", [DbName]).
 
-check_user_urls(DbName, UserId) ->
+check_user_urls(AppName, ApiUrl, DbName, UserId) ->
     {'ok', UserDoc} = couch_mgr:open_doc(DbName, UserId),
-    AccountName = get_account_name_by_db(DbName),
-    Portal = wh_json:get_value([<<"apps">>,<<"userportal">>,<<"api_url">>],UserDoc),
-    Voip = wh_json:get_value([<<"apps">>,<<"voip">>,<<"api_url">>],UserDoc),
-    case Voip =/= 'undefined' andalso Voip =/= <<"http://192.168.1.32:8000/v1">> of
+    AccountName = whapps_util:get_account_name(DbName),
+    CurrApiUrl = wh_json:get_value([<<"apps">>, AppName,<<"api_url">>],UserDoc),
+    case CurrApiUrl =/= 'undefined' andalso CurrApiUrl =/= ApiUrl of
         true ->
-%              {'ok', _} = couch_mgr:save_doc(DbName, wh_json:set_value([<<"apps">>,<<"voip">>,<<"api_url">>], <<"http://192.168.1.32:8000/v1">>, UserDoc)),
-               io:format("Voip to be changed ~p, Account: ~p, User: ~p\n", [Voip,AccountName,UserId]);
-        _ -> ok
-    end,
-    case Portal =/= 'undefined' andalso Portal =/= <<"http://192.168.1.32:8000/v1">> of
-        true ->
-               {'ok', _} = couch_mgr:save_doc(DbName, wh_json:set_value([<<"apps">>,<<"userportal">>,<<"api_url">>], <<"http://192.168.1.32:8000/v1">>, UserDoc)),
-               io:format("Portal to be changed ~p, Account: ~p, User: ~p\n", [Portal,AccountName,UserId]);
+               {'ok', _} = couch_mgr:save_doc(DbName, wh_json:set_value([<<"apps">>, AppName,<<"api_url">>], ApiUrl, UserDoc)),
+               io:format("Url to be changed ~p, Account: ~p, User: ~p\n", [CurrApiUrl, AccountName, UserId]);
         _ -> ok
     end.
-
