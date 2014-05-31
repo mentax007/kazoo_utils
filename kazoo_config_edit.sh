@@ -185,20 +185,20 @@ sed -i 's/<param name="tls" value="true"\/>/<param name="tls" value="false"\/>/g
 sed -i 's/\/var\/log\/bigcouch.log {/\/var\/log\/bigcouch\/bigcouch.log {/' /etc/logrotate.d/bigcouch.conf
 
 ## Also could be worth after upgrade
-/opt/kazoo/utils/sup/sup whapps_maintenance refresh system_schemas
-/opt/kazoo/utils/sup/sup -t 3600 whapps_maintenance migrate
+#/opt/kazoo/utils/sup/sup whapps_maintenance refresh system_schemas
+#/opt/kazoo/utils/sup/sup -t 3600 whapps_maintenance migrate
 
 
 ## MONIT
 
-yum -y install wget
-yum -y install monit --enablerepo=epel --nogpgcheck
-wget https://raw.github.com/onnet/onnet_util/master/monit.conf -O /etc/monit.conf
-chmod 0600 /etc/monit.conf
-sed -i 's/change_mo_to_localsysname.onnet.su/'$HOSTNAME'/g' /etc/monit.conf
-chkconfig --add monit
-chkconfig monit on
-service monit restart
+#yum -y install wget
+#yum -y install monit --enablerepo=epel --nogpgcheck
+#wget https://raw.github.com/onnet/onnet_util/master/monit.conf -O /etc/monit.conf
+#chmod 0600 /etc/monit.conf
+#sed -i 's/change_mo_to_localsysname.onnet.su/'$HOSTNAME'/g' /etc/monit.conf
+#chkconfig --add monit
+#chkconfig monit on
+#service monit restart
 
 echo Done
 
