@@ -70,8 +70,7 @@ echo "Kazoo Server step 3"
 #Replace $RABBIT_IP with the IP address of the node that you are going to run the main RabbitMQ messaging bus on (generally the first Kazoo server)
 #Replace $HOST_IP with the current host IP address
 #Replace $HOSTNAME with the current host hostname
-sed -i 's/guest:guest@127.0.0.1:5672\/dialoginfo/guest:guest@'$RABBIT_IP':5672\/dialoginfo/g' /etc/kazoo/kamailio/local.cfg
-sed -i 's/guest:guest@127.0.0.1:5672\/callmgr/guest:guest@'$RABBIT_IP':5672\/callmgr/g' /etc/kazoo/kamailio/local.cfg
+sed -i 's/guest:guest@127.0.0.1:5672/guest:guest@'$RABBIT_IP':5672/g' /etc/kazoo/kamailio/local.cfg
 sed -i 's/127.0.0.1/'$HOST_IP'/g' /etc/kazoo/kamailio/local.cfg
 sed -i 's/kamailio.2600hz.com/'$HOSTNAME'/g' /etc/kazoo/kamailio/local.cfg
 sed -i 's/MY_WEBSOCKET_DOMAIN!2600hz.com/MY_WEBSOCKET_DOMAIN!'$WEBSOCKET_DOMAIN'/g' /etc/kazoo/kamailio/local.cfg
