@@ -8,6 +8,7 @@
 ##############################################
 ## Create /etc/kz_vars/kazoo_config_edit.vars:
 #
+#WEBSOCKET_DOMAIN="tld.com"
 #RABBIT_IP="192.168.4.100"
 #HOMER_IP="192.168.4.99"
 #
@@ -16,16 +17,16 @@
 #
 #KZ_COOKIE="my_test_cookie"
 #
-#DB1="kz4100.onnet.su 192.168.4.100"
-#FS1="kz4100.onnet.su"
+#DB1="kz4100.tld.su 192.168.4.100"
+#FS1="kz4100.tld.su"
 #
 ## In case of cluster add:
 ##
-##DB2="kz4103.onnet.su 192.168.4.103"
-##DB3="kz4104.onnet.su 192.168.4.104"
-##DB4="kz4105.onnet.su 192.168.4.105"
+##DB2="kz4103.tld.su 192.168.4.103"
+##DB3="kz4104.tld.su 192.168.4.104"
+##DB4="kz4105.tld.su 192.168.4.105"
 ##
-##FS2="kz4101.onnet.su"
+##FS2="kz4101.tld.su"
 ##############################################
 
 ##source $(dirname $0)/kazoo_config_edit.vars
@@ -73,6 +74,7 @@ sed -i 's/guest:guest@127.0.0.1:5672\/dialoginfo/guest:guest@'$RABBIT_IP':5672\/
 sed -i 's/guest:guest@127.0.0.1:5672\/callmgr/guest:guest@'$RABBIT_IP':5672\/callmgr/g' /etc/kazoo/kamailio/local.cfg
 sed -i 's/127.0.0.1/'$HOST_IP'/g' /etc/kazoo/kamailio/local.cfg
 sed -i 's/kamailio.2600hz.com/'$HOSTNAME'/g' /etc/kazoo/kamailio/local.cfg
+sed -i 's/MY_WEBSOCKET_DOMAIN!2600hz.com/MY_WEBSOCKET_DOMAIN!'$WEBSOCKET_DOMAIN'/g' /etc/kazoo/kamailio/local.cfg
 
 echo Done
 

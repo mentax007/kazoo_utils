@@ -13,7 +13,7 @@
 #KAZOO_UI_DIR="/var/www/html"
 #CROSSBAR_SERVER="192.168.1.27"
 #COUNTRY_CODE="7"
-#PROVISIONING_SERVER="p.onnet.su"
+#PROVISIONING_SERVER="p.tld.com"
 
 #############################
 ######  Get Variables  ######
@@ -46,6 +46,8 @@ wget --no-check-certificate https://raw.github.com/onnet/kazoo_utils/master/kazo
 echo "Changing config.js"
 
 sed -i "s/api.2600hz.com/$CROSSBAR_SERVER/g" $KAZOO_UI_DIR/config/config.js
+sed -i "s/10.26.0.41/$CROSSBAR_SERVER/g" $KAZOO_UI_DIR/config/config.js
+sed -i "s/api.zswitch.net/$CROSSBAR_SERVER/g" $KAZOO_UI_DIR/config/config.js
 
 ###########################################################
 ###### Change your preferred options here by analogy ######
@@ -98,7 +100,7 @@ sed -i "s/'statistics': false,/'statistics': false/g" $KAZOO_UI_DIR/whapps/myacc
 
 ######### Get rid of Carrier and Directory menu in PBX Advanced settings ########
 
-sed -i "/'resource': false,/d" $KAZOO_UI_DIR/whapps/voip/voip.js
+#sed -i "/'resource': false,/d" $KAZOO_UI_DIR/whapps/voip/voip.js
 sed -i "/'directory': false/d" $KAZOO_UI_DIR/whapps/voip/voip.js
 sed -i "s/'cdr': false,/'cdr': false/g" $KAZOO_UI_DIR/whapps/voip/voip.js
 
@@ -154,8 +156,6 @@ sed -i "7,12{;s/width: 120px;/width: 160px;/;}" $KAZOO_UI_DIR/whapps/core/whappn
 ##########  Running localization if needed                                  ############
 ########################################################################################
 
-#echo "Running localozation. Could be way too long ..."
-
-#nohup localization/runlocalization &
+sed -i "s/language = 'en'/language = 'ru'/g" $KAZOO_UI_DIR/config/load.js
 
 ########################################################################################
