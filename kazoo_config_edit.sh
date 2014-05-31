@@ -178,6 +178,7 @@ echo FS...
 sed -i '9i\        <param name="capture-server" value="udp:'$HOMER_IP':9060"/>'	/etc/kazoo/freeswitch/autoload_configs/sofia.conf.xml
 LineNumSipTrace=`sed -n '/sip-trace/{;=;}' /etc/kazoo/freeswitch/sip_profiles/sipinterface_1.xml`
 sed -i $LineNumSipTrace'i\            <param name="sip-capture" value="yes"/>' /etc/kazoo/freeswitch/sip_profiles/sipinterface_1.xml
+sed -i 's/<param name="tls" value="true"\/>/<param name="tls" value="false"\/>/g' /etc/kazoo/freeswitch/sip_profiles/sipinterface_1.xml
 
 
 ## Check bigcouch.log rotating
