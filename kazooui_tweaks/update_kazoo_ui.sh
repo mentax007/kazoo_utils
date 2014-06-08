@@ -159,3 +159,12 @@ sed -i "7,12{;s/width: 120px;/width: 160px;/;}" $KAZOO_UI_DIR/whapps/core/whappn
 sed -i "s/language = 'en'/language = 'ru'/g" $KAZOO_UI_DIR/config/load.js
 
 ########################################################################################
+
+########################################################################################
+##########  Change default timezone to MSK                                  ############
+########################################################################################
+
+sed -i "s/America\/Los_Angeles/Europe\/Moscow/g" $KAZOO_UI_DIR/js/winkstart-timezone.js
+sed -i "s/America\/Los_Angeles/Europe\/Moscow/g" $KAZOO_UI_DIR/whapps/voip/vmbox/vmbox.js
+
+########################################################################################
