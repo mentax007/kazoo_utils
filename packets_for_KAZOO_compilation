@@ -1,7 +1,1 @@
 yum -y install git make nc zip unzip gcc libxslt libstdc++-devel
-cd /opt
-mv kazoo kazoo-stock
-git clone -b KAZOO-243 https://github.com/2600hz/kazoo.git
-cd kazoo
-make
-chown -R kazoo.daemon ../kazoo
