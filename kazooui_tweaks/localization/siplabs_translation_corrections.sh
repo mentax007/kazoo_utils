@@ -27,5 +27,7 @@ sed -i 's/delete_callflow: "Удалить сценарий"/delete_callflow: "�
 sed -i 's/add_callflow_label: "Добавить сценарий"/add_callflow_label: "Добавить"/' $KAZOO_UI_DIR/whapps/voip/callflow/lang/ru.js
 sed -i 's/callflows_label: "Сценарии"/callflows_label: "Маршрутизация"/' $KAZOO_UI_DIR/whapps/voip/callflow/lang/ru.js
 sed -i 's/add_voicemail_box_label: "Добавить ящик голосовой почты"/add_voicemail_box_label: "Добавить"/' $KAZOO_UI_DIR/whapps/voip/vmbox/lang/ru.js
+sed -i 's/login: "Логин \/ Почта"/login: "Логин"/' $KAZOO_UI_DIR/whapps/auth/auth/lang/ru.js
+sed -i 's/account_name: "Клиент"/account_name: "Учетная запись"/' $KAZOO_UI_DIR/whapps/auth/auth/lang/ru.js
 sed -i 's///' $KAZOO_UI_DIR/whapps/voip/callflow/lang/ru.js
 
