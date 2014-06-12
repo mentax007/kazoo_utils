@@ -43,3 +43,4 @@ sed -i "s/edit_sip_uri/edit_skype/" $KAZOO_UI_DIR/whapps/voip/device/tmpl/skype.
 sed -i "s/add_a_sip_uri/add_a_skype/" $KAZOO_UI_DIR/whapps/voip/device/tmpl/skype.html
 sed -i "s/sip:support@company.com/skype_account/" $KAZOO_UI_DIR/whapps/voip/device/tmpl/skype.html
 sed -i "s/'url'/'skype_account'/" $KAZOO_UI_DIR/whapps/voip/device/tmpl/skype.html
+sed -i "s/'url_data_content'/'skype_account'/" $KAZOO_UI_DIR/whapps/voip/device/tmpl/skype.html
