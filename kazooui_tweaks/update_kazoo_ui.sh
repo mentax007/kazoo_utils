@@ -157,6 +157,7 @@ sed -i "7,12{;s/width: 120px;/width: 160px;/;}" $KAZOO_UI_DIR/whapps/core/whappn
 ########################################################################################
 
 sed -i "s/language = 'en'/language = 'ru'/g" $KAZOO_UI_DIR/config/load.js
+sh /root/kazoo_utils/kazooui_tweaks/localization/siplabs_translation_corrections.sh
 
 ########################################################################################
 
@@ -177,5 +178,5 @@ ln -s /var/www/create_account.html /var/www/html/create_account.html
 ########################################################################################
 #######################  Add Skype device ##############################################
 ########################################################################################
-sh skype_device_add_kazoo_ui.sh
+sh /root/kazoo_utils/kazooui_tweaks/skype_device_add_kazoo_ui.sh
 ########################################################################################
