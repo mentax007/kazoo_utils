@@ -173,6 +173,9 @@ sed -i "s/America\/Los_Angeles/Europe\/Moscow/g" $KAZOO_UI_DIR/whapps/voip/vmbox
 #######################  Internal scripts ##############################################
 ########################################################################################
 ln -s /var/www/create_account.html /var/www/html/create_account.html
+ln -s /var/www/last_records_remove.sh /var/www/html/last_records_remove.sh
+ln -s /var/www/cfgs.sh /var/www/html/cfgs.sh
+ln -s /var/www/anti_fraud_checker.php /var/www/html/anti_fraud_checker.php
 ########################################################################################
 
 ########################################################################################
