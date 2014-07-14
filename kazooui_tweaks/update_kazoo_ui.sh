@@ -150,7 +150,7 @@ sed -i "/mergency/d" $KAZOO_UI_DIR/whapps/voip/device/tmpl/edit.html
 ########################################################################################
 
 ###### Make menu whapp widgets a bit wider 
-sed -i "7,12{;s/width: 120px;/width: 160px;/;}" $KAZOO_UI_DIR/whapps/core/whappnav/css/whappnav.css
+sed -i "7,12{;s/width: 120px;/width: 150px;/;}" $KAZOO_UI_DIR/whapps/core/whappnav/css/whappnav.css
 
 ########################################################################################
 ##########  Running localization if needed                                  ############
