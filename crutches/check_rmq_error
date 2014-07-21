@@ -1,0 +1,5 @@
+RESULT=$(tail -1000 /var/log/kamailio/kamailio.log | grep -ci rmq_error)
+if [ $RESULT -gt 0 ] 
+then
+    /etc/init.d/kamailio restart
+fi
