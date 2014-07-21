@@ -1,5 +1,5 @@
 RESULT=$(tail -1000 /var/log/kamailio/kamailio.log | grep -ci rmq_error)
-if [ $RESULT -gt 0 ] 
+if [ $RESULT -gt 10 ] 
 then
     tail -1000 /var/log/kamailio/kamailio.log | sendmail  tech@onnet.su
     /etc/init.d/kamailio restart
