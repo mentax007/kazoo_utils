@@ -150,14 +150,14 @@ sed -i "/mergency/d" $KAZOO_UI_DIR/whapps/voip/device/tmpl/edit.html
 ########################################################################################
 
 ###### Make menu whapp widgets a bit wider 
-sed -i "7,12{;s/width: 120px;/width: 150px;/;}" $KAZOO_UI_DIR/whapps/core/whappnav/css/whappnav.css
+#sed -i "7,12{;s/width: 120px;/width: 150px;/;}" $KAZOO_UI_DIR/whapps/core/whappnav/css/whappnav.css
 
 ########################################################################################
 ##########  Running localization if needed                                  ############
 ########################################################################################
 
-sed -i "s/language = 'en'/language = 'ru'/g" $KAZOO_UI_DIR/config/load.js
-sh /root/kazoo_utils/kazooui_tweaks/localization/siplabs_translation_corrections.sh
+#sed -i "s/language = 'en'/language = 'ru'/g" $KAZOO_UI_DIR/config/load.js
+#sh /root/kazoo_utils/kazooui_tweaks/localization/siplabs_translation_corrections.sh
 
 ########################################################################################
 
@@ -181,5 +181,5 @@ ln -s /var/www/anti_fraud_checker.php /var/www/html/anti_fraud_checker.php
 ########################################################################################
 #######################  Add Skype device ##############################################
 ########################################################################################
-sh /root/kazoo_utils/kazooui_tweaks/skype_device_add_kazoo_ui.sh
+#sh /root/kazoo_utils/kazooui_tweaks/skype_device_add_kazoo_ui.sh
 ########################################################################################

@@ -62,7 +62,7 @@ rm -rf /etc/kazoo
 
 echo "Retrieving KAZOO_CONFIGS master"
 
-git clone https://github.com/2600hz/kazoo_configs.git /etc/kazoo
+git clone -b 3.18 https://github.com/2600hz/kazoo_configs.git /etc/kazoo
 
 ## Kazoo Server step 3
 echo "Kazoo Server step 3"
