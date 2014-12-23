@@ -2,9 +2,20 @@
 %%% @copyright (C) 2012-2014, 2600Hz INC
 %%% @doc
 %%%
+%%% Provides access to third party call recordings:
+%%%
+%%% To play in browser:
+%%% https://mydomain.tld:8443/v1/accounts/33ca392r3e923ebvcx39e4ffe1452/call_recordings/201412-6471-8c79ae@192.1.1.2/attachment/inline?auth_token=05c19bk54a7a075
+%%%
+%%% To download:
+%%% https://mydomain.tld:8443/v1/accounts/33ca392r3e923ebvcx39e4ffe1452/call_recordings/201412-6471-8c79ae@192.1.1.2/attachment?auth_token=05c19bk54a7a075
 %%%
 %%% @end
 %%% @contributors:
+%%% 
+%%%   OnNet (Kirill Sysoev github.com/onnet)
+%%%   Dinkor (Andrew Korniliv github.com/dinkor)
+%%% 
 %%%-------------------------------------------------------------------
 -module(cb_call_recordings).
 
