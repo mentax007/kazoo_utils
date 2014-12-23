@@ -2,7 +2,7 @@
 %%% @copyright (C) 2012-2014, 2600Hz INC
 %%% @doc
 %%%
-%%% Provides access to third party call recordings:
+%%% Provides access to third party bigcouch stored call recordings:
 %%%
 %%% To play in browser:
 %%% https://mydomain.tld:8443/v1/accounts/33ca392r3e923ebvcx39e4ffe1452/call_recordings/201412-6471-8c79ae@192.1.1.2/attachment/inline?auth_token=05c19bk54a7a075
