@@ -177,7 +177,6 @@ echo FS...
 sed -i '9i\        <param name="capture-server" value="udp:'$HOMER_IP':9060"/>'	/etc/kazoo/freeswitch/autoload_configs/sofia.conf.xml
 LineNumSipTrace=`sed -n '/sip-trace/{;=;}' /etc/kazoo/freeswitch/sip_profiles/sipinterface_1.xml`
 sed -i $LineNumSipTrace'i\            <param name="sip-capture" value="yes"/>' /etc/kazoo/freeswitch/sip_profiles/sipinterface_1.xml
-sed -i 's/<param name="tls" value="true"\/>/<param name="tls" value="false"\/>/g' /etc/kazoo/freeswitch/sip_profiles/sipinterface_1.xml
 
 
 ## Check bigcouch.log rotating
@@ -187,6 +186,16 @@ sed -i 's/\/var\/log\/bigcouch.log {/\/var\/log\/bigcouch\/bigcouch.log {/' /etc
 ## Also could be worth after upgrade
 #/opt/kazoo/utils/sup/sup whapps_maintenance refresh system_schemas
 #/opt/kazoo/utils/sup/sup -t 3600 whapps_maintenance migrate
+
+
+## TLS
+
+sed -i 's/# # #!trydef TLS-ROLE/#!trydef TLS-ROLE/g' /etc/kazoo/kamailio/local.cfg 
+sed -i 's/<param name="tls" value="false"\/>/<param name="tls" value="true"\/>/g' /etc/kazoo/freeswitch/sip_profiles/sipinterface_1.xml
+cp /etc/kz_vars/certs/onnet_su_2016_05_28.crt /etc/kazoo/freeswitch/certs/agent.pem
+cp /etc/kz_vars/certs/onnet.ca.crt /etc/kazoo/freeswitch/certs/cacert.pem
+cp /etc/kz_vars/certs/onnet_su_2016_05_28.crt /etc/kazoo/kamailio/certs/cert.pem
+cp /etc/kz_vars/certs/passlessprivate.key /etc/kazoo/kamailio/certs/key.pem
 
 
 ## MONIT
