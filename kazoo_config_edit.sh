@@ -209,5 +209,10 @@ cp /etc/kz_vars/certs/passlessprivate.key /etc/kazoo/kamailio/certs/key.pem
 #chkconfig monit on
 #service monit restart
 
+## Permissions
+
+chown -R freeswitch.daemon /etc/kazoo/freeswitch
+chown -R kamailio.kamailio /etc/kazoo/kamailio
+
 echo Done
 
