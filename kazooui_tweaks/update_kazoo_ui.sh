@@ -76,7 +76,7 @@ sed -i "s/'+1'/'+$COUNTRY_CODE'/g" $KAZOO_UI_DIR/whapps/pbxs/pbxs_manager/pbxs_m
 
 # Check if "/var/www/html/kazoo-ui/whapps/voip/resource/resource.js" also needed
 
-####################################################i###################################
+########################################################################################
 ###### Remove unused at KAZOO_UI elements. For example:                           ######
 ###### - we do not use built in billing;                                          ######
 ###### - it is not common to use Directory in Russian SOHO segmenta;              ######
@@ -90,8 +90,6 @@ echo "Removing unused elements..."
 
 > $KAZOO_UI_DIR/whapps/pbxs/pbxs_manager/tmpl/e911_dialog.html
 > $KAZOO_UI_DIR/whapps/pbxs/pbxs_manager/tmpl/cnam_dialog.html
-#> $KAZOO_UI_DIR/
-#> $KAZOO_UI_DIR/
 
 #########  Get rid of Credit widget  ###################################################
 

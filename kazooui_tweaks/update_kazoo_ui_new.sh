@@ -75,6 +75,64 @@ sed -i "s/+?1?/+?$COUNTRY_CODE?/g" $KAZOO_UI_DIR/whapps/pbxs/pbxs_manager/pbxs_m
 sed -i "s/'+1'/'+$COUNTRY_CODE'/g" $KAZOO_UI_DIR/whapps/pbxs/pbxs_manager/pbxs_manager.js 
 
 ########################################################################################
+###### Remove unused at KAZOO_UI elements. For example:                           ######
+###### - we do not use built in billing;                                          ######
+###### - it is not common to use Directory in Russian SOHO segmenta;              ######
+###### - we do not provide an ability to route calls to third party carriers yet; ######
+###### - we do not provide subaccounts yet.                                       ######
+########################################################################################
+
+echo "Removing unused elements..."
+
+##### Remove CID and E911 dialog boxes as we unfortunetely still can not provide this service #####
+
+> $KAZOO_UI_DIR/whapps/pbxs/pbxs_manager/tmpl/e911_dialog.html
+> $KAZOO_UI_DIR/whapps/pbxs/pbxs_manager/tmpl/cnam_dialog.html
+
+#########  Get rid of Credit widget  ###################################################
+
+sed -i "/'credits': false/d" $KAZOO_UI_DIR/whapps/myaccount/myaccount.js
+sed -i "s/'statistics': false,/'statistics': false/g" $KAZOO_UI_DIR/whapps/myaccount/myaccount.js
+
+######### Get rid of Carrier and Directory menu in PBX Advanced settings ########
+
+##sed -i "/'resource': false,/d" $KAZOO_UI_DIR/whapps/voip/voip.js
+#sed -i "/'directory': false/d" $KAZOO_UI_DIR/whapps/voip/voip.js
+#sed -i "s/'cdr': false,/'cdr': false/g" $KAZOO_UI_DIR/whapps/voip/voip.js
+
+#########  Get rid of some staff in "myaccount"  #######################################
+
+#sed -i "/'billing': false,/d" $KAZOO_UI_DIR/whapps/myaccount/myaccount.js
+#sed -i "/'report': false,/d" $KAZOO_UI_DIR/whapps/myaccount/myaccount.js
+
+#########  Get rid of Emergency and Billing Fields as we do not use them  ##################
+## Account
+
+#sed -i "/_emergency/d" $KAZOO_UI_DIR/whapps/voip/account/account.js
+#sed -i "/form_data.caller_id.emergency.number/d" $KAZOO_UI_DIR/whapps/voip/account/account.js
+#sed -i "/name: '#contact_billing_email'/d" $KAZOO_UI_DIR/whapps/voip/account/account.js
+#sed -i "/name: '#contact_billing_number'/d" $KAZOO_UI_DIR/whapps/voip/account/account.js
+#sed -i "/mergency/d" $KAZOO_UI_DIR/whapps/voip/account/tmpl/edit.html
+#sed -i "/Billing Contact/d" $KAZOO_UI_DIR/whapps/voip/account/tmpl/edit.html
+#sed -i "/contact_billing_number/d" $KAZOO_UI_DIR/whapps/voip/account/tmpl/edit.html
+#sed -i "/contact_billing_email/d" $KAZOO_UI_DIR/whapps/voip/account/tmpl/edit.html
+#sed -i "40,75{;/<hr /d;}" $KAZOO_UI_DIR/whapps/voip/account/tmpl/edit.html
+
+## User
+
+#sed -i "/_emergency/d" $KAZOO_UI_DIR/whapps/voip/user/user.js
+#sed -i "/form_data.caller_id.emergency.number/d" $KAZOO_UI_DIR/whapps/voip/user/user.js
+#sed -i "/mergency/d" $KAZOO_UI_DIR/whapps/voip/user/tmpl/edit.html
+
+## Device
+
+#sed -i "/_emergency/d" $KAZOO_UI_DIR/whapps/voip/device/device.js
+#sed -i "/form_data.caller_id.emergency.number/d" $KAZOO_UI_DIR/whapps/voip/device/device.js
+#sed -i "/mergency/d" $KAZOO_UI_DIR/whapps/voip/device/tmpl/edit.html
+
+########################################################################################
+
+########################################################################################
 ##########  Running localization if needed                                  ############
 ########################################################################################
 sed -i "s/language = 'en'/language = 'ru'/g" $KAZOO_UI_DIR/config/load.js
