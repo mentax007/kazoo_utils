@@ -79,8 +79,8 @@ ln -s /var/www/anti_fraud_checker.php /var/www/html/anti_fraud_checker.php
 
 echo "`date '+%Y-%m-%d'`" > $KAZOO_UI_DIR/VERSION
 wget --no-check-certificate https://raw.github.com/onnet/mod_zonnet/b9e5f3cbe4d9f320027bc8d048c2b0a4d172895a/lib/images/OnNet36x36.png -O $KAZOO_UI_DIR/img/wsLogo.png
-wget --no-check-certificate https://raw.github.com/onnet/mod_zonnet/master/lib/images/logo_for_kazoo.png -O $KAZOO_UI_DIR/config/images/logo.png
-wget --no-check-certificate https://raw.github.com/onnet/mod_zonnet/master/lib/images/big_onnet_img_for_kazoo.png -O $KAZOO_UI_DIR/config/images/onnet.png
+wget --no-check-certificate $LOGO_SMALL -O $KAZOO_UI_DIR/config/images/logo.png
+wget --no-check-certificate $LOGO_BIG -O $KAZOO_UI_DIR/config/images/onnet.png
 wget --no-check-certificate https://raw.github.com/onnet/kazoo_utils/master/kazooui_tweaks/files/left_welcome.html -O $KAZOO_UI_DIR/config/tmpl/left_welcome.html
 
 ###########################################################
