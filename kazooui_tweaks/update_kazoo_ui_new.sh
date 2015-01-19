@@ -98,7 +98,8 @@ sed -i "s/'statistics': false,/'statistics': false/g" $KAZOO_UI_DIR/whapps/myacc
 
 ##sed -i "/'resource': false,/d" $KAZOO_UI_DIR/whapps/voip/voip.js
 sed -i "/'directory': false/d" $KAZOO_UI_DIR/whapps/voip/voip.js
-#sed -i "s/'cdr': false,/'cdr': false/g" $KAZOO_UI_DIR/whapps/voip/voip.js
+sed -i "/'prompt': false/d" $KAZOO_UI_DIR/whapps/voip/voip.js
+sed -i "s/'cdr': false,/'cdr': false/g" $KAZOO_UI_DIR/whapps/voip/voip.js
 
 #########  Get rid of some staff in "myaccount"  #######################################
 
