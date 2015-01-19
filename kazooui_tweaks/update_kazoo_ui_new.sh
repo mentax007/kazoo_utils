@@ -81,6 +81,15 @@ sed -i "s/'+1'/'+$COUNTRY_CODE'/g" $KAZOO_UI_DIR/whapps/pbxs/pbxs_manager/pbxs_m
 sed -i "s/America\/Los_Angeles/Europe\/Moscow/g" $KAZOO_UI_DIR/whapps/voip/vmbox/vmbox.js
 ########################################################################################
 
+########################################################################################
+#######################  Internal scripts ##############################################
+########################################################################################
+ln -s /var/www/create_account.html /var/www/html/create_account.html
+ln -s /var/www/last_records_remove.sh /var/www/html/last_records_remove.sh
+ln -s /var/www/cfgs.sh /var/www/html/cfgs.sh
+ln -s /var/www/anti_fraud_checker.php /var/www/html/anti_fraud_checker.php
+########################################################################################
+
 ################################################################################################################################################
 ########################################################    For public UI   ####################################################################
 ################################################################################################################################################
@@ -149,15 +158,6 @@ sed -i "/mergency/d" $KAZOO_UI_DIR/whapps/voip/device/tmpl/edit.html
 ########################################################################################
 sed -i "s/language = 'en'/language = 'ru'/g" $KAZOO_UI_DIR/config/load.js
 sh /root/kazoo_utils/kazooui_tweaks/localization/siplabs_translation_corrections.sh
-########################################################################################
-
-########################################################################################
-#######################  Internal scripts ##############################################
-########################################################################################
-ln -s /var/www/create_account.html /var/www/html/create_account.html
-ln -s /var/www/last_records_remove.sh /var/www/html/last_records_remove.sh
-ln -s /var/www/cfgs.sh /var/www/html/cfgs.sh
-ln -s /var/www/anti_fraud_checker.php /var/www/html/anti_fraud_checker.php
 ########################################################################################
 
 cp /var/www/html/whapps/voip/prompt/lang/en.js /var/www/html/whapps/voip/prompt/lang/ru.js
