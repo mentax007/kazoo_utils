@@ -61,7 +61,7 @@ sed -i "s/'+1'/'+$COUNTRY_CODE'/g" $KAZOO_UI_DIR/whapps/pbxs/pbxs_manager/pbxs_m
 ########################################################################################
 ##########  Change default timezone to MSK                                  ############
 ########################################################################################
-sed -i "s/America\/Los_Angeles/Europe\/Moscow/g" $KAZOO_UI_DIR/whapps/voip/vmbox/vmbox.js
+sed -i "s/America\/Los_Angeles/Europe\/$CITY/g" $KAZOO_UI_DIR/whapps/voip/vmbox/vmbox.js
 ########################################################################################
 
 ########################################################################################
