@@ -97,38 +97,38 @@ sed -i "s/'statistics': false,/'statistics': false/g" $KAZOO_UI_DIR/whapps/myacc
 ######### Get rid of Carrier and Directory menu in PBX Advanced settings ########
 
 ##sed -i "/'resource': false,/d" $KAZOO_UI_DIR/whapps/voip/voip.js
-#sed -i "/'directory': false/d" $KAZOO_UI_DIR/whapps/voip/voip.js
+sed -i "/'directory': false/d" $KAZOO_UI_DIR/whapps/voip/voip.js
 #sed -i "s/'cdr': false,/'cdr': false/g" $KAZOO_UI_DIR/whapps/voip/voip.js
 
 #########  Get rid of some staff in "myaccount"  #######################################
 
-#sed -i "/'billing': false,/d" $KAZOO_UI_DIR/whapps/myaccount/myaccount.js
-#sed -i "/'report': false,/d" $KAZOO_UI_DIR/whapps/myaccount/myaccount.js
+sed -i "/'billing': false,/d" $KAZOO_UI_DIR/whapps/myaccount/myaccount.js
+sed -i "/'report': false,/d" $KAZOO_UI_DIR/whapps/myaccount/myaccount.js
 
 #########  Get rid of Emergency and Billing Fields as we do not use them  ##################
 ## Account
 
-#sed -i "/_emergency/d" $KAZOO_UI_DIR/whapps/voip/account/account.js
-#sed -i "/form_data.caller_id.emergency.number/d" $KAZOO_UI_DIR/whapps/voip/account/account.js
-#sed -i "/name: '#contact_billing_email'/d" $KAZOO_UI_DIR/whapps/voip/account/account.js
-#sed -i "/name: '#contact_billing_number'/d" $KAZOO_UI_DIR/whapps/voip/account/account.js
-#sed -i "/mergency/d" $KAZOO_UI_DIR/whapps/voip/account/tmpl/edit.html
-#sed -i "/Billing Contact/d" $KAZOO_UI_DIR/whapps/voip/account/tmpl/edit.html
-#sed -i "/contact_billing_number/d" $KAZOO_UI_DIR/whapps/voip/account/tmpl/edit.html
-#sed -i "/contact_billing_email/d" $KAZOO_UI_DIR/whapps/voip/account/tmpl/edit.html
-#sed -i "40,75{;/<hr /d;}" $KAZOO_UI_DIR/whapps/voip/account/tmpl/edit.html
+sed -i "/_emergency/d" $KAZOO_UI_DIR/whapps/voip/account/account.js
+sed -i "/form_data.caller_id.emergency.number/d" $KAZOO_UI_DIR/whapps/voip/account/account.js
+sed -i "/name: '#contact_billing_email'/d" $KAZOO_UI_DIR/whapps/voip/account/account.js
+sed -i "/name: '#contact_billing_number'/d" $KAZOO_UI_DIR/whapps/voip/account/account.js
+sed -i "/mergency/d" $KAZOO_UI_DIR/whapps/voip/account/tmpl/edit.html
+sed -i "/Billing Contact/d" $KAZOO_UI_DIR/whapps/voip/account/tmpl/edit.html
+sed -i "/contact_billing_number/d" $KAZOO_UI_DIR/whapps/voip/account/tmpl/edit.html
+sed -i "/contact_billing_email/d" $KAZOO_UI_DIR/whapps/voip/account/tmpl/edit.html
+sed -i "40,75{;/<hr /d;}" $KAZOO_UI_DIR/whapps/voip/account/tmpl/edit.html
 
 ## User
 
-#sed -i "/_emergency/d" $KAZOO_UI_DIR/whapps/voip/user/user.js
-#sed -i "/form_data.caller_id.emergency.number/d" $KAZOO_UI_DIR/whapps/voip/user/user.js
-#sed -i "/mergency/d" $KAZOO_UI_DIR/whapps/voip/user/tmpl/edit.html
+sed -i "/_emergency/d" $KAZOO_UI_DIR/whapps/voip/user/user.js
+sed -i "/form_data.caller_id.emergency.number/d" $KAZOO_UI_DIR/whapps/voip/user/user.js
+sed -i "/mergency/d" $KAZOO_UI_DIR/whapps/voip/user/tmpl/edit.html
 
 ## Device
 
-#sed -i "/_emergency/d" $KAZOO_UI_DIR/whapps/voip/device/device.js
-#sed -i "/form_data.caller_id.emergency.number/d" $KAZOO_UI_DIR/whapps/voip/device/device.js
-#sed -i "/mergency/d" $KAZOO_UI_DIR/whapps/voip/device/tmpl/edit.html
+sed -i "/_emergency/d" $KAZOO_UI_DIR/whapps/voip/device/device.js
+sed -i "/form_data.caller_id.emergency.number/d" $KAZOO_UI_DIR/whapps/voip/device/device.js
+sed -i "/mergency/d" $KAZOO_UI_DIR/whapps/voip/device/tmpl/edit.html
 
 ########################################################################################
 
@@ -153,4 +153,7 @@ ln -s /var/www/last_records_remove.sh /var/www/html/last_records_remove.sh
 ln -s /var/www/cfgs.sh /var/www/html/cfgs.sh
 ln -s /var/www/anti_fraud_checker.php /var/www/html/anti_fraud_checker.php
 ########################################################################################
+
+cp /var/www/html/whapps/voip/prompt/lang/en.js /var/www/html/whapps/voip/prompt/lang/ru.js
+cp /var/www/html/whapps/voip/faxbox/lang/en.js /var/www/html/whapps/voip/faxbox/lang/ru.js
 
