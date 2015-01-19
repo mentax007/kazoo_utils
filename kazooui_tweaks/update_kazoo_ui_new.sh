@@ -98,6 +98,8 @@ sed -i "s/company_name: '2600hz'/company_name: 'OnNet - Virtual Office'/g" $KAZO
 ###### - we do not provide subaccounts yet.                                       ######
 ########################################################################################
 
+### May be ....
+
 echo "Removing unused elements..."
 
 ##### Remove CID and E911 dialog boxes as we unfortunetely still can not provide this service #####
@@ -109,13 +111,6 @@ echo "Removing unused elements..."
 
 sed -i "/'credits': false/d" $KAZOO_UI_DIR/whapps/myaccount/myaccount.js
 sed -i "s/'statistics': false,/'statistics': false/g" $KAZOO_UI_DIR/whapps/myaccount/myaccount.js
-
-######### Get rid of Carrier and Directory menu in PBX Advanced settings ########
-
-sed -i "/'resource': false,/d" $KAZOO_UI_DIR/whapps/voip/voip.js
-sed -i "/'directory': false/d" $KAZOO_UI_DIR/whapps/voip/voip.js
-sed -i "/'prompt': false/d" $KAZOO_UI_DIR/whapps/voip/voip.js
-sed -i "s/'cdr': false,/'cdr': false/g" $KAZOO_UI_DIR/whapps/voip/voip.js
 
 #########  Get rid of some staff in "myaccount"  #######################################
 
@@ -146,6 +141,16 @@ sed -i "/mergency/d" $KAZOO_UI_DIR/whapps/voip/user/tmpl/edit.html
 sed -i "/_emergency/d" $KAZOO_UI_DIR/whapps/voip/device/device.js
 sed -i "/form_data.caller_id.emergency.number/d" $KAZOO_UI_DIR/whapps/voip/device/device.js
 sed -i "/mergency/d" $KAZOO_UI_DIR/whapps/voip/device/tmpl/edit.html
+
+######### Get rid of Carrier and Directory menu in PBX Advanced settings ########
+
+sed -i "/'directory': false/d" $KAZOO_UI_DIR/whapps/voip/voip.js
+sed -i "/'prompt': false/d" $KAZOO_UI_DIR/whapps/voip/voip.js
+
+### May be not....
+
+sed -i "s/'cdr': false,/'cdr': false/g" $KAZOO_UI_DIR/whapps/voip/voip.js
+sed -i "/'resource': false,/d" $KAZOO_UI_DIR/whapps/voip/voip.js
 
 ########################################################################################
 
