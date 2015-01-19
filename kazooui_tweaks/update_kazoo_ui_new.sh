@@ -11,7 +11,7 @@
 #########################################
 
 #KAZOO_UI_DIR="/var/www/html"
-#CROSSBAR_SERVER="https://192.168.1.27"
+#CROSSBAR_SERVER="https://192.168.1.27:8443"
 #COUNTRY_CODE="7"
 #PROVISIONING_SERVER="p.tld.com"
 
@@ -35,9 +35,9 @@ git clone -b v3.18 https://github.com/2600hz/kazoo_ui.git $KAZOO_UI_DIR
 
 echo "Changing config.js"
 
-sed -i "s/https:\/\/api.2600hz.com/$CROSSBAR_SERVER/g" $KAZOO_UI_DIR/config/config.js
-sed -i "s/https:\/\/10.26.0.41/$CROSSBAR_SERVER/g" $KAZOO_UI_DIR/config/config.js
-sed -i "s/https:\/\/api.zswitch.net/$CROSSBAR_SERVER/g" $KAZOO_UI_DIR/config/config.js
+sed -i "s/https:\/\/api.2600hz.com:8443/$CROSSBAR_SERVER/g" $KAZOO_UI_DIR/config/config.js
+sed -i "s/https:\/\/10.26.0.41:8443/$CROSSBAR_SERVER/g" $KAZOO_UI_DIR/config/config.js
+sed -i "s/https:\/\/api.zswitch.net:8443/$CROSSBAR_SERVER/g" $KAZOO_UI_DIR/config/config.js
 
 ################################################################################
 ###### Change default infite_format in pbx_manager to 'e164_without_plus' ######
