@@ -38,6 +38,13 @@ sed -i 's/"Переадресация звонков"/"Переадресаци�
 sed -i 's/"Включить переадресацию звонков"/"Включить переадресацию"/' $KAZOO_UI_DIR/whapps/voip/callflow/lang/ru.js
 sed -i 's/stop_call_recording: "Остановить запись разговора"/stop_call_recording: "Остановить запись"/' $KAZOO_UI_DIR/whapps/voip/callflow/lang/ru.js
 
+sed -i "/sunday:/d" /var/www/html/whapps/voip/timeofday/lang/ru.js
+sed -i "/monday:/d" /var/www/html/whapps/voip/timeofday/lang/ru.js
+sed -i "/tuesday:/d" /var/www/html/whapps/voip/timeofday/lang/ru.js
+sed -i "/wednesday:/d" /var/www/html/whapps/voip/timeofday/lang/ru.js
+sed -i "/thursday:/d" /var/www/html/whapps/voip/timeofday/lang/ru.js
+sed -i "/friday:/d" /var/www/html/whapps/voip/timeofday/lang/ru.js
+sed -i "/saturday:/d" /var/www/html/whapps/voip/timeofday/lang/ru.js
 
 sed -i 's/check_voicemail: "Проверить голосовую почту"/check_voicemail: "Проверить сообщения"/' $KAZOO_UI_DIR/whapps/voip/vmbox/lang/ru.js
 #sed -i 's///' $KAZOO_UI_DIR/whapps/voip/callflow/lang/ru.js
