@@ -65,7 +65,7 @@ acquire_number(#number{number=Number}=NR) ->
 %%--------------------------------------------------------------------
 %% @private
 %% @doc
-%% Return number vack to Simwood.com
+%% Return number back to Simwood.com
 %% @end
 %%--------------------------------------------------------------------
 -spec disconnect_number(wnm_number()) -> wnm_number().
