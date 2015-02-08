@@ -14,12 +14,9 @@
 -export([find_numbers/3
          ,acquire_number/1
          ,disconnect_number/1
+         ,is_number_billable/1
          ,should_lookup_cnam/0
         ]).
-
--export([query_simwood/1
-        ,process_response/1
-       ]).
 
 -include("../wnm.hrl").
 
@@ -34,42 +31,61 @@
 -define(SW_AUTH_PASSWORD, whapps_config:get_string(?WNM_SW_CONFIG_CAT, <<"auth_password">>, <<>>)).
 
 
+%%--------------------------------------------------------------------
+%% @public
+%% @doc
+%% Query Simwood.com for available numbers
+%% @end
+%%--------------------------------------------------------------------
 -spec find_numbers(ne_binary(), pos_integer(), wh_proplist()) ->
                           {'ok', wh_json:objects()} |
                           {'error', _}.
 find_numbers(Prefix, Quantity, Options) ->
     lager:info("Simwood search. Prefix: ~p. Quantity: ~p. Options: ~p.", [Prefix, Quantity, Options]),
-    %%
-    %%  As of Feb 2015 Simwood number query supports only 1|10|100 search amount
-    %%
     URL = list_to_binary([?SW_NUMBER_URL, "/", ?SW_ACCOUNT_ID, <<"/available/standard/">>, sw_quantity(Quantity), "?pattern=", Prefix]), 
-    {'ok', Body} = query_simwood(URL), 
+    {'ok', Body} = query_simwood(URL, 'get'), 
     process_response(wh_json:decode(Body)).
 
 %%--------------------------------------------------------------------
 %% @public
 %% @doc
-%% Acquire a given number from the carrier
+%% Acquire a given number from Simwood.com
 %% @end
 %%--------------------------------------------------------------------
 -spec acquire_number(wnm_number()) -> wnm_number().
-acquire_number(#number{}=Number) ->
-    Number.
+acquire_number(#number{dry_run='true'}=NR) -> NR;
+acquire_number(#number{number=(<<$+, Number/binary>>)}=NR) ->
+    acquire_number(NR#number{number=Number});
+acquire_number(#number{number=Number}=NR) ->
+    lager:info("Simwood number acquire attempt: ~p", [Number]),
+    URL = list_to_binary([?SW_NUMBER_URL, "/", ?SW_ACCOUNT_ID, <<"/allocated/">>, wh_util:to_binary(Number)]), 
+    {'ok', _Body} = query_simwood(URL, 'put'),
+    NR#number{number=(wnm_util:normalize_number(Number))}.
 
 %%--------------------------------------------------------------------
 %% @private
 %% @doc
-%% Release a number from the routing table
+%% Return number vack to Simwood.com
 %% @end
 %%--------------------------------------------------------------------
 -spec disconnect_number(wnm_number()) -> wnm_number().
-disconnect_number(#number{}=Number) -> Number.
+disconnect_number(#number{number=(<<$+, Number/binary>>)}=NR) -> 
+    disconnect_number(NR#number{number=Number}); 
+disconnect_number(#number{number=Number}=NR) -> 
+    lager:info("Simwood number disconnect attempt: ~p", [Number]),
+    URL = list_to_binary([?SW_NUMBER_URL, "/", ?SW_ACCOUNT_ID, <<"/allocated/">>, wh_util:to_binary(Number)]), 
+    {'ok', _Body} = query_simwood(URL, 'delete'),
+    NR#number{number=(wnm_util:normalize_number(Number))}.
 
 %%--------------------------------------------------------------------
 %% @private
 %% @doc
 %% @end
 %%--------------------------------------------------------------------
+
+-spec is_number_billable(wnm_number()) -> 'true'.
+is_number_billable(_Number) -> 'true'.
+
 -spec should_lookup_cnam() -> boolean().
 should_lookup_cnam() -> 'true'.
 
@@ -77,22 +93,25 @@ should_lookup_cnam() -> 'true'.
 %%% Internal functions
 %%%===================================================================
 
-query_simwood(URL) ->
-    lager:debug("querying Simwood ~s", [URL]),
+query_simwood(URL, Verb) ->
+    lager:debug("querying Simwood. Verb: ~p. URL: ~p.", [Verb, URL]),
     HTTPOptions = [{'ssl',[{'verify',0}]}
                    ,{'inactivity_timeout', 180000}
                    ,{'connect_timeout', 180000}
                    ,{'basic_auth', {?SW_AUTH_USERNAME, ?SW_AUTH_PASSWORD}}
                   ],
-    case ibrowse:send_req(wh_util:to_list(URL), [], 'post', [], HTTPOptions) of
-        {'ok', "200", _RespHeaders, Body} ->
-            lager:debug("recv 200: ~s", [Body]),
+    case ibrowse:send_req(wh_util:to_list(URL), [], Verb, [], HTTPOptions) of
+        {'ok', _Resp, _RespHeaders, Body} ->
+            lager:debug("recv ~p: ~p", [_Resp, Body]),
             {'ok', Body};
         {'error', _R} ->
             lager:debug("error querying: ~p", [_R]),
             {'error', 'not_available'}
     end.
 
+%%
+%%  Simwood number query supports only 1|10|100 search amount
+%%
 sw_quantity(Quantity) when Quantity == 1 -> <<"1">>;
 sw_quantity(Quantity) when Quantity > 1, Quantity =< 10  -> <<"10">>;
 sw_quantity(_Quantity) -> <<"100">>.
