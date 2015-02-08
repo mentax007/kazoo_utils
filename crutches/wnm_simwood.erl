@@ -41,7 +41,6 @@
                           {'ok', wh_json:objects()} |
                           {'error', _}.
 find_numbers(Prefix, Quantity, Options) ->
-    lager:info("Simwood search. Prefix: ~p. Quantity: ~p. Options: ~p.", [Prefix, Quantity, Options]),
     URL = list_to_binary([?SW_NUMBER_URL, "/", ?SW_ACCOUNT_ID, <<"/available/standard/">>, sw_quantity(Quantity), "?pattern=", Prefix]), 
     {'ok', Body} = query_simwood(URL, 'get'), 
     process_response(wh_json:decode(Body)).
@@ -57,7 +56,6 @@ acquire_number(#number{dry_run='true'}=NR) -> NR;
 acquire_number(#number{number=(<<$+, Number/binary>>)}=NR) ->
     acquire_number(NR#number{number=Number});
 acquire_number(#number{number=Number}=NR) ->
-    lager:info("Simwood number acquire attempt: ~p", [Number]),
     URL = list_to_binary([?SW_NUMBER_URL, "/", ?SW_ACCOUNT_ID, <<"/allocated/">>, wh_util:to_binary(Number)]), 
     {'ok', _Body} = query_simwood(URL, 'put'),
     NR#number{number=(wnm_util:normalize_number(Number))}.
@@ -72,7 +70,6 @@ acquire_number(#number{number=Number}=NR) ->
 disconnect_number(#number{number=(<<$+, Number/binary>>)}=NR) -> 
     disconnect_number(NR#number{number=Number}); 
 disconnect_number(#number{number=Number}=NR) -> 
-    lager:info("Simwood number disconnect attempt: ~p", [Number]),
     URL = list_to_binary([?SW_NUMBER_URL, "/", ?SW_ACCOUNT_ID, <<"/allocated/">>, wh_util:to_binary(Number)]), 
     {'ok', _Body} = query_simwood(URL, 'delete'),
     NR#number{number=(wnm_util:normalize_number(Number))}.
@@ -94,7 +91,7 @@ should_lookup_cnam() -> 'true'.
 %%%===================================================================
 
 query_simwood(URL, Verb) ->
-    lager:debug("querying Simwood. Verb: ~p. URL: ~p.", [Verb, URL]),
+    lager:debug("Querying Simwood. Verb: ~p. URL: ~p.", [Verb, URL]),
     HTTPOptions = [{'ssl',[{'verify',0}]}
                    ,{'inactivity_timeout', 180000}
                    ,{'connect_timeout', 180000}
@@ -102,10 +99,10 @@ query_simwood(URL, Verb) ->
                   ],
     case ibrowse:send_req(wh_util:to_list(URL), [], Verb, [], HTTPOptions) of
         {'ok', _Resp, _RespHeaders, Body} ->
-            lager:debug("recv ~p: ~p", [_Resp, Body]),
+            lager:debug("Simwood response ~p: ~p", [_Resp, Body]),
             {'ok', Body};
         {'error', _R} ->
-            lager:debug("error querying: ~p", [_R]),
+            lager:debug("Simwood response: ~p", [_R]),
             {'error', 'not_available'}
     end.
 
@@ -122,10 +119,9 @@ process_response(Body) ->
 
 process_response([], Acc) -> {'ok', wh_json:from_list(Acc)};
 process_response([JObj|T], Acc) -> 
-    lager:info("Simwood JObj from List: ~p", [JObj]),
     CountryCode = wh_json:get_value(<<"country_code">>, JObj),
     FoundNumber = wh_json:get_value(<<"number">>, JObj),
     E164 = <<"+", CountryCode/binary, FoundNumber/binary>>, 
     Number = {E164, {[{<<"number">>, E164}, {<<"rate">>,<<"2">>}, {<<"activation_charge">>,<<"0">>}]}}, 
-    process_response(T, [Number | Acc]).
+    process_response(T, [Number|Acc]).
 
