@@ -40,7 +40,7 @@
 -spec find_numbers(ne_binary(), pos_integer(), wh_proplist()) ->
                           {'ok', wh_json:objects()} |
                           {'error', _}.
-find_numbers(Prefix, Quantity, Options) ->
+find_numbers(Prefix, Quantity, _Options) ->
     URL = list_to_binary([?SW_NUMBER_URL, "/", ?SW_ACCOUNT_ID, <<"/available/standard/">>, sw_quantity(Quantity), "?pattern=", Prefix]), 
     {'ok', Body} = query_simwood(URL, 'get'), 
     process_response(wh_json:decode(Body)).
@@ -90,6 +90,7 @@ should_lookup_cnam() -> 'true'.
 %%% Internal functions
 %%%===================================================================
 
+-spec query_simwood(ne_binary(), 'get'|'put'|'post'|'delete') -> {'ok', any()} | {'error', 'not_available'}.
 query_simwood(URL, Verb) ->
     lager:debug("Querying Simwood. Verb: ~p. URL: ~p.", [Verb, URL]),
     HTTPOptions = [{'ssl',[{'verify',0}]}
@@ -109,14 +110,17 @@ query_simwood(URL, Verb) ->
 %%
 %%  Simwood number query supports only 1|10|100 search amount
 %%
+-spec sw_quantity(pos_integer()) -> ne_binary().
 sw_quantity(Quantity) when Quantity == 1 -> <<"1">>;
 sw_quantity(Quantity) when Quantity > 1, Quantity =< 10  -> <<"10">>;
 sw_quantity(_Quantity) -> <<"100">>.
 
+-spec process_response(wh_proplist()) -> {'ok', wh_json:object()}.
 process_response([]) -> {'ok', wh_json:new()};
 process_response(Body) ->
     process_response(Body, []).
 
+-spec process_response(wh_proplist(), wh_proplist()) -> {'ok', wh_json:object()}.
 process_response([], Acc) -> {'ok', wh_json:from_list(Acc)};
 process_response([JObj|T], Acc) -> 
     CountryCode = wh_json:get_value(<<"country_code">>, JObj),
