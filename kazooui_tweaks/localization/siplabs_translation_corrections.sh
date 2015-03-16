@@ -35,6 +35,7 @@ sed -i 's/login: "Логин \/ Почта"/login: "Логин"/' $KAZOO_UI_DIR/
 sed -i 's/account_name: "Клиент"/account_name: "Учетная запись"/' $KAZOO_UI_DIR/whapps/auth/auth/lang/ru.js
 sed -i 's/hotdesking_cat: "Присвоение телефонов"/hotdesking_cat: "Присвоение телефона"/' $KAZOO_UI_DIR/config/lang/ru.js
 sed -i 's/"Переадресация звонков"/"Переадресация"/' $KAZOO_UI_DIR/config/lang/ru.js
+sed -i 's/"Управление номерами"/"Номера"/' $KAZOO_UI_DIR/config/lang/ru.js
 sed -i 's/"Включить переадресацию звонков"/"Включить переадресацию"/' $KAZOO_UI_DIR/whapps/voip/callflow/lang/ru.js
 sed -i 's/stop_call_recording: "Остановить запись разговора"/stop_call_recording: "Остановить запись"/' $KAZOO_UI_DIR/whapps/voip/callflow/lang/ru.js
 
