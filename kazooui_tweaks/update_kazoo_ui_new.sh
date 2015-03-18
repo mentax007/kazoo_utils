@@ -149,7 +149,7 @@ sed -i "/'prompt': false/d" $KAZOO_UI_DIR/whapps/voip/voip.js
 
 ### May be not....
 
-sed -i "s/'cdr': false,/'cdr': false/g" $KAZOO_UI_DIR/whapps/voip/voip.js
+#sed -i "s/'cdr': false,/'cdr': false/g" $KAZOO_UI_DIR/whapps/voip/voip.js
 sed -i "/'resource': false,/d" $KAZOO_UI_DIR/whapps/voip/voip.js
 
 ########################################################################################
@@ -163,4 +163,5 @@ sh /root/kazoo_utils/kazooui_tweaks/localization/siplabs_translation_corrections
 
 cp /var/www/html/whapps/voip/prompt/lang/en.js /var/www/html/whapps/voip/prompt/lang/ru.js
 cp /var/www/html/whapps/voip/faxbox/lang/en.js /var/www/html/whapps/voip/faxbox/lang/ru.js
+cp /var/www/html/whapps/voip/blacklist/lang/en.js /var/www/html/whapps/voip/blacklist/lang/ru.js
 
