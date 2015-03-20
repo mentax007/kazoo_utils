@@ -51,4 +51,11 @@ sed -i 's/check_voicemail: "Проверить голосовую почту"/ch
 #sed -i 's///' $KAZOO_UI_DIR/whapps/voip/callflow/lang/ru.js
 #sed -i 's///' $KAZOO_UI_DIR/whapps/voip/callflow/lang/ru.js
 
+sed -i 's/sunday: "Воскресенье"/sunday: "Sunday"/g' /var/www/html/whapps/voip/timeofday/lang/ru.js 
+sed -i 's/monday: "Понедельник"/monday: "Monday"/g' /var/www/html/whapps/voip/timeofday/lang/ru.js
+sed -i 's/tuesday: "Вторник"/tuesday: "Tuesday"/g' /var/www/html/whapps/voip/timeofday/lang/ru.js
+sed -i 's/wednesday: "Среда"/wednesday: "Wednesday"/g' /var/www/html/whapps/voip/timeofday/lang/ru.js
+sed -i 's/thursday: "Четверг"/thursday: "Thursday"/g' /var/www/html/whapps/voip/timeofday/lang/ru.js
+sed -i 's/friday: "Пятница"/friday: "Friday"/g' /var/www/html/whapps/voip/timeofday/lang/ru.js
+sed -i 's/saturdaty: "Суббота"/saturday: "Saturday"/g' /var/www/html/whapps/voip/timeofday/lang/ru.js
 
