@@ -73,7 +73,6 @@ echo "Kazoo Server step 3"
 sed -i 's/guest:guest@127.0.0.1:5672/guest:guest@'$RABBIT_IP':5672/g' /etc/kazoo/kamailio/local.cfg
 sed -i 's/127.0.0.1/'$HOST_IP'/g' /etc/kazoo/kamailio/local.cfg
 sed -i 's/kamailio.2600hz.com/'$HOSTNAME'/g' /etc/kazoo/kamailio/local.cfg
-sed -i 's/MY_WEBSOCKET_DOMAIN!2600hz.com/MY_WEBSOCKET_DOMAIN!'$WEBSOCKET_DOMAIN'/g' /etc/kazoo/kamailio/local.cfg
 
 echo Done
 
@@ -187,6 +186,13 @@ sed -i 's/\/var\/log\/bigcouch.log {/\/var\/log\/bigcouch\/bigcouch.log {/' /etc
 #/opt/kazoo/utils/sup/sup whapps_maintenance refresh system_schemas
 #/opt/kazoo/utils/sup/sup -t 3600 whapps_maintenance migrate
 
+
+## WSS
+
+sed -i 's/# # #!trydef WEBSOCKETS-ROLE/#!trydef WEBSOCKETS-ROLE/g' /etc/kazoo/kamailio/local.cfg 
+sed -i 's/MY_WEBSOCKET_DOMAIN!2600hz.com/MY_WEBSOCKET_DOMAIN!'$WEBSOCKET_DOMAIN'/g' /etc/kazoo/kamailio/local.cfg
+sed -i 's/TLS_WSS!tls:MY_IP_ADDRESS:8443/TLS_WSS!tls:MY_IP_ADDRESS:9443/g' /etc/kazoo/kamailio/local.cfg
+sed -i 's/UDP_WSS_SIP!udp:MY_IP_ADDRESS:8443/UDP_WSS_SIP!udp:MY_IP_ADDRESS:9443/g' /etc/kazoo/kamailio/local.cfg
 
 ## TLS
 
