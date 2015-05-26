@@ -62,7 +62,7 @@ rm -rf /etc/kazoo
 
 echo "Retrieving KAZOO_CONFIGS master"
 
-git clone -b 3.19 https://github.com/2600hz/kazoo_configs.git /etc/kazoo
+git clone -b 3.20 https://github.com/2600hz/kazoo_configs.git /etc/kazoo
 
 ## Kazoo Server step 3
 echo "Kazoo Server step 3"
@@ -219,6 +219,45 @@ cp /etc/kz_vars/certs/certificate_passless_private.key /etc/kazoo/kamailio/certs
 
 chown -R freeswitch.daemon /etc/kazoo/freeswitch
 chown -R kamailio.kamailio /etc/kazoo/kamailio
+
+echo HAProxy...
+
+LineNumHAProxyGlobal=`sed -n '/stats socket/{;=;}' /etc/kazoo/haproxy/haproxy.cfg`
+sed -i $((LineNumHAProxyGlobal + 1))'i\        tune.ssl.default-dh-param 2048' /etc/kazoo/haproxy/haproxy.cfg
+
+LineNumHAProxyDefaults=`sed -n '/timeout server/{;=;}' /etc/kazoo/haproxy/haproxy.cfg`
+sed -i $((LineNumHAProxyDefaults + 1))'i\        timeout tunnel 1h' /etc/kazoo/haproxy/haproxy.cfg
+
+sed -i '$a \
+ \
+frontend secure_blackhole \
+    bind 0.0.0.0:7777 ssl crt /etc/kazoo/haproxy/cert_key.pem \
+    timeout client 1h \
+    default_backend www_blackhole \
+    acl is_websocket hdr(Upgrade) -i WebSocket \
+    use_backend websocket_blackhole if is_websocket \
+ \
+backend www_blackhole \
+    mode http \
+    stats enable \
+    stats uri /haproxy \
+    option forwardfor \
+    reqadd x-forwarded-proto:\\ https \
+    server server1 127.0.0.1:5555 weight 1 maxconn 8192 \
+ \
+backend websocket_blackhole \
+    mode http \
+    option forwardfor \
+    option http-server-close \
+    option forceclose \
+    no option httpclose \
+    server server1 127.0.0.1:5555 weight 1 maxconn 8192 \
+
+ ' /etc/kazoo/haproxy/haproxy.cfg
+
+cat /etc/kz_vars/certs/certificate.crt > /etc/kazoo/haproxy/cert_key.pem
+echo "" >> /etc/kazoo/haproxy/cert_key.pem
+cat /etc/kz_vars/certs/certificate_passless_private.key >> /etc/kazoo/haproxy/cert_key.pem
 
 echo Done
 
