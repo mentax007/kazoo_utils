@@ -73,6 +73,7 @@ echo "Kazoo Server step 3"
 sed -i 's/guest:guest@127.0.0.1:5672/guest:guest@'$RABBIT_IP':5672/g' /etc/kazoo/kamailio/local.cfg
 sed -i 's/127.0.0.1/'$HOST_IP'/g' /etc/kazoo/kamailio/local.cfg
 sed -i 's/kamailio.2600hz.com/'$HOSTNAME'/g' /etc/kazoo/kamailio/local.cfg
+sed -i 's/\#!substdef "!MY_WEBSOCKET_DOMAIN/\#\#!substdef "!MY_WEBSOCKET_DOMAIN/g' /etc/kazoo/kamailio/local.cfg
 
 echo Done
 
