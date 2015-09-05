@@ -1,1 +1,1 @@
-yum -y install git make nc zip unzip gcc libxslt libstdc++-devel libxml2-devel expat-devel
+yum -y install git make nc zip unzip gcc libxslt libstdc++-devel libxml2-devel expat-devel openssl-devel
