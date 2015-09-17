@@ -207,14 +207,16 @@ cp /etc/kz_vars/certs/certificate_passless_private.key /etc/kazoo/kamailio/certs
 
 ## MONIT
 
-#yum -y install wget
-#yum -y install monit --enablerepo=epel --nogpgcheck
-#wget https://raw.github.com/onnet/onnet_util/master/monit.conf -O /etc/monit.conf
-#chmod 0600 /etc/monit.conf
-#sed -i 's/change_mo_to_localsysname.onnet.su/'$HOSTNAME'/g' /etc/monit.conf
-#chkconfig --add monit
-#chkconfig monit on
-#service monit restart
+yum -y install wget
+yum -y install monit --enablerepo=epel --nogpgcheck
+wget https://raw.github.com/onnet/onnet_util/master/monit.conf -O /etc/monit.conf
+chmod 0600 /etc/monit.conf
+sed -i 's/change_mo_to_localsysname.onnet.su/'$HOSTNAME'/g' /etc/monit.conf
+wget https://github.com/onnet/onnet_util/raw/master/freeswitch.monitrc /etc/monit.d/freeswitch.monitrc
+sed -i 's/change_mo_to_localsysname/'$HOSTNAME'/g' /etc/monit.d/freeswitch.monitrc
+chkconfig --add monit
+chkconfig monit on
+service monit restart
 
 ## Permissions
 
