@@ -26,10 +26,18 @@ is_good_standing(AccountId) ->
                           {'ok', wh_transaction:transactions()} |
                           {'error', 'not_found'} |
                           {'error', 'unknown_error'}.
-transactions(AccountId, From0, To0) ->
+transactions(AccountId, From, To) ->
     lager:info("IAM BOOK transactions/3 AccountId: ~p",[AccountId]),
-    lager:info("IAM BOOK transactions/3 From0: ~p",[From0]),
-    lager:info("IAM BOOK transactions/3 To0: ~p",[To0]).
+    lager:info("IAM BOOK transactions/3 From: ~p",[From]),
+    lager:info("IAM BOOK transactions/3 To: ~p",[To]),
+    case wh_transactions:fetch_local(AccountId, From, To) of
+        {'error', _Reason}=Error -> Error;
+        {'ok', _Transactions}=Res ->
+  %          handle_topup(AccountId, Transactions),
+            lager:info("IAM transactions Res: ~p",[Res]),
+            Res
+    end.
+
 
 -spec subscriptions(ne_binary()) -> atom() | wh_json:objects().
 subscriptions(AccountId) ->
