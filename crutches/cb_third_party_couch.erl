@@ -151,7 +151,7 @@ do_load_recording_binary(CdrId, Context) ->
 
                                                   ,[{<<"Content-Disposition">>, get_disposition(MediaName, Context1)}
                                                     ,{<<"Content-Type">>, <<"audio/mpeg">>}
-                                                    ,{<<"Content-Length">>, byte_size(Attachment)}
+                                       %             ,{<<"Content-Length">>, byte_size(Attachment)}
                                                     | cb_context:resp_headers(Context)
                                                    ])
                       ,'undefined'
