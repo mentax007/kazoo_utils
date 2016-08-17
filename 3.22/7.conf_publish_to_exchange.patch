@@ -1,0 +1,14 @@
+diff --git a/core/whistle_apps-1.0.0/src/whapps_conference_command.erl b/core/whistle_apps-1.0.0/src/whapps_conference_command.erl
+index 569b1f4..1210d5d 100644
+--- a/core/whistle_apps-1.0.0/src/whapps_conference_command.erl
++++ b/core/whistle_apps-1.0.0/src/whapps_conference_command.erl
+@@ -229,7 +229,8 @@ send_command([_|_]=Command, Conference) ->
+     lager:debug("prop ~p", [Prop]),
+     case wh_util:is_empty(Focus) of
+         'true' -> wapi_conference:publish_command(ConferenceId, Prop);
+-        'false' -> wapi_conference:publish_targeted_command(Focus, Prop)
++        'false' -> wapi_conference:publish_command(ConferenceId, Prop)
++%        'false' -> wapi_conference:publish_targeted_command(Focus, Prop)
+     end;
+ send_command(JObj, Conference) -> send_command(wh_json:to_proplist(JObj), Conference).
+

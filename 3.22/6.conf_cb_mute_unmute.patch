@@ -1,0 +1,28 @@
+From 729c607caf53c292509fc1341b391e105f4c0cab Mon Sep 17 00:00:00 2001
+From: Kirill Sysoev <kirill.sysoev@gmail.com>
+Date: Mon, 21 Dec 2015 17:11:02 +0300
+Subject: [PATCH] KAZOO-4455: Conference Mute/Unmute over API actions should be
+ also announced to the participant
+
+---
+ applications/crossbar/src/modules/cb_conferences.erl | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/applications/crossbar/src/modules/cb_conferences.erl b/applications/crossbar/src/modules/cb_conferences.erl
+index faa54c8..e3e5967 100644
+--- a/applications/crossbar/src/modules/cb_conferences.erl
++++ b/applications/crossbar/src/modules/cb_conferences.erl
+@@ -311,9 +311,11 @@ do_conference_action(Context, Id, Action, ParticipantId) ->
+ 
+ -spec perform_conference_action(whapps_conference:conference(), binary(), ne_binary()) -> 'ok'.
+ perform_conference_action(Conference, <<"mute">>, ParticipantId) ->
+-    whapps_conference_command:mute_participant(ParticipantId, Conference);
++    whapps_conference_command:mute_participant(ParticipantId, Conference),
++    whapps_conference_command:prompt(<<"conf-muted">>, ParticipantId, Conference);
+ perform_conference_action(Conference, <<"unmute">>, ParticipantId) ->
+-    whapps_conference_command:unmute_participant(ParticipantId, Conference);
++    whapps_conference_command:unmute_participant(ParticipantId, Conference),
++    whapps_conference_command:prompt(<<"conf-unmuted">>, ParticipantId, Conference);
+ perform_conference_action(Conference, <<"kick">>, ParticipantId) ->
+     whapps_conference_command:kick(ParticipantId, Conference).
+ 

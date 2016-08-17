@@ -1,0 +1,13 @@
+diff --git a/applications/crossbar/src/modules/cb_clicktocall.erl b/applications/crossbar/src/modules/cb_clicktocall.erl
+index e8386c6..d1581ed 100644
+--- a/applications/crossbar/src/modules/cb_clicktocall.erl
++++ b/applications/crossbar/src/modules/cb_clicktocall.erl
+@@ -427,7 +427,7 @@ build_originate_req(Contact, Context) ->
+ 
+     CCVs = [{<<"Account-ID">>, AccountId}
+             ,{<<"Auto-Answer">>, AutoAnswer}
+-            ,{<<"Retain-CID">>, <<"true">>}
++            ,{<<"Retain-CID">>, <<"false">>}
+             ,{<<"Authorizing-ID">>, wh_doc:id(JObj)}
+             ,{<<"Inherit-Codec">>, <<"false">>}
+             ,{<<"Authorizing-Type">>, <<"device">>}

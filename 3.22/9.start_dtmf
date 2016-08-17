@@ -1,0 +1,64 @@
+diff --git a/applications/ecallmgr/src/ecallmgr_fs_route.erl b/applications/ecallmgr/src/ecallmgr_fs_route.erl
+index 883a4e9..6cc7e6f 100644
+--- a/applications/ecallmgr/src/ecallmgr_fs_route.erl
++++ b/applications/ecallmgr/src/ecallmgr_fs_route.erl
+@@ -280,14 +280,23 @@ search_for_route(Section, Node, FetchId, CallId, Props) ->
+             lager:info("did not receive route response for request ~s: ~p", [FetchId, _R]);
+         {'ok', JObj} ->
+             'true' = wapi_route:resp_v(JObj),
+-            J = wh_json:set_value(<<"Context">>, hunt_context(Props), JObj),
+-            maybe_wait_for_authz(Section, Node, FetchId, CallId, J)
++            ToSet = [{<<"Context">>, hunt_context(Props)}] ++ remote_sdp(Props),
++            maybe_wait_for_authz(Section, Node, FetchId, CallId
++                                 ,wh_json:set_values(ToSet, JObj)
++                                )
+     end.
+ 
+ -spec hunt_context(wh_proplist()) -> api_binary().
+ hunt_context(Props) ->
+     props:get_value(<<"Hunt-Context">>, Props, ?DEFAULT_FREESWITCH_CONTEXT).
+ 
++-spec remote_sdp(wh_proplist()) -> api_binary().
++remote_sdp(Props) ->
++    case props:get_value(<<"variable_switch_r_sdp">>, Props, <<>>) of
++        <<>> -> [];
++        RemoteSDP -> [{<<"Remote-SDP">>, RemoteSDP}]
++    end.
++
+ -spec maybe_wait_for_authz(atom(), atom(), ne_binary(), ne_binary(), wh_json:object()) -> 'ok'.
+ maybe_wait_for_authz(Section, Node, FetchId, CallId, JObj) ->
+     case wh_util:is_true(ecallmgr_config:get(<<"authz_enabled">>, 'false'))
+diff --git a/applications/ecallmgr/src/ecallmgr_fs_xml.erl b/applications/ecallmgr/src/ecallmgr_fs_xml.erl
+index 2b883fd..13fcd4d 100644
+--- a/applications/ecallmgr/src/ecallmgr_fs_xml.erl
++++ b/applications/ecallmgr/src/ecallmgr_fs_xml.erl
+@@ -287,6 +287,7 @@ route_resp_xml(<<"park">>, _Routes, JObj) ->
+              ,route_resp_ringback(JObj)
+              ,route_resp_transfer_ringback(JObj)
+              ,route_resp_pre_park_action(JObj)
++             ,may_be_start_dtmf_action(JObj)
+              | route_resp_ccvs(JObj) ++ [action_el(<<"park">>)]
+             ],
+     ParkExtEl = extension_el(<<"park">>, 'undefined', [condition_el(Exten)]),
+@@ -404,6 +405,21 @@ route_resp_pre_park_action(JObj) ->
+         _Else -> 'undefined'
+     end.
+ 
++-spec may_be_start_dtmf_action(wh_json:object()) -> 'undefined' | xml_el().
++may_be_start_dtmf_action(JObj) ->
++    case ecallmgr_config:is_true(<<"should_detect_inband_dtmf">>) of
++        'false' -> 'undefined';
++        'true' -> check_dtmf_type(JObj)
++    end.
++
++-spec check_dtmf_type(wh_json:object()) -> 'undefined' | xml_el().
++check_dtmf_type(JObj) ->
++    SDPRemote = wh_json:get_value(<<"Remote-SDP">>, JObj, <<"101 telephone-event">>),
++    case binary:match(SDPRemote, <<"101 telephone-event">>) of
++        'nomatch' -> action_el(<<"start_dtmf">>);
++        _ -> 'undefined'
++    end.
++
+ -spec get_leg_vars(wh_json:object() | wh_proplist()) -> iolist().
+ get_leg_vars([_|_]=Prop) ->
+     ["[", string:join([wh_util:to_list(V) || V <- lists:foldr(fun get_channel_vars/2, [], Prop)], ","), "]"];

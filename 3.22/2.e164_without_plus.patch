@@ -1,0 +1,106 @@
+diff --git a/applications/ecallmgr/src/ecallmgr_util.erl b/applications/ecallmgr/src/ecallmgr_util.erl
+index a8f3002..f2b76b0 100644
+--- a/applications/ecallmgr/src/ecallmgr_util.erl
++++ b/applications/ecallmgr/src/ecallmgr_util.erl
+@@ -796,6 +796,8 @@ maybe_format_user(Contact, #bridge_endpoint{invite_format = <<"username">>
+ maybe_format_user(Contact, #bridge_endpoint{number='undefined'}) -> Contact;
+ maybe_format_user(Contact, #bridge_endpoint{invite_format = <<"e164">>, number=Number}) ->
+     re:replace(Contact, "^[^\@]+", wnm_util:to_e164(Number), [{'return', 'binary'}]);
++maybe_format_user(Contact, #bridge_endpoint{invite_format = <<"e164_without_plus">>, number=Number}) ->
++    re:replace(Contact, "^[^\@]+", wnm_util:to_e164_without_plus(Number), [{'return', 'binary'}]);
+ maybe_format_user(Contact, #bridge_endpoint{invite_format = <<"npan">>, number=Number}) ->
+     re:replace(Contact, "^[^\@]+", wnm_util:to_npan(Number), [{'return', 'binary'}]);
+ maybe_format_user(Contact, #bridge_endpoint{invite_format = <<"1npan">>, number=Number}) ->
+diff --git a/applications/stepswitch/src/stepswitch_formatters.erl b/applications/stepswitch/src/stepswitch_formatters.erl
+index 62319f5..fea4103 100644
+--- a/applications/stepswitch/src/stepswitch_formatters.erl
++++ b/applications/stepswitch/src/stepswitch_formatters.erl
+@@ -276,6 +276,7 @@ maybe_match_invite_format(JObj, Formatter) ->
+         <<"route">> -> 'false';
+         <<"username">> -> 'false';
+         <<"e164">> -> 'true';
++        <<"e164_without_plus">> -> 'true';
+         <<"npan">> -> 'true';
+         <<"1npan">> -> 'true'
+     end.
+@@ -297,6 +298,7 @@ match_invite_format(JObj, Key, User, Realm) ->
+ invite_format_fun(JObj) ->
+     case wh_json:get_value(<<"Invite-Format">>, JObj) of
+         <<"e164">> -> fun wnm_util:to_e164/1;
++        <<"e164_without_plus">> -> fun wnm_util:to_e164_without_plus/1;
+         <<"1npan">> -> fun wnm_util:to_1npan/1;
+         <<"npan">> -> fun wnm_util:to_npan/1
+     end.
+diff --git a/applications/trunkstore/src/ts_util.erl b/applications/trunkstore/src/ts_util.erl
+index fac7cd4..565e194 100644
+--- a/applications/trunkstore/src/ts_util.erl
++++ b/applications/trunkstore/src/ts_util.erl
+@@ -222,17 +222,21 @@ invite_format(<<"e164">>, To) ->
+      ,{<<"To-DID">>, wnm_util:to_e164(To)}
+     ];
+ invite_format(<<"e164_without_plus">>, To) ->
+-    case wnm_util:to_e164(To) of
+-        <<$+, PluslessDID/binary>> ->
+-            lager:info("while processing 'e164_without_plus' flag, DID ~s converted to E.164 with truncated '+': ~s",[To, PluslessDID]),
+-            [{<<"Invite-Format">>, <<"e164">>}
+-             ,{<<"To-DID">>, PluslessDID}
+-            ];
+-        AsIsDID ->
+-            [{<<"Invite-Format">>, <<"e164">>}
+-             ,{<<"To-DID">>, AsIsDID}
+-            ]
+-    end;
++    [{<<"Invite-Format">>, <<"e164_without_plus">>}
++     ,{<<"To-DID">>, wnm_util:to_e164_without_plus(To)}
++    ];
++%invite_format(<<"e164_without_plus">>, To) ->
++%    case wnm_util:to_e164(To) of
++%        <<$+, PluslessDID/binary>> ->
++%            lager:info("while processing 'e164_without_plus' flag, DID ~s converted to E.164 with truncated '+': ~s",[To, PluslessDID]),
++%            [{<<"Invite-Format">>, <<"e164">>}
++%             ,{<<"To-DID">>, PluslessDID}
++%            ];
++%        AsIsDID ->
++%            [{<<"Invite-Format">>, <<"e164">>}
++%             ,{<<"To-DID">>, AsIsDID}
++%            ]
++%    end;
+ invite_format(<<"1npanxxxxxx">>, To) ->
+     [{<<"Invite-Format">>, <<"1npan">>}
+      ,{<<"To-DID">>, wnm_util:to_1npan(To)}
+diff --git a/core/whistle-1.0.0/src/api/wapi_dialplan.hrl b/core/whistle-1.0.0/src/api/wapi_dialplan.hrl
+index 573cd2d..a16f585 100644
+--- a/core/whistle-1.0.0/src/api/wapi_dialplan.hrl
++++ b/core/whistle-1.0.0/src/api/wapi_dialplan.hrl
+@@ -14,7 +14,7 @@
+ 
+ %% For dialplan messages, what does the Invite-Format param accept as values?
+ -define(INVITE_FORMAT_TUPLE, {<<"Invite-Format">>
+-                              ,[<<"username">>, <<"e164">>
++                              ,[<<"username">>, <<"e164">>, <<"e164_without_plus">>
+                                 ,<<"npan">>, <<"1npan">>
+                                 ,<<"route">>, <<"loopback">>
+                                ]
+diff --git a/core/whistle_number_manager-1.0.0/src/wnm_util.erl b/core/whistle_number_manager-1.0.0/src/wnm_util.erl
+index 5069e36..f35f727 100644
+--- a/core/whistle_number_manager-1.0.0/src/wnm_util.erl
++++ b/core/whistle_number_manager-1.0.0/src/wnm_util.erl
+@@ -26,7 +26,7 @@
+          ,get_all_number_dbs/0
+         ]).
+ -export([normalize_number/1, normalize_number/2]).
+--export([to_e164/1, to_e164/2, to_e164/3
++-export([to_e164/1, to_e164/2, to_e164/3, to_e164_without_plus/1
+          ,to_npan/1, to_1npan/1
+         ]).
+ -export([is_e164/1, is_e164/2
+@@ -437,6 +437,9 @@ maybe_convert_to_e164([Regex|Regexs], Converters, Number) ->
+             wh_util:log_stacktrace(ST)
+     end.
+ 
++to_e164_without_plus(Number) ->
++    re:replace(to_e164(Number), "[\+]", "", [{'return', 'binary'}]).
++
+ %% end up with 8001234567 from 1NPAN and E.164
+ -spec to_npan(ne_binary()) -> ne_binary().
+ to_npan(Number) ->

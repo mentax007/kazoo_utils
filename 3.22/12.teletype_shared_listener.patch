@@ -1,0 +1,22 @@
+diff --git a/applications/teletype/src/teletype_shared_listener.erl b/applications/teletype/src/teletype_shared_listener.erl
+index 4b45b83..4b2d850 100644
+--- a/applications/teletype/src/teletype_shared_listener.erl
++++ b/applications/teletype/src/teletype_shared_listener.erl
+@@ -51,6 +51,9 @@
+                      ,{'teletype_template_skel'
+                        ,[{<<"notification">>, <<"skel">>}]
+                       }
++                     ,{{'teletype_customer_update', 'handle_req'}
++                       ,[{<<"notification">>, <<"customer_update">>}]
++                      }
+                      ,{{'teletype_deregister', 'handle_deregister'}
+                        ,[{<<"notification">>, <<"deregister">>}]
+                       }
+@@ -128,6 +131,7 @@
+                       ,'transaction'
+                       ,'voicemail_full'
+                       ,'webhook_disabled'
++                      ,'customer_update'
+                       %%,'skel'
+                      ]).
+ 
