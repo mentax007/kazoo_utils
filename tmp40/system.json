@@ -1,0 +1,43 @@
+{
+    "attachments": {},
+    "connections": {
+        "09ee9fb9714bd6dfe5ce457da9adf897": {
+            "connect_options": {
+                "keepalive": true
+            },
+            "connect_timeout": 500,
+            "driver": "kazoo_couch",
+            "ip": "94.125.5.45",
+            "max_pipeline_size": 10,
+            "max_sessions": 512,
+            "name": "my_couch",
+            "pool": "09ee9fb9714bd6dfe5ce457da9adf897",
+            "pool_name": "09ee9fb9714bd6dfe5ce457da9adf897",
+            "pool_size": 100,
+            "port": 5984
+        },
+        "local": {}
+    },
+    "plan": {
+        "account": {
+            "attachments": {},
+            "connection": "local",
+            "types": {}
+        },
+        "modb": {
+            "attachments": {},
+            "connection": "local",
+            "types": {
+                "call_recording": {
+                    "connection": "09ee9fb9714bd6dfe5ce457da9adf897"
+                }
+            }
+        },
+        "system": {
+            "attachments": {},
+            "connection": "local",
+            "types": {}
+        }
+    },
+    "pvt_type": "storage"
+}

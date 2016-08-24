@@ -188,6 +188,12 @@ sed -i 's/\/var\/log\/bigcouch.log {/\/var\/log\/bigcouch\/bigcouch.log {/' /etc
 #/opt/kazoo/utils/sup/sup -t 3600 whapps_maintenance migrate
 
 
+## FRONTIER
+
+sed -i 's/# # #!trydef ACL-ROLE/#!trydef ACL-ROLE/g' /etc/kazoo/kamailio/local.cfg 
+sed -i 's/# # #!trydef RATE_LIMITER-ROLE/#!trydef RATE_LIMITER-ROLE/g' /etc/kazoo/kamailio/local.cfg 
+sed -i 's/autoexpire=7200"/autoexpire=120"/g' /etc/kazoo/kamailio/acl-role.cfg 
+
 ## WSS
 
 sed -i 's/# # #!trydef WEBSOCKETS-ROLE/#!trydef WEBSOCKETS-ROLE/g' /etc/kazoo/kamailio/local.cfg 
