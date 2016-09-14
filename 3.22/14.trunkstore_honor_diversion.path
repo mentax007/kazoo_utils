@@ -1,18 +1,27 @@
 diff --git a/applications/trunkstore/src/ts_from_onnet.erl b/applications/trunkstore/src/ts_from_onnet.erl
-index 52067a7..585581a 100644
+index 52067a7..93c7d75 100644
 --- a/applications/trunkstore/src/ts_from_onnet.erl
 +++ b/applications/trunkstore/src/ts_from_onnet.erl
-@@ -73,7 +73,8 @@ onnet_data(CallID, AccountId, FromUser, ToDID, Options, State) ->
-                                       ,wh_json:get_value(<<"sip_headers">>, SrvOptions)
-                                       ,wh_json:get_value(<<"sip_headers">>, AccountOptions)
-                                      ]),
--
+@@ -65,6 +65,8 @@ onnet_data(CallID, AccountId, FromUser, ToDID, Options, State) ->
+     DIDOptions = wh_json:get_value(<<"DID_Opts">>, Options, wh_json:new()),
+     AccountOptions = wh_json:get_value(<<"account">>, Options, wh_json:new()),
+     SrvOptions = wh_json:get_value([<<"server">>, <<"options">>], Options, wh_json:new()),
 +    RouteReq = ts_callflow:get_request_data(State),
 +    CustomSIPHeaders = wh_json:get_value(<<"Custom-SIP-Headers">>, RouteReq),
+     MediaHandling = ts_util:get_media_handling([wh_json:get_value(<<"media_handling">>, DIDOptions)
+                                                 ,wh_json:get_value(<<"media_handling">>, SrvOptions)
+                                                 ,wh_json:get_value(<<"media_handling">>, AccountOptions)
+@@ -72,8 +74,8 @@ onnet_data(CallID, AccountId, FromUser, ToDID, Options, State) ->
+     SIPHeaders = ts_util:sip_headers([wh_json:get_value(<<"sip_headers">>, DIDOptions)
+                                       ,wh_json:get_value(<<"sip_headers">>, SrvOptions)
+                                       ,wh_json:get_value(<<"sip_headers">>, AccountOptions)
++                                      ,CustomSIPHeaders
+                                      ]),
+-
      EmergencyCallerID =
          case ts_util:caller_id([wh_json:get_value(<<"emergency_caller_id">>, DIDOptions)
                                  ,wh_json:get_value(<<"emergency_caller_id">>, SrvOptions)
-@@ -84,10 +85,9 @@ onnet_data(CallID, AccountId, FromUser, ToDID, Options, State) ->
+@@ -84,10 +86,9 @@ onnet_data(CallID, AccountId, FromUser, ToDID, Options, State) ->
              {ECIDName, ECIDNum} ->
                  [{<<"Emergency-Caller-ID-Name">>, ECIDName}
                   ,{<<"Emergency-Caller-ID-Number">>
@@ -24,7 +33,7 @@ index 52067a7..585581a 100644
      OriginalCIdNumber = wh_json:get_value(<<"Caller-ID-Number">>, RouteReq),
      OriginalCIdName = wh_json:get_value(<<"Caller-ID-Name">>, RouteReq),
      CallerID =
-@@ -99,7 +99,7 @@ onnet_data(CallID, AccountId, FromUser, ToDID, Options, State) ->
+@@ -99,7 +100,7 @@ onnet_data(CallID, AccountId, FromUser, ToDID, Options, State) ->
              {'undefined', 'undefined'} ->
                  case whapps_config:get_is_true(<<"trunkstore">>, <<"ensure_valid_caller_id">>, 'false') of
                      'true' ->
@@ -33,7 +42,7 @@ index 52067a7..585581a 100644
                          [{<<"Outbound-Caller-ID-Number">>, ValidCID}
                           ,{<<"Outbound-Caller-ID-Name">>, OriginalCIdName}
                           | EmergencyCallerID
-@@ -113,7 +113,7 @@ onnet_data(CallID, AccountId, FromUser, ToDID, Options, State) ->
+@@ -113,7 +114,7 @@ onnet_data(CallID, AccountId, FromUser, ToDID, Options, State) ->
              {CIDName, CIDNum} ->
                  [{<<"Outbound-Caller-ID-Name">>, CIDName}
                   ,{<<"Outbound-Caller-ID-Number">>
@@ -42,11 +51,11 @@ index 52067a7..585581a 100644
                   | EmergencyCallerID
                  ]
                 end,
-@@ -137,6 +137,7 @@ onnet_data(CallID, AccountId, FromUser, ToDID, Options, State) ->
+@@ -137,6 +138,7 @@ onnet_data(CallID, AccountId, FromUser, ToDID, Options, State) ->
                          ,{<<"Custom-SIP-Headers">>, SIPHeaders}
                          ,{<<"Hunt-Account-ID">>, wh_json:get_value(<<"hunt_account_id">>, SrvOptions)}
                          ,{<<"Custom-Channel-Vars">>, wh_json:from_list([{<<"Account-ID">>, AccountId}])}
-+                        ,{<<"Custom-SIP-Headers">>, CustomSIPHeaders}
++                  %      ,{<<"Custom-SIP-Headers">>, CustomSIPHeaders}
                          | wh_api:default_headers(Q, ?APP_NAME, ?APP_VERSION)
                         ],
                     V =/= 'undefined',
