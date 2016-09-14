@@ -1,0 +1,116 @@
+diff --git a/applications/trunkstore/src/ts_from_onnet.erl b/applications/trunkstore/src/ts_from_onnet.erl
+index 52067a7..585581a 100644
+--- a/applications/trunkstore/src/ts_from_onnet.erl
++++ b/applications/trunkstore/src/ts_from_onnet.erl
+@@ -73,7 +73,8 @@ onnet_data(CallID, AccountId, FromUser, ToDID, Options, State) ->
+                                       ,wh_json:get_value(<<"sip_headers">>, SrvOptions)
+                                       ,wh_json:get_value(<<"sip_headers">>, AccountOptions)
+                                      ]),
+-
++    RouteReq = ts_callflow:get_request_data(State),
++    CustomSIPHeaders = wh_json:get_value(<<"Custom-SIP-Headers">>, RouteReq),
+     EmergencyCallerID =
+         case ts_util:caller_id([wh_json:get_value(<<"emergency_caller_id">>, DIDOptions)
+                                 ,wh_json:get_value(<<"emergency_caller_id">>, SrvOptions)
+@@ -84,10 +85,9 @@ onnet_data(CallID, AccountId, FromUser, ToDID, Options, State) ->
+             {ECIDName, ECIDNum} ->
+                 [{<<"Emergency-Caller-ID-Name">>, ECIDName}
+                  ,{<<"Emergency-Caller-ID-Number">>
+-                   ,ts_util:maybe_ensure_cid_valid('emergency', ECIDNum, FromUser, AccountId)}
++                   ,ts_util:maybe_ensure_cid_valid('emergency', ECIDNum, FromUser, AccountId, CustomSIPHeaders)}
+                 ]
+         end,
+-    RouteReq = ts_callflow:get_request_data(State),
+     OriginalCIdNumber = wh_json:get_value(<<"Caller-ID-Number">>, RouteReq),
+     OriginalCIdName = wh_json:get_value(<<"Caller-ID-Name">>, RouteReq),
+     CallerID =
+@@ -99,7 +99,7 @@ onnet_data(CallID, AccountId, FromUser, ToDID, Options, State) ->
+             {'undefined', 'undefined'} ->
+                 case whapps_config:get_is_true(<<"trunkstore">>, <<"ensure_valid_caller_id">>, 'false') of
+                     'true' ->
+-                        ValidCID = ts_util:maybe_ensure_cid_valid('external', OriginalCIdNumber, FromUser, AccountId),
++                        ValidCID = ts_util:maybe_ensure_cid_valid('external', OriginalCIdNumber, FromUser, AccountId, CustomSIPHeaders),
+                         [{<<"Outbound-Caller-ID-Number">>, ValidCID}
+                          ,{<<"Outbound-Caller-ID-Name">>, OriginalCIdName}
+                          | EmergencyCallerID
+@@ -113,7 +113,7 @@ onnet_data(CallID, AccountId, FromUser, ToDID, Options, State) ->
+             {CIDName, CIDNum} ->
+                 [{<<"Outbound-Caller-ID-Name">>, CIDName}
+                  ,{<<"Outbound-Caller-ID-Number">>
+-                   ,ts_util:maybe_ensure_cid_valid('external', CIDNum, FromUser, AccountId)}
++                   ,ts_util:maybe_ensure_cid_valid('external', CIDNum, FromUser, AccountId, CustomSIPHeaders)}
+                  | EmergencyCallerID
+                 ]
+                end,
+@@ -137,6 +137,7 @@ onnet_data(CallID, AccountId, FromUser, ToDID, Options, State) ->
+                         ,{<<"Custom-SIP-Headers">>, SIPHeaders}
+                         ,{<<"Hunt-Account-ID">>, wh_json:get_value(<<"hunt_account_id">>, SrvOptions)}
+                         ,{<<"Custom-Channel-Vars">>, wh_json:from_list([{<<"Account-ID">>, AccountId}])}
++                        ,{<<"Custom-SIP-Headers">>, CustomSIPHeaders}
+                         | wh_api:default_headers(Q, ?APP_NAME, ?APP_VERSION)
+                        ],
+                    V =/= 'undefined',
+diff --git a/applications/trunkstore/src/ts_util.erl b/applications/trunkstore/src/ts_util.erl
+index fac7cd4..3b9fbf5 100644
+--- a/applications/trunkstore/src/ts_util.erl
++++ b/applications/trunkstore/src/ts_util.erl
+@@ -37,14 +37,15 @@
+          ,offnet_flags/1
+         ]).
+ 
+--export([maybe_ensure_cid_valid/4
++-export([maybe_ensure_cid_valid/5
+          ,maybe_restrict_call/2
+         ]).
+ 
+ -include("ts.hrl").
+ -include_lib("kernel/include/inet.hrl"). %% for hostent record, used in find_ip/1
+ 
+--define(VALIDATE_CALLER_ID, whapps_config:get_is_true(<<"trunkstore">>, <<"ensure_valid_caller_id">>, 'false')).
++-define(VALIDATE_CALLER_ID, whapps_config:get_is_true(?TS_CONFIG_CAT, <<"ensure_valid_caller_id">>, 'false')).
++-define(HONOR_DIVERSION ,whapps_config:get_is_true(?TS_CONFIG_CAT, <<"honor_diversions_by_cid_validation">>, 'false')).
+ 
+ -spec find_ip(ne_binary() | nonempty_string()) -> nonempty_string().
+ find_ip(Domain) when is_binary(Domain) ->
+@@ -327,16 +332,37 @@ simple_extract([JObj | T]) ->
+ 
+ -type cid_type() :: 'external' | 'emergency'.
+ 
+--spec maybe_ensure_cid_valid(cid_type(), api_binary(), ne_binary(), ne_binary()) ->
++-spec maybe_ensure_cid_valid(cid_type(), api_binary(), ne_binary(), ne_binary(), wh_json:object()) ->
+                                     ne_binary().
+-maybe_ensure_cid_valid('external', CIDNum, FromUser, AccountId) ->
++maybe_ensure_cid_valid('external', CIDNum, FromUser, AccountId, CustomSIPHeaders) ->
+     case ?VALIDATE_CALLER_ID of
+-        'true' -> validate_external_cid(CIDNum, FromUser, AccountId);
++        'true' -> maybe_honor_diversion(CIDNum, FromUser, AccountId, CustomSIPHeaders);
+         'false' -> CIDNum
+     end;
+-maybe_ensure_cid_valid('emergency', ECIDNum, _FromUser, _AccountId) ->
++maybe_ensure_cid_valid('emergency', ECIDNum, _FromUser, _AccountId, _CustomSIPHeaders) ->
+     ECIDNum.
+ 
++maybe_honor_diversion(CIDNum, FromUser, AccountId, CustomSIPHeaders) ->
++    case ?HONOR_DIVERSION of
++        'false' -> validate_external_cid(CIDNum, FromUser, AccountId);
++        'true' -> honor_diversion(CIDNum, FromUser, AccountId, CustomSIPHeaders)
++    end.
++
++honor_diversion(CIDNum, FromUser, AccountId, CustomSIPHeaders) ->
++    case wh_json:get_value(<<"Diversions">>, CustomSIPHeaders) of
++        [Diversion|_] ->
++            [_,CallerIdNumber,_] = binary:split(Diversion, [<<":">>,<<"@">>], ['global']),
++            case wh_number_manager:lookup_account_by_number(CallerIdNumber) of
++                {'ok', AccountId, _} -> CIDNum;
++                _ ->
++                    DefaultCID = whapps_config:get(<<"trunkstore">>, <<"default_caller_id_number">>, wh_util:anonymous_caller_id_number()),
++                    lager:info("wrong diversions cid detected! Will use default trunkstore caller id: ~s", [DefaultCID]),
++                    DefaultCID
++            end;
++        _ ->
++            validate_external_cid(CIDNum, FromUser, AccountId)
++    end.
++
+ -spec validate_external_cid(api_binary(), ne_binary(), ne_binary()) -> ne_binary().
+ validate_external_cid(CIDNum, FromUser, AccountId) ->
+     lager:info("ensure_valid_caller_id flag detected, will check whether CID is legal..."),
