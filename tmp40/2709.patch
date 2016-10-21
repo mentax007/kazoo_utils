@@ -1,0 +1,193 @@
+From ea684dc6b6f564b18c3d6f1598a8f4b782e6d500 Mon Sep 17 00:00:00 2001
+From: Kirill Sysoev <kirill.sysoev@gmail.com>
+Date: Wed, 19 Oct 2016 20:40:52 +0000
+Subject: [PATCH] optionally filter rates by resource id
+
+---
+ applications/ecallmgr/src/ecallmgr_fs_authz.erl    |  1 +
+ applications/hotornot/src/hon_rater.erl            | 13 ++++++++-
+ applications/hotornot/src/hon_util.erl             | 32 ++++++++++++++--------
+ applications/hotornot/src/hotornot_maintenance.erl | 14 +++++-----
+ core/kazoo_amqp/src/api/kapi_rate.erl              |  2 +-
+ 5 files changed, 42 insertions(+), 20 deletions(-)
+
+diff --git a/applications/ecallmgr/src/ecallmgr_fs_authz.erl b/applications/ecallmgr/src/ecallmgr_fs_authz.erl
+index da77c55..5ca673b 100644
+--- a/applications/ecallmgr/src/ecallmgr_fs_authz.erl
++++ b/applications/ecallmgr/src/ecallmgr_fs_authz.erl
+@@ -386,5 +386,6 @@ rating_req(CallId, Props) ->
+     ,{<<"Direction">>, kzd_freeswitch:call_direction(Props)}
+     ,{<<"Send-Empty">>, 'true'}
+     ,{<<"Outbound-Flags">>, props:get_value(<<"Outbound-Flags">>, Props)}
++    ,{<<"Resource-ID">>, props:get_value(<<"variable_ecallmgr_Resource-ID">>, Props)}
+      | kz_api:default_headers(?APP_NAME, ?APP_VERSION)
+     ].
+diff --git a/applications/hotornot/src/hon_rater.erl b/applications/hotornot/src/hon_rater.erl
+index c2e85eb..47866cf 100644
+--- a/applications/hotornot/src/hon_rater.erl
++++ b/applications/hotornot/src/hon_rater.erl
+@@ -76,7 +76,11 @@ get_rate_data(JObj, ToDID, FromDID, Rates) ->
+     RouteOptions = kz_json:get_value(<<"Options">>, JObj, []),
+     RouteFlags   = kz_json:get_value(<<"Outbound-Flags">>, JObj, []),
+     Direction    = kz_json:get_value(<<"Direction">>, JObj),
+-    Matching     = hon_util:matching_rates(Rates, ToDID, Direction, RouteOptions++RouteFlags),
++    ResourceId   = case kz_json:get_value(<<"Account-ID">>, JObj) of
++                       'undefined' -> 'undefined';
++                       AccountId -> maybe_filter_by_resource_id(JObj, AccountId)
++                   end,
++    Matching     = hon_util:matching_rates(Rates, ToDID, Direction, ResourceId, RouteOptions++RouteFlags),
+ 
+     case hon_util:sort_rates(Matching) of
+         [] ->
+@@ -95,6 +99,13 @@ get_rate_data(JObj, ToDID, FromDID, Rates) ->
+             {'ok', rate_resp(Rate, JObj)}
+     end.
+ 
++-spec maybe_filter_by_resource_id(kz_json:object(), ne_binary()) -> ne_binary()|'undefined'.
++maybe_filter_by_resource_id(JObj, AccountId) ->
++    case kapps_account_config:get_from_reseller(AccountId, ?APP_NAME, <<"filter_by_resource_id">>, 'false') of
++        'true' -> kz_json:get_value(<<"Resource-ID">>, JObj);
++        'false' -> 'undefined'
++    end.
++
+ -spec maybe_get_rate_discount(kz_json:object()) -> api_binary().
+ -spec maybe_get_rate_discount(kz_json:object(), api_binary()) -> api_binary().
+ maybe_get_rate_discount(JObj) ->
+diff --git a/applications/hotornot/src/hon_util.erl b/applications/hotornot/src/hon_util.erl
+index 885c931..de52e1d 100644
+--- a/applications/hotornot/src/hon_util.erl
++++ b/applications/hotornot/src/hon_util.erl
+@@ -9,7 +9,7 @@
+ -module(hon_util).
+ 
+ -export([candidate_rates/1, candidate_rates/2
+-        ,matching_rates/2, matching_rates/4
++        ,matching_rates/2, matching_rates/5
+         ,sort_rates/1
+         ]).
+ 
+@@ -68,32 +68,33 @@ build_keys(Number) ->
+             build_keys(Rest, D, [kz_util:to_integer(D)])
+     end.
+ 
+--spec only_numeric(binary()) -> [integer()].
++-spec only_numeric(binary()) -> binary().
+ only_numeric(Number) ->
+     << <<N>> || <<N>> <= Number, is_numeric(N)>>.
+ 
+ -spec is_numeric(integer()) -> boolean().
+ is_numeric(N) ->
+-    N >= $0 andalso N =< $9.
++    N >= $0
++        andalso N =< $9.
+ 
+ -spec build_keys(binary(), ne_binary(), [integer()]) -> [integer()].
++build_keys(<<>>, _, Acc) -> Acc;
+ build_keys(<<D:1/binary, Rest/binary>>, Prefix, Acc) ->
+-    build_keys(Rest, <<Prefix/binary, D/binary>>, [kz_util:to_integer(<<Prefix/binary, D/binary>>) | Acc]);
+-build_keys(<<>>, _, Acc) -> Acc.
++    build_keys(Rest, <<Prefix/binary, D/binary>>, [kz_util:to_integer(<<Prefix/binary, D/binary>>) | Acc]).
+ 
+ %% Given a list of rates, return the list of rates whose routes regexes match the given E164
+ %% Optionally include direction of the call and options from the client to match against the rate
+ -spec matching_rates(kz_json:objects(), ne_binary()) ->
+                             kz_json:objects().
+--spec matching_rates(kz_json:objects(), ne_binary(), api_binary(), trunking_options()) ->
++-spec matching_rates(kz_json:objects(), ne_binary(), api_binary()|'undefined', ne_binary()|'undefined', trunking_options()) ->
+                             kz_json:objects().
+ matching_rates(Rates, DID) ->
+-    matching_rates(Rates, DID, 'undefined', []).
++    matching_rates(Rates, DID, 'undefined', 'undefined', []).
+ 
+-matching_rates(Rates, DID, Direction, RouteOptions) ->
++matching_rates(Rates, DID, Direction, ResourceId, RouteOptions) ->
+     E164 = knm_converters:normalize(DID),
+     [Rate || Rate <- Rates,
+-             matching_rate(Rate, E164, Direction, RouteOptions)
++             matching_rate(Rate, E164, Direction, ResourceId, RouteOptions)
+     ].
+ 
+ -spec sort_rates(kz_json:objects()) -> kz_json:objects().
+@@ -105,10 +106,11 @@ sort_rates(Rates) ->
+ %% Return whether the given rate is a candidate for the given DID
+ %% taking into account direction of the call and options the DID
+ %% needs to have available
+--spec matching_rate(kz_json:object(), ne_binary(), api_binary(), trunking_options()) -> boolean().
+-matching_rate(Rate, E164, Direction, RouteOptions) ->
++-spec matching_rate(kz_json:object(), ne_binary(), api_binary(), ne_binary(), trunking_options()) -> boolean().
++matching_rate(Rate, E164, Direction, ResourceId, RouteOptions) ->
+     matching_direction(Rate, Direction)
+         andalso matching_options(Rate, RouteOptions)
++        andalso matching_resource_id(Rate, ResourceId)
+         andalso matching_routes(Rate, E164).
+ 
+ -spec matching_routes(kz_json:object(), ne_binary()) -> boolean().
+@@ -125,6 +127,14 @@ matching_direction(Rate, Direction) ->
+                 ,kz_json:get_value([<<"direction">>], Rate, ?BOTH_DIRECTIONS)
+                 ).
+ 
++-spec matching_resource_id(kz_json:object(), api_binary()) -> boolean().
++matching_resource_id(_Rate, 'undefined') ->
++    'true';
++matching_resource_id(Rate, ResourceId) ->
++    lists:member(ResourceId
++                ,kz_json:get_value([<<"options">>], Rate, [])
++                ).
++
+ %% Return true if RateA has lower weight than RateB
+ -spec sort_rate(kz_json:object(), kz_json:object()) -> boolean().
+ sort_rate(RateA, RateB) ->
+diff --git a/applications/hotornot/src/hotornot_maintenance.erl b/applications/hotornot/src/hotornot_maintenance.erl
+index fdf6aad..b624fdf 100644
+--- a/applications/hotornot/src/hotornot_maintenance.erl
++++ b/applications/hotornot/src/hotornot_maintenance.erl
+@@ -9,7 +9,7 @@
+ -module(hotornot_maintenance).
+ 
+ -export([local_summary/0
+-        ,rates_for_did/1, rates_for_did/3
++        ,rates_for_did/1, rates_for_did/4
+         ,rates_between/2
+         ]).
+ 
+@@ -27,10 +27,10 @@ local_summary() ->
+     io:format("use rates_for_did/1 to see what rates would be used for a DID").
+ 
+ -spec rates_for_did(ne_binary()) -> 'ok'.
+--spec rates_for_did(ne_binary(), api_binary(), trunking_options()) -> 'ok'.
++-spec rates_for_did(ne_binary(), api_binary()|'undefined', ne_binary()|'undefined', trunking_options()) -> 'ok'.
+ rates_for_did(DID) ->
+-    rates_for_did(DID, 'undefined', []).
+-rates_for_did(DID, Direction, RouteOptions) when is_list(RouteOptions) ->
++    rates_for_did(DID, 'undefined', 'undefined', []).
++rates_for_did(DID, Direction, ResourceId, RouteOptions) when is_list(RouteOptions) ->
+     case hon_util:candidate_rates(DID) of
+         {'ok', []} -> io:format("rate lookup had no results~n");
+         {'error', _E} -> io:format("rate lookup error: ~p~n", [_E]);
+@@ -39,10 +39,10 @@ rates_for_did(DID, Direction, RouteOptions) when is_list(RouteOptions) ->
+             ?LOCAL_SUMMARY_HEADER,
+             lists:foreach(fun print_rate/1, Rates),
+ 
+-            print_matching(hon_util:matching_rates(Rates, DID, Direction, RouteOptions))
++            print_matching(hon_util:matching_rates(Rates, DID, Direction, ResourceId, RouteOptions))
+     end;
+-rates_for_did(DID, Direction, Opt) ->
+-    rates_for_did(DID, Direction, [Opt]).
++rates_for_did(DID, Direction, ResourceId, Opt) ->
++    rates_for_did(DID, Direction, ResourceId, [Opt]).
+ 
+ -spec print_matching(kz_json:objects()) -> 'ok'.
+ print_matching([]) ->
+diff --git a/core/kazoo_amqp/src/api/kapi_rate.erl b/core/kazoo_amqp/src/api/kapi_rate.erl
+index 852a6a9..ee29559 100644
+--- a/core/kazoo_amqp/src/api/kapi_rate.erl
++++ b/core/kazoo_amqp/src/api/kapi_rate.erl
+@@ -26,7 +26,7 @@
+ -define(RATE_REQ_HEADERS, [<<"To-DID">>]).
+ -define(OPTIONAL_RATE_REQ_HEADERS, [<<"Call-ID">>, <<"Account-ID">>, <<"From-DID">>
+                                    ,<<"Options">>, <<"Direction">>, <<"Resource-Type">>
+-                                   ,<<"Send-Empty">>, <<"Outbound-Flags">>
++                                   ,<<"Send-Empty">>, <<"Outbound-Flags">>, <<"Resource-ID">>
+                                    ]).
+ -define(RATE_REQ_VALUES, [{<<"Event-Category">>, ?EVENT_CATEGORY}
+                          ,{<<"Event-Name">>, <<"req">>}
