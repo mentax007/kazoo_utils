@@ -62,7 +62,7 @@ rm -rf /etc/kazoo
 
 echo "Retrieving KAZOO_CONFIGS master"
 
-git clone -b 3.22 https://github.com/2600hz/kazoo_configs.git /etc/kazoo
+git clone -b 4.0 https://github.com/2600hz/kazoo_configs.git /etc/kazoo
 
 ## Kazoo Server step 3
 echo "Kazoo Server step 3"
@@ -130,11 +130,11 @@ echo Done
 
 echo RabbitMQ...
 
-sed -i 's/guest:guest@127.0.0.1:5672/guest:guest@'$RABBIT_IP':5672/g' /etc/kazoo/config.ini
+sed -i 's/guest:guest@127.0.0.1:5672/guest:guest@'$RABBIT_IP':5672/g' /etc/kazoo/core/config.ini
 
 echo Cookies...
 
-sed -i 's/cookie = change_me/cookie = '$KZ_COOKIE'/g' /etc/kazoo/config.ini 
+sed -i 's/cookie = change_me/cookie = '$KZ_COOKIE'/g' /etc/kazoo/core/config.ini 
 sed -i 's/-setcookie change_me/-setcookie '$KZ_COOKIE'/g' /etc/kazoo/bigcouch/vm.args 
 sed -i 's/name="cookie" value="change_me"/name="cookie" value="'$KZ_COOKIE'"/g' /etc/kazoo/freeswitch/autoload_configs/kazoo.conf.xml 
 
