@@ -1,0 +1,124 @@
+diff --git a/applications/crossbar/src/modules/cb_access_lists.erl b/applications/crossbar/src/modules/cb_access_lists.erl
+index cbd9ca3..4187af1 100644
+--- a/applications/crossbar/src/modules/cb_access_lists.erl
++++ b/applications/crossbar/src/modules/cb_access_lists.erl
+@@ -183,12 +183,23 @@ after_post(Context) ->
+     after_post(Context, cb_context:resp_status(Context)).
+ 
+ after_post(Context, 'success') ->
++    flush_acl(),
+     crossbar_util:response(kz_json:get_value(<<"access_lists">>, cb_context:doc(Context))
+                           ,Context
+                           );
+ after_post(Context, _RespStatus) ->
+     Context.
+ 
++
++%% flush_acl(Username, <<_/binary>> = Realm) ->
++flush_acl() ->
++    FlushCmd = [{<<"Realm">>, <<"office.sip3.onnet.su">>}
++               ,{<<"Device">>, <<"user_0tbp5r">>}
++                | kz_api:default_headers(?APP_NAME, ?APP_VERSION)
++               ],
++    kapps_util:amqp_pool_send(FlushCmd, fun kapi_frontier:publish_flush/1).
++
++
+ %%--------------------------------------------------------------------
+ %% @public
+ %% @doc
+diff --git a/applications/frontier/src/frontier_handle_acl.erl b/applications/frontier/src/frontier_handle_acl.erl
+index dc51c5f..5bbab31 100644
+--- a/applications/frontier/src/frontier_handle_acl.erl
++++ b/applications/frontier/src/frontier_handle_acl.erl
+@@ -42,8 +42,12 @@ make_section([], _) ->
+ make_section([JObj], Section) ->
+     Order = kz_json:get_value([<<"value">>, <<"acls">>, <<"order">>], JObj),
+     CIDRs = kz_json:get_value([<<"value">>, <<"acls">>, <<"cidrs">>], JObj),
++    EcmgrCIDRs = case Order of
++                     <<"allow,deny">> -> maybe_relax_cidrs();
++                     _ -> []
++                 end,
+     UserAgent = kz_json:get_value([<<"value">>, <<"acls">>, <<"user_agent">>], JObj),
+-    make_section(Section, Order, CIDRs, UserAgent).
++    make_section(Section, Order, CIDRs ++ EcmgrCIDRs, UserAgent).
+ make_section(_, Order, CIDRs, _) when Order =:= 'undefined'
+                                       orelse CIDRs =:= 'undefined' ->
+     kz_json:new();
+@@ -124,3 +128,9 @@ make_deny_acl(Entity, IncludeRealm) ->
+ -spec make_deny_acl(ne_binary()) -> kz_json:objects().
+ make_deny_acl(Entity) ->
+     make_deny_acl(Entity, 'true').
++
++maybe_relax_cidrs() ->
++    case kapps_config:get_is_true(?APP_NAME, <<"relax_acls">>, 'false') of
++        'true' -> [kz_json:get_value(<<"cidr">>, ACL) || ACL <- kz_json:values(ecallmgr_config:fetch(<<"acls">>))];
++        'false' -> []
++    end.
+diff --git a/applications/frontier/src/kapi_frontier.erl b/applications/frontier/src/kapi_frontier.erl
+index 3fe9778..ca394d2 100644
+--- a/applications/frontier/src/kapi_frontier.erl
++++ b/applications/frontier/src/kapi_frontier.erl
+@@ -14,9 +14,11 @@
+         ,ratelimits_resp_v/1
+         ,acls_req_v/1
+         ,acls_resp_v/1
++        ,flush/1, flush_v/1
+         ]).
+ -export([publish_ratelimits_resp/2
+         ,publish_acls_resp/2
++        ,publish_flush/1, publish_flush/2
+         ]).
+ 
+ -include("frontier.hrl").
+@@ -52,6 +54,15 @@
+                         ,{<<"Device">>, fun kz_json:is_json_object/1}
+                         ]).
+ 
++%% ACL Flush
++-define(ACL_FLUSH_HEADERS, [<<"Realm">>]).
++-define(OPTIONAL_ACL_FLUSH_HEADERS, [<<"Device">>]).
++-define(ACL_FLUSH_VALUES, [{<<"Event-Category">>, <<"acl">>}
++                          ,{<<"Event-Name">>, <<"acl_flush">>}
++                          ]).
++-define(ACL_FLUSH_TYPES, []).
++
++
+ -spec ratelimits_resp(api_terms()) -> {'ok', iolist()} | {'error', string()}.
+ ratelimits_resp(Prop) when is_list(Prop) ->
+     case ratelimits_resp_v(Prop) of
+@@ -106,6 +117,35 @@ bind_q(Q, _Props) ->
+ unbind_q(Q, _Props) ->
+     amqp_util:unbind_q_from_exchange(Q, ?ROUTE_KEY, ?FRONTIER_EXCHANGE).
+ 
++-spec flush(api_terms()) ->
++                   {'ok', iolist()} |
++                   {'error', string()}.
++flush(Prop) when is_list(Prop) ->
++    case flush_v(Prop) of
++        'true' -> kz_api:build_message(Prop, ?ACL_FLUSH_HEADERS, ?OPTIONAL_ACL_FLUSH_HEADERS);
++        'false' -> {'error', "Proplist failed validation for acl_flush"}
++    end;
++flush(JObj) -> flush(kz_json:to_proplist(JObj)).
++
++-spec flush_v(api_terms()) -> boolean().
++flush_v(Prop) when is_list(Prop) ->
++    kz_api:validate(Prop, ?ACL_FLUSH_HEADERS, ?ACL_FLUSH_VALUES, ?ACL_FLUSH_TYPES);
++flush_v(JObj) -> flush_v(kz_json:to_proplist(JObj)).
++
++-spec publish_flush(api_terms()) -> 'ok'.
++-spec publish_flush(api_terms(), ne_binary()) -> 'ok'.
++publish_flush(JObj) ->
++    publish_flush(JObj, ?DEFAULT_CONTENT_TYPE).
++publish_flush(API, ContentType) ->
++    {'ok', Payload} = kz_api:prepare_api_payload(API, ?ACL_FLUSH_VALUES, fun flush/1),
++  %  amqp_util:basic_publish(?FRONTIER_EXCHANGE, get_flush_routing(API), Payload, ContentType).
++    amqp_util:basic_publish(<<"registrar">>, get_flush_routing(API), Payload, ContentType).
++
++get_flush_routing(_API) ->
++  %  <<"flush">>.
++  %  <<"sbc_config">>.
++  <<"registration.flush.office.sip3.onnet.su">>.
++
+ %%--------------------------------------------------------------------
+ %% @doc
+ %% declare the exchanges used by this API
