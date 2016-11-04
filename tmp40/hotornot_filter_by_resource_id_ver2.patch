@@ -1,0 +1,70 @@
+From 00a47c34acc1e820cd680d6e61841ca2e6895ba8 Mon Sep 17 00:00:00 2001
+From: Kirill Sysoev <kirill.sysoev@gmail.com>
+Date: Wed, 19 Oct 2016 20:40:52 +0000
+Subject: [PATCH] optionally filter rates by resource id
+
+---
+ applications/ecallmgr/src/ecallmgr_fs_authz.erl |  1 +
+ applications/hotornot/src/hon_rater.erl         | 17 ++++++++++++++++-
+ core/kazoo_amqp/src/api/kapi_rate.erl           |  2 +-
+ 3 files changed, 18 insertions(+), 2 deletions(-)
+
+diff --git a/applications/ecallmgr/src/ecallmgr_fs_authz.erl b/applications/ecallmgr/src/ecallmgr_fs_authz.erl
+index da77c55..5ca673b 100644
+--- a/applications/ecallmgr/src/ecallmgr_fs_authz.erl
++++ b/applications/ecallmgr/src/ecallmgr_fs_authz.erl
+@@ -386,5 +386,6 @@ rating_req(CallId, Props) ->
+     ,{<<"Direction">>, kzd_freeswitch:call_direction(Props)}
+     ,{<<"Send-Empty">>, 'true'}
+     ,{<<"Outbound-Flags">>, props:get_value(<<"Outbound-Flags">>, Props)}
++    ,{<<"Resource-ID">>, props:get_value(<<"variable_ecallmgr_Resource-ID">>, Props)}
+      | kz_api:default_headers(?APP_NAME, ?APP_VERSION)
+     ].
+diff --git a/applications/hotornot/src/hon_rater.erl b/applications/hotornot/src/hon_rater.erl
+index c2e85eb..44250f5 100644
+--- a/applications/hotornot/src/hon_rater.erl
++++ b/applications/hotornot/src/hon_rater.erl
+@@ -76,7 +76,11 @@ get_rate_data(JObj, ToDID, FromDID, Rates) ->
+     RouteOptions = kz_json:get_value(<<"Options">>, JObj, []),
+     RouteFlags   = kz_json:get_value(<<"Outbound-Flags">>, JObj, []),
+     Direction    = kz_json:get_value(<<"Direction">>, JObj),
+-    Matching     = hon_util:matching_rates(Rates, ToDID, Direction, RouteOptions++RouteFlags),
++    ResourceFlag = case kz_json:get_value(<<"Account-ID">>, JObj) of
++                       'undefined' -> [];
++                       AccountId -> maybe_add_resource_flag(JObj, AccountId)
++                   end,
++    Matching     = hon_util:matching_rates(Rates, ToDID, Direction, RouteOptions++RouteFlags++ResourceFlag),
+ 
+     case hon_util:sort_rates(Matching) of
+         [] ->
+@@ -95,6 +99,17 @@ get_rate_data(JObj, ToDID, FromDID, Rates) ->
+             {'ok', rate_resp(Rate, JObj)}
+     end.
+ 
++-spec maybe_add_resource_flag(kz_json:object(), ne_binary()) -> ne_binary()|'undefined'.
++maybe_add_resource_flag(JObj, AccountId) ->
++    case kapps_account_config:get_from_reseller(AccountId, ?APP_NAME, <<"filter_by_resource_id">>, 'false') of
++        'true' ->
++            case kz_json:get_value(<<"Resource-ID">>, JObj) of
++                'undefined' -> [];
++                ResourceId -> [ResourceId]
++            end;
++        'false' -> []
++    end.
++
+ -spec maybe_get_rate_discount(kz_json:object()) -> api_binary().
+ -spec maybe_get_rate_discount(kz_json:object(), api_binary()) -> api_binary().
+ maybe_get_rate_discount(JObj) ->
+diff --git a/core/kazoo_amqp/src/api/kapi_rate.erl b/core/kazoo_amqp/src/api/kapi_rate.erl
+index 852a6a9..ee29559 100644
+--- a/core/kazoo_amqp/src/api/kapi_rate.erl
++++ b/core/kazoo_amqp/src/api/kapi_rate.erl
+@@ -26,7 +26,7 @@
+ -define(RATE_REQ_HEADERS, [<<"To-DID">>]).
+ -define(OPTIONAL_RATE_REQ_HEADERS, [<<"Call-ID">>, <<"Account-ID">>, <<"From-DID">>
+                                    ,<<"Options">>, <<"Direction">>, <<"Resource-Type">>
+-                                   ,<<"Send-Empty">>, <<"Outbound-Flags">>
++                                   ,<<"Send-Empty">>, <<"Outbound-Flags">>, <<"Resource-ID">>
+                                    ]).
+ -define(RATE_REQ_VALUES, [{<<"Event-Category">>, ?EVENT_CATEGORY}
+                          ,{<<"Event-Name">>, <<"req">>}
