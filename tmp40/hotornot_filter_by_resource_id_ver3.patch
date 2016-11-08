@@ -1,0 +1,146 @@
+From 0f82917487f22f6b5a760b0aedae21441afb4f74 Mon Sep 17 00:00:00 2001
+From: Kirill Sysoev <kirill.sysoev@gmail.com>
+Date: Wed, 19 Oct 2016 20:40:52 +0000
+Subject: [PATCH 1/2] optionally filter rates by resource id
+
+---
+ applications/ecallmgr/src/ecallmgr_fs_authz.erl |  1 +
+ applications/hotornot/src/hon_rater.erl         | 17 ++++++++++++++++-
+ applications/hotornot/src/hon_util.erl          | 11 ++++++++++-
+ core/kazoo_amqp/src/api/kapi_rate.erl           |  2 +-
+ 4 files changed, 28 insertions(+), 3 deletions(-)
+
+diff --git a/applications/ecallmgr/src/ecallmgr_fs_authz.erl b/applications/ecallmgr/src/ecallmgr_fs_authz.erl
+index da77c55..5ca673b 100644
+--- a/applications/ecallmgr/src/ecallmgr_fs_authz.erl
++++ b/applications/ecallmgr/src/ecallmgr_fs_authz.erl
+@@ -386,5 +386,6 @@ rating_req(CallId, Props) ->
+     ,{<<"Direction">>, kzd_freeswitch:call_direction(Props)}
+     ,{<<"Send-Empty">>, 'true'}
+     ,{<<"Outbound-Flags">>, props:get_value(<<"Outbound-Flags">>, Props)}
++    ,{<<"Resource-ID">>, props:get_value(<<"variable_ecallmgr_Resource-ID">>, Props)}
+      | kz_api:default_headers(?APP_NAME, ?APP_VERSION)
+     ].
+diff --git a/applications/hotornot/src/hon_rater.erl b/applications/hotornot/src/hon_rater.erl
+index c2e85eb..7a1ae15 100644
+--- a/applications/hotornot/src/hon_rater.erl
++++ b/applications/hotornot/src/hon_rater.erl
+@@ -76,7 +76,11 @@ get_rate_data(JObj, ToDID, FromDID, Rates) ->
+     RouteOptions = kz_json:get_value(<<"Options">>, JObj, []),
+     RouteFlags   = kz_json:get_value(<<"Outbound-Flags">>, JObj, []),
+     Direction    = kz_json:get_value(<<"Direction">>, JObj),
+-    Matching     = hon_util:matching_rates(Rates, ToDID, Direction, RouteOptions++RouteFlags),
++    ResourceFlag = case kz_json:get_value(<<"Account-ID">>, JObj) of
++                       'undefined' -> [];
++                       AccountId -> maybe_add_resource_flag(JObj, AccountId)
++                   end,
++    Matching     = hon_util:matching_rates(Rates, ToDID, Direction, RouteOptions++RouteFlags++ResourceFlag),
+ 
+     case hon_util:sort_rates(Matching) of
+         [] ->
+@@ -95,6 +99,17 @@ get_rate_data(JObj, ToDID, FromDID, Rates) ->
+             {'ok', rate_resp(Rate, JObj)}
+     end.
+ 
++-spec maybe_add_resource_flag(kz_json:object(), ne_binary()) -> kz_proplist().
++maybe_add_resource_flag(JObj, AccountId) ->
++    case kapps_account_config:get_from_reseller(AccountId, ?APP_NAME, <<"filter_by_resource_id">>, 'false') of
++        'true' ->
++            case kz_json:get_value(<<"Resource-ID">>, JObj) of
++                'undefined' -> [];
++                ResourceId -> [{'resource_id', ResourceId}]
++            end;
++        'false' -> []
++    end.
++
+ -spec maybe_get_rate_discount(kz_json:object()) -> api_binary().
+ -spec maybe_get_rate_discount(kz_json:object(), api_binary()) -> api_binary().
+ maybe_get_rate_discount(JObj) ->
+diff --git a/applications/hotornot/src/hon_util.erl b/applications/hotornot/src/hon_util.erl
+index 885c931..4a043ec 100644
+--- a/applications/hotornot/src/hon_util.erl
++++ b/applications/hotornot/src/hon_util.erl
+@@ -109,6 +109,7 @@ sort_rates(Rates) ->
+ matching_rate(Rate, E164, Direction, RouteOptions) ->
+     matching_direction(Rate, Direction)
+         andalso matching_options(Rate, RouteOptions)
++        andalso matching_resource_id(Rate, props:get_value('resource_id', RouteOptions))
+         andalso matching_routes(Rate, E164).
+ 
+ -spec matching_routes(kz_json:object(), ne_binary()) -> boolean().
+@@ -154,5 +155,13 @@ options_match(RateOptions, RouteOptions) ->
+     lists:all(fun(RouteOption) ->
+                       props:get_value(RouteOption, RateOptions, 'false') =/= 'false'
+               end
+-             ,RouteOptions
++             ,[Option || Option <- RouteOptions, not (is_tuple(Option) andalso (element(1, Option) == 'resource_id'))]
+              ).
++
++-spec matching_resource_id(kz_json:object(), api_binary()) -> boolean().
++matching_resource_id(_Rate, 'undefined') ->
++    'true';
++matching_resource_id(Rate, ResourceId) ->
++    lists:member(ResourceId
++                ,kz_json:get_value([<<"options">>], Rate, [])
++                ).
+diff --git a/core/kazoo_amqp/src/api/kapi_rate.erl b/core/kazoo_amqp/src/api/kapi_rate.erl
+index 852a6a9..ee29559 100644
+--- a/core/kazoo_amqp/src/api/kapi_rate.erl
++++ b/core/kazoo_amqp/src/api/kapi_rate.erl
+@@ -26,7 +26,7 @@
+ -define(RATE_REQ_HEADERS, [<<"To-DID">>]).
+ -define(OPTIONAL_RATE_REQ_HEADERS, [<<"Call-ID">>, <<"Account-ID">>, <<"From-DID">>
+                                    ,<<"Options">>, <<"Direction">>, <<"Resource-Type">>
+-                                   ,<<"Send-Empty">>, <<"Outbound-Flags">>
++                                   ,<<"Send-Empty">>, <<"Outbound-Flags">>, <<"Resource-ID">>
+                                    ]).
+ -define(RATE_REQ_VALUES, [{<<"Event-Category">>, ?EVENT_CATEGORY}
+                          ,{<<"Event-Name">>, <<"req">>}
+
+From 070f67829fad1a507d1bc5ed5d276010a2efa4e3 Mon Sep 17 00:00:00 2001
+From: Kirill Sysoev <kirill.sysoev@gmail.com>
+Date: Sat, 5 Nov 2016 10:19:12 +0000
+Subject: [PATCH 2/2] circleci complaints
+
+---
+ applications/hotornot/src/hon_util.erl | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
+
+diff --git a/applications/hotornot/src/hon_util.erl b/applications/hotornot/src/hon_util.erl
+index 4a043ec..93f42d7 100644
+--- a/applications/hotornot/src/hon_util.erl
++++ b/applications/hotornot/src/hon_util.erl
+@@ -68,18 +68,19 @@ build_keys(Number) ->
+             build_keys(Rest, D, [kz_util:to_integer(D)])
+     end.
+ 
+--spec only_numeric(binary()) -> [integer()].
++-spec only_numeric(binary()) -> binary().
+ only_numeric(Number) ->
+     << <<N>> || <<N>> <= Number, is_numeric(N)>>.
+ 
+ -spec is_numeric(integer()) -> boolean().
+ is_numeric(N) ->
+-    N >= $0 andalso N =< $9.
++    N >= $0
++        andalso N =< $9.
+ 
+ -spec build_keys(binary(), ne_binary(), [integer()]) -> [integer()].
++build_keys(<<>>, _, Acc) -> Acc;
+ build_keys(<<D:1/binary, Rest/binary>>, Prefix, Acc) ->
+-    build_keys(Rest, <<Prefix/binary, D/binary>>, [kz_util:to_integer(<<Prefix/binary, D/binary>>) | Acc]);
+-build_keys(<<>>, _, Acc) -> Acc.
++    build_keys(Rest, <<Prefix/binary, D/binary>>, [kz_util:to_integer(<<Prefix/binary, D/binary>>) | Acc]).
+ 
+ %% Given a list of rates, return the list of rates whose routes regexes match the given E164
+ %% Optionally include direction of the call and options from the client to match against the rate
+@@ -155,7 +156,8 @@ options_match(RateOptions, RouteOptions) ->
+     lists:all(fun(RouteOption) ->
+                       props:get_value(RouteOption, RateOptions, 'false') =/= 'false'
+               end
+-             ,[Option || Option <- RouteOptions, not (is_tuple(Option) andalso (element(1, Option) == 'resource_id'))]
++             ,[Option || Option <- RouteOptions, not (is_tuple(Option)
++                                                      andalso (element(1, Option) == 'resource_id'))]
+              ).
+ 
+ -spec matching_resource_id(kz_json:object(), api_binary()) -> boolean().
