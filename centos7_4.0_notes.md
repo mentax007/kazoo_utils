@@ -12,9 +12,16 @@ gpgcheck=0
 ```
 - yum -y install epel-release
 
-##Bigcouch
+## Bigcouch
 - yum install bigcouch --nogpgcheck
 - systemctl enable kazoo-bigcouch.service
+```
+curl -X PUT core5-dc01-dev.sip.local:5986/nodes/bigcouch@core6-dc01-dev.sip.local -d {}
+curl -X PUT core5-dc01-dev.sip.local:5986/nodes/bigcouch@core7-dc01-dev.sip.local -d {}
+curl -X PUT core5-dc01-dev.sip.local:5986/nodes/bigcouch@core5-dc02-dev.sip.local -d {}
+curl -X PUT core5-dc01-dev.sip.local:5986/nodes/bigcouch@core6-dc02-dev.sip.local -d {}
+curl -X PUT core5-dc01-dev.sip.local:5986/nodes/bigcouch@core7-dc02-dev.sip.local -d {}
+```
 
 ## FS
 - yum install -y http://files.freeswitch.org/freeswitch-release-1-6.noarch.rpm epel-release
@@ -46,3 +53,7 @@ enabled=1
 - systemctl enable kazoo-haproxy.service
 - systemctl enable kazoo-kamailio.service
 
+## First steps
+
+- sup crossbar_maintenance create_account {ACCT NAME} {REALM} {LOGIN} {PASSWORD}
+- sup -n ecallmgr ecallmgr_maintenance add_fs_node freeswitch@...
