@@ -11,6 +11,9 @@ sslverify=0
 gpgcheck=0
 ```
 - yum -y install epel-release
+- yum -y install shorewall
+- systemctl enable shorewall.service
+
 
 ## Bigcouch
 - yum install bigcouch --nogpgcheck
@@ -57,3 +60,18 @@ enabled=1
 
 - sup crossbar_maintenance create_account {ACCT NAME} {REALM} {LOGIN} {PASSWORD}
 - sup -n ecallmgr ecallmgr_maintenance add_fs_node freeswitch@...
+
+## Erlang for dev
+- yum install libxslt-devel zip unzip expat zlib-devel curl ncurses-devel git-core htmldoc gcc gcc-c++ openssl-devel expat-devel
+```
+curl -O https://raw.githubusercontent.com/yrashk/kerl/master/kerl
+chmod a+x kerl
+mv kerl /usr/bin
+kerl list releases
+kerl build 18.2 r18.2
+kerl install r18.2 /usr/local/erlang
+. /usr/local/erlang/activate
+
+vi .bashrc
+. /usr/local/erlang/activate
+```
