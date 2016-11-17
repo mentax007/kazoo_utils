@@ -1,4 +1,4 @@
-
+# Some notes for CentOS7 based Kazoo 4.0 installation
 ##Preps
 - selinux permissive
 
@@ -13,5 +13,35 @@ gpgcheck=0
 ```
 
 - yum -y install epel-release
+
+##Bigcouch
+- yum install bigcouch --nogpgcheck
+
+- systemctl enable kazoo-bigcouch.service
+
+## FS
+- yum install -y http://files.freeswitch.org/freeswitch-release-1-6.noarch.rpm epel-release
+
+- yum install kazoo-freeswitch freeswitch-application-av freeswitch-format-shout 
+
+- systemctl enable epmd.service
+
+## Kazoo Apps + Kamailio
+### Kamailio
+- vi /etc/yum.repos.d/kamailio.repo
+```
+[home_kamailio_v4.4.x-rpms]
+name=RPM Packages for Kamailio v4.4.x (CentOS_7)
+type=rpm-md
+baseurl=http://download.opensuse.org/repositories/home:/kamailio:/v4.4.x-rpms/CentOS_7/
+gpgcheck=1
+gpgkey=http://download.opensuse.org/repositories/home:/kamailio:/v4.4.x-rpms/CentOS_7//repodata/repomd.xml.key
+enabled=1
+```
+- yum install kazoo-configs-kamailio kamailio-kazo* kamailio-outbound kamailio-uuid
+- rm -rf /etc/kamailio
+- ln -s /etc/kazoo/kamailio /etc/kamailio
+- systemctl enable kazoo-kamailio.service
+- vi /etc/default/kamailio - check startup vars
 
 
