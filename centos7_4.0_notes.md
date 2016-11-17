@@ -34,7 +34,7 @@ curl -X PUT core5-dc01-dev.sip.local:5986/nodes/bigcouch@core7-dc02-dev.sip.loca
 - systemctl enable kazoo-haproxy.service
 
 ## Rabbit + Kamailio + Kazoo Apps server
--systemctl enable kazoo-haproxy.service
+
 ### Rabbit (it is way better to keep it on separate server(s). it is resources hungry and reboots slowly)
 - yum install https://www.rabbitmq.com/releases/rabbitmq-server/v3.6.0/rabbitmq-server-3.6.0-1.noarch.rpm
 - yum install kazoo-configs-rabbitmq
@@ -58,7 +58,8 @@ enabled=1
 - vi /etc/default/kamailio - check startup vars
 
 ### Kazoo
-- yum install kazoo-core* kazoo-app*
+- yum -y install kazoo-core* kazoo-app*
+- yum -y install kazoo-haproxy
 - systemctl enable kazoo-applications.service
 - systemctl enable kazoo-ecallmgr.service
 - systemctl enable kazoo-haproxy.service
