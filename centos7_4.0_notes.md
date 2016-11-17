@@ -12,6 +12,18 @@ gpgcheck=0
 ```
 - yum -y install epel-release
 - yum -y install shorewall
+```
+###################  Cluster IPs  ##################################
+ACCEPT    net:xxx.xxx.xxx.xxx/xx fw
+###################  Services Ports  ###############################
+ACCEPT    net                   $FW     tcp     5555
+ACCEPT    net                   $FW     tcp     7777
+ACCEPT    net                   $FW     tcp     8000
+ACCEPT    net                   $FW     tcp     8443
+ACCEPT    net                   $FW     tcp     5060,5061,5065,7000,7001
+ACCEPT    net                   $FW     udp     5060,5065,7000
+####################################################################
+```
 - systemctl enable shorewall.service
 
 
