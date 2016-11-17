@@ -15,7 +15,7 @@ gpgcheck=0
 - systemctl enable shorewall.service
 
 
-## Bigcouch
+## Bigcouch servers
 - yum install bigcouch --nogpgcheck
 - systemctl enable kazoo-bigcouch.service
 ```
@@ -26,12 +26,20 @@ curl -X PUT core5-dc01-dev.sip.local:5986/nodes/bigcouch@core6-dc02-dev.sip.loca
 curl -X PUT core5-dc01-dev.sip.local:5986/nodes/bigcouch@core7-dc02-dev.sip.local -d {}
 ```
 
-## FS
+## FS server
+- yum -y install kazoo-haproxy
 - yum install -y http://files.freeswitch.org/freeswitch-release-1-6.noarch.rpm epel-release
 - yum install kazoo-freeswitch freeswitch-application-av freeswitch-format-shout 
 - systemctl enable epmd.service
+- systemctl enable kazoo-haproxy.service
 
-## Kamailio + Kazoo Apps
+## Rabbit + Kamailio + Kazoo Apps server
+-systemctl enable kazoo-haproxy.service
+### Rabbit (it is way better to keep it on separate server(s). it is resources hungry and reboots slowly)
+- yum install https://www.rabbitmq.com/releases/rabbitmq-server/v3.6.0/rabbitmq-server-3.6.0-1.noarch.rpm
+- yum install kazoo-configs-rabbitmq
+- chkconfig rabbitmq-server on
+
 ### Kamailio
 - vi /etc/yum.repos.d/kamailio.repo
 ```
