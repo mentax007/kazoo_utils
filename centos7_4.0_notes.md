@@ -1,7 +1,6 @@
 # Some notes for CentOS7 based Kazoo 4.0 installation
 ##Preps
 - selinux permissive
-
 - vi /etc/yum.repos.d/2600hz.repo
 ```
 [kazoo40]
@@ -11,22 +10,18 @@ enabled=1
 sslverify=0
 gpgcheck=0
 ```
-
 - yum -y install epel-release
 
 ##Bigcouch
 - yum install bigcouch --nogpgcheck
-
 - systemctl enable kazoo-bigcouch.service
 
 ## FS
 - yum install -y http://files.freeswitch.org/freeswitch-release-1-6.noarch.rpm epel-release
-
 - yum install kazoo-freeswitch freeswitch-application-av freeswitch-format-shout 
-
 - systemctl enable epmd.service
 
-## Kazoo Apps + Kamailio
+## Kamailio + Kazoo Apps
 ### Kamailio
 - vi /etc/yum.repos.d/kamailio.repo
 ```
@@ -44,4 +39,6 @@ enabled=1
 - systemctl enable kazoo-kamailio.service
 - vi /etc/default/kamailio - check startup vars
 
+### Kazoo
+- yum install kazoo-core* kazoo-app*
 
