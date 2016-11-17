@@ -41,4 +41,8 @@ enabled=1
 
 ### Kazoo
 - yum install kazoo-core* kazoo-app*
+- systemctl enable kazoo-applications.service
+- systemctl enable kazoo-ecallmgr.service
+- systemctl enable kazoo-haproxy.service
+- systemctl enable kazoo-kamailio.service
 
