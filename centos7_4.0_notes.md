@@ -72,7 +72,7 @@ enabled=1
 - systemctl enable kazoo-kamailio.service
 - chkconfig --del kamailio
 - vi /etc/default/kamailio - check startup vars
-- new dbtext format: 1:1:sip\:fs.tld.com\:11000:0:1: : 
+- new dbtext format: 1:1:sip\:fs.tld.com\:11000:0:1: : (check kamailio/local.cfg)
 
 ### Kazoo
 - yum -y install kazoo-core* kazoo-app*
