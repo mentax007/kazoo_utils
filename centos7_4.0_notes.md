@@ -28,8 +28,9 @@ ACCEPT    net                   $FW     udp     5060,5065,7000
 
 
 ## Bigcouch servers
-- yum install bigcouch --nogpgcheck
-- systemctl enable kazoo-bigcouch.service
+- yum install -y kazoo-bigcouch
+- systemctl enable kazoo-bigcouch
+- systemctl start kazoo-bigcouch
 ```
 curl -X PUT core5-dc01-dev.sip.local:5986/nodes/bigcouch@core6-dc01-dev.sip.local -d {}
 curl -X PUT core5-dc01-dev.sip.local:5986/nodes/bigcouch@core7-dc01-dev.sip.local -d {}
