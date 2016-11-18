@@ -39,6 +39,7 @@ curl -X PUT core5-dc01-dev.sip.local:5986/nodes/bigcouch@core5-dc02-dev.sip.loca
 curl -X PUT core5-dc01-dev.sip.local:5986/nodes/bigcouch@core6-dc02-dev.sip.local -d {}
 curl -X PUT core5-dc01-dev.sip.local:5986/nodes/bigcouch@core7-dc02-dev.sip.local -d {}
 ```
+- curl localhost:5984/_membership | python -mjson.tool
 
 ## FS server
 - yum -y install kazoo-haproxy
