@@ -62,7 +62,7 @@ rm -rf /etc/kazoo
 
 echo "Retrieving KAZOO_CONFIGS master"
 
-git clone -b 4.0 https://github.com/2600hz/kazoo_configs.git /etc/kazoo
+git clone https://github.com/2600hz/kazoo_configs.git /etc/kazoo
 
 ## Kazoo Server step 3
 echo "Kazoo Server step 3"
@@ -203,27 +203,27 @@ sed -i 's/UDP_WSS_SIP!udp:MY_IP_ADDRESS:8443/UDP_WSS_SIP!udp:MY_IP_ADDRESS:9443/
 
 ## TLS
 
-sed -i 's/# # #!trydef TLS-ROLE/#!trydef TLS-ROLE/g' /etc/kazoo/kamailio/local.cfg 
-sed -i 's/<param name="tls" value="false"\/>/<param name="tls" value="true"\/>/g' /etc/kazoo/freeswitch/sip_profiles/sipinterface_1.xml
-cp /etc/kz_vars/certs/certificate.crt /etc/kazoo/freeswitch/certs/agent.pem
-cp /etc/kz_vars/certs/certificate.ca.crt /etc/kazoo/freeswitch/certs/cacert.pem
-cp /etc/kz_vars/certs/certificate.crt /etc/kazoo/kamailio/certs/cert.pem
-cp /etc/kz_vars/certs/certificate_passless_private.key /etc/kazoo/kamailio/certs/key.pem
+#sed -i 's/# # #!trydef TLS-ROLE/#!trydef TLS-ROLE/g' /etc/kazoo/kamailio/local.cfg 
+#sed -i 's/<param name="tls" value="false"\/>/<param name="tls" value="true"\/>/g' /etc/kazoo/freeswitch/sip_profiles/sipinterface_1.xml
+#cp /etc/kz_vars/certs/certificate.crt /etc/kazoo/freeswitch/certs/agent.pem
+#cp /etc/kz_vars/certs/certificate.ca.crt /etc/kazoo/freeswitch/certs/cacert.pem
+#cp /etc/kz_vars/certs/certificate.crt /etc/kazoo/kamailio/certs/cert.pem
+#cp /etc/kz_vars/certs/certificate_passless_private.key /etc/kazoo/kamailio/certs/key.pem
 
 
 ## MONIT
 
-yum -y install wget
-yum -y install monit --enablerepo=epel --nogpgcheck
-wget https://raw.github.com/onnet/onnet_util/master/monit.conf -O /etc/monit.conf
-chmod 0600 /etc/monit.conf
-sed -i 's/change_mo_to_localsysname.onnet.su/'$HOSTNAME'/g' /etc/monit.conf
-rm -f /etc/monit.d/freeswitch.monitrc
-wget https://github.com/onnet/onnet_util/raw/master/freeswitch.monitrc -O /etc/monit.d/freeswitch.monitrc
-sed -i 's/change_mo_to_localsysname/'$HOSTNAME'/g' /etc/monit.d/freeswitch.monitrc
-chkconfig --add monit
-chkconfig monit on
-service monit restart
+#yum -y install wget
+#yum -y install monit --enablerepo=epel --nogpgcheck
+#wget https://raw.github.com/onnet/onnet_util/master/monit.conf -O /etc/monit.conf
+#chmod 0600 /etc/monit.conf
+#sed -i 's/change_mo_to_localsysname.onnet.su/'$HOSTNAME'/g' /etc/monit.conf
+#rm -f /etc/monit.d/freeswitch.monitrc
+#wget https://github.com/onnet/onnet_util/raw/master/freeswitch.monitrc -O /etc/monit.d/freeswitch.monitrc
+#sed -i 's/change_mo_to_localsysname/'$HOSTNAME'/g' /etc/monit.d/freeswitch.monitrc
+#chkconfig --add monit
+#chkconfig monit on
+#service monit restart
 
 ## Permissions
 

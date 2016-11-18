@@ -106,9 +106,11 @@ echo Done
 
 echo Step 7
 
-sed -i "s/1 sip:127.0.0.1:11000 0/1 sip:$FS1:11000 0/" /etc/kazoo/kamailio/dbtext/dispatcher
+if [ -n "$FS1" ]; then
+echo "1:1:sip\:$FS1\:11000:0:1: : " >> /etc/kazoo/kamailio/dbtext/dispatcher
+fi
 if [ -n "$FS2" ]; then
-echo 1 sip:$FS2:11000 0 >> /etc/kazoo/kamailio/dbtext/dispatcher
+echo "1:1:sip\:$FS2\:11000:0:1: : " >> /etc/kazoo/kamailio/dbtext/dispatcher
 fi
 
 echo Done
@@ -213,17 +215,17 @@ cp /etc/kz_vars/certs/certificate_passless_private.key /etc/kazoo/kamailio/certs
 
 ## MONIT
 
-yum -y install wget
-yum -y install monit --enablerepo=epel --nogpgcheck
-wget https://raw.github.com/onnet/onnet_util/master/monit.conf -O /etc/monit.conf
-chmod 0600 /etc/monit.conf
-sed -i 's/change_mo_to_localsysname.onnet.su/'$HOSTNAME'/g' /etc/monit.conf
-rm -f /etc/monit.d/freeswitch.monitrc
-wget https://github.com/onnet/onnet_util/raw/master/freeswitch.monitrc -O /etc/monit.d/freeswitch.monitrc
-sed -i 's/change_mo_to_localsysname/'$HOSTNAME'/g' /etc/monit.d/freeswitch.monitrc
-chkconfig --add monit
-chkconfig monit on
-service monit restart
+#yum -y install wget
+#yum -y install monit --enablerepo=epel --nogpgcheck
+#wget https://raw.github.com/onnet/onnet_util/master/monit.conf -O /etc/monit.conf
+#chmod 0600 /etc/monit.conf
+#sed -i 's/change_mo_to_localsysname.onnet.su/'$HOSTNAME'/g' /etc/monit.conf
+#rm -f /etc/monit.d/freeswitch.monitrc
+#wget https://github.com/onnet/onnet_util/raw/master/freeswitch.monitrc -O /etc/monit.d/freeswitch.monitrc
+#sed -i 's/change_mo_to_localsysname/'$HOSTNAME'/g' /etc/monit.d/freeswitch.monitrc
+#chkconfig --add monit
+#chkconfig monit on
+#service monit restart
 
 ## Permissions
 
