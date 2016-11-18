@@ -214,7 +214,7 @@ cp /etc/kz_vars/certs/certificate_passless_private.key /etc/kazoo/kamailio/certs
 
 
 ## MONIT
-
+## Bug atm: https://freeswitch.org/jira/browse/DOCS-52
 #yum -y install wget
 #yum -y install monit --enablerepo=epel --nogpgcheck
 #wget https://raw.github.com/onnet/onnet_util/master/monit.conf -O /etc/monit.conf
