@@ -70,7 +70,9 @@ enabled=1
 - rm -rf /etc/kamailio
 - ln -s /etc/kazoo/kamailio /etc/kamailio
 - systemctl enable kazoo-kamailio.service
+- chkconfig --del kamailio
 - vi /etc/default/kamailio - check startup vars
+- new dbtext format: 1:1:sip\:fs.tld.com\:11000:0:1: : 
 
 ### Kazoo
 - yum -y install kazoo-core* kazoo-app*
