@@ -64,6 +64,11 @@ echo "Retrieving KAZOO_CONFIGS master"
 
 git clone -b 4.0 https://github.com/2600hz/kazoo_configs.git /etc/kazoo
 
+mkdir /etc/kazoo/certs
+if [ -d /etc/letsencrypt/live/`hostname -f` ]; then
+  cp /etc/letsencrypt/live/`hostname -f`/* /etc/kazoo/certs/
+fi
+
 ## Kazoo Server step 3
 echo "Kazoo Server step 3"
 
@@ -207,10 +212,10 @@ sed -i 's/UDP_WSS_SIP!udp:MY_IP_ADDRESS:8443/UDP_WSS_SIP!udp:MY_IP_ADDRESS:9443/
 
 sed -i 's/# # #!trydef TLS-ROLE/#!trydef TLS-ROLE/g' /etc/kazoo/kamailio/local.cfg 
 sed -i 's/<param name="tls" value="false"\/>/<param name="tls" value="true"\/>/g' /etc/kazoo/freeswitch/sip_profiles/sipinterface_1.xml
-cp /etc/kz_vars/certs/certificate.crt /etc/kazoo/freeswitch/certs/agent.pem
-cp /etc/kz_vars/certs/certificate.ca.crt /etc/kazoo/freeswitch/certs/cacert.pem
-cp /etc/kz_vars/certs/certificate.crt /etc/kazoo/kamailio/certs/cert.pem
-cp /etc/kz_vars/certs/certificate_passless_private.key /etc/kazoo/kamailio/certs/key.pem
+cp /etc/kazoo/certs/cert.pem /etc/kazoo/freeswitch/certs/agent.pem
+cp /etc/kazoo/certs/fullchain.pem /etc/kazoo/freeswitch/certs/cacert.pem
+cp /etc/kazoo/certs/cert.pem /etc/kazoo/kamailio/certs/cert.pem
+cp /etc/kazoo/certs/privkey.pem /etc/kazoo/kamailio/certs/key.pem
 
 
 ## MONIT
@@ -267,9 +272,9 @@ backend websocket_blackhole \
 
  ' /etc/kazoo/haproxy/haproxy.cfg
 
-cat /etc/kz_vars/certs/certificate.crt > /etc/kazoo/haproxy/cert_key.pem
+cat /etc/kazoo/certs/cert.pem > /etc/kazoo/haproxy/cert_key.pem
 echo "" >> /etc/kazoo/haproxy/cert_key.pem
-cat /etc/kz_vars/certs/certificate_passless_private.key >> /etc/kazoo/haproxy/cert_key.pem
+cat /etc/kazoo/certs/privkey.pem >> /etc/kazoo/haproxy/cert_key.pem
 
 echo Done
 
