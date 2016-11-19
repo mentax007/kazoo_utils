@@ -64,9 +64,9 @@ echo "Retrieving KAZOO_CONFIGS master"
 
 git clone -b 4.0 https://github.com/2600hz/kazoo_configs.git /etc/kazoo
 
-mkdir /etc/kazoo/certs
-if [ -d /etc/letsencrypt/live/`hostname -f` ]; then
-  cp /etc/letsencrypt/live/`hostname -f`/* /etc/kazoo/certs/
+if [ -d /etc/letsencrypt/live/$HOSTNAME ]; then
+  mkdir /etc/kazoo/certs
+  cp /etc/letsencrypt/live/$HOSTNAME/* /etc/kazoo/certs/
 fi
 
 ## Kazoo Server step 3
