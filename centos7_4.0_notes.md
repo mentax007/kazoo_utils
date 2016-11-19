@@ -2,6 +2,7 @@
 ##Preps
 - selinux permissive
 - ln -fs /usr/share/zoneinfo/UTC /etc/localtime
+- timedatectl set-ntp true
 - vi /etc/yum.repos.d/2600hz.repo
 ```
 [kazoo40]
