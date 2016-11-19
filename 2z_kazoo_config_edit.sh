@@ -52,9 +52,14 @@ echo "Disabling selinuxi...  just in case"
 
 sed -i "s/SELINUX=enforcing/SELINUX=disabled/g" /etc/selinux/config 
 
-echo "Disabling iptables... just in case again"
+echo "Disabling iptables ... just in case again"
 
 chkconfig iptables off
+
+echo "Setting up timezone and syncronization ... just in case again"
+
+ln -fs /usr/share/zoneinfo/UTC /etc/localtime
+/usr/bin/timedatectl set-ntp true
 
 echo "Deleting previous configs"
 
