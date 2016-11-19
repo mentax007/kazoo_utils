@@ -37,6 +37,8 @@ echo DB1: $DB1
 echo DB2: $DB2
 echo DB3: $DB3
 echo DB4: $DB4
+echo DB5: $DB5
+echo DB6: $DB6
 echo FS1: $FS1
 echo FS2: $FS2
 echo KZ_COOKIE: $KZ_COOKIE
