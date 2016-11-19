@@ -16,16 +16,20 @@ gpgcheck=0
 ```
 ###################  Cluster IPs  ##################################
 ACCEPT    net:xxx.xxx.xxx.xxx/xx fw
-###################  Services Ports  ###############################
-ACCEPT    net                   $FW     tcp     5555
-ACCEPT    net                   $FW     tcp     7777
+###################  Crossbar HTTP, HTTPS  #########################
 ACCEPT    net                   $FW     tcp     8000
 ACCEPT    net                   $FW     tcp     8443
-ACCEPT    net                   $FW     tcp     5060,5061,7000,7001
+###################  SIP ###########################################
+ACCEPT    net                   $FW     tcp     5060,7000
 ACCEPT    net                   $FW     udp     5060,7000
+###################  TLS ###########################################
+ACCEPT    net                   $FW     tcp     5061,7001
 ###################  Kamailio Websockets WS, WSS  ##################
 ACCEPT    net                   $FW     tcp     5064,5065
 ACCEPT    net                   $FW     udp     5064,5065
+###################  Blackhole WS, WSS  ############################
+ACCEPT    net                   $FW     tcp     5555
+ACCEPT    net                   $FW     tcp     7777
 ####################################################################
 ```
 - systemctl enable shorewall.service
