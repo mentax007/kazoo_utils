@@ -82,11 +82,6 @@ enabled=1
 - systemctl enable kazoo-haproxy.service
 - systemctl enable kazoo-kamailio.service
 
-## First steps
-
-- sup crossbar_maintenance create_account {ACCT NAME} {REALM} {LOGIN} {PASSWORD}
-- sup -n ecallmgr ecallmgr_maintenance add_fs_node freeswitch@...
-
 ## Erlang for dev
 - yum install libxslt-devel zip unzip expat zlib-devel curl ncurses-devel git-core htmldoc gcc gcc-c++ openssl-devel expat-devel
 ```
@@ -100,4 +95,22 @@ kerl install r18.2 /usr/local/erlang
 
 vi .bashrc
 . /usr/local/erlang/activate
+```
+
+## First steps
+
+- sup crossbar_maintenance create_account {ACCT NAME} {REALM} {LOGIN} {PASSWORD}
+- sup -n ecallmgr ecallmgr_maintenance add_fs_node freeswitch@...
+
+## SRV notes
+```
+_sip._udp.sip1.tld.com.  10 10 5060 core1-dc01.tld.com.
+_sip._udp.sip1.tld.com.  10 10 5060 core2-dc01.tld.com.
+_sip._udp.sip1.tld.com.  20 20 5060 core1-dc02.tld.com.
+_sip._udp.sip1.tld.com.  20 20 5060 core2-dc02.tld.com.
+
+_sip._udp.sip2.tld.com.  10 10 5060 core1-dc02.tld.com.
+_sip._udp.sip2.tld.com.  10 10 5060 core2-dc02.tld.com.
+_sip._udp.sip2.tld.com.  20 20 5060 core1-dc01.tld.com.
+_sip._udp.sip2.tld.com.  20 20 5060 core2-dc01.tld.com.
 ```
