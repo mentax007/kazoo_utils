@@ -1,6 +1,6 @@
 #!/bin/bash
 #######################################################################################################################################
-## Automates some of "Deploying a Kazoo v3.0 cluster" steps ( https://2600hz.atlassian.net/wiki/pages/viewpage.action?pageId=39223316 )
+## Automates some of "Deploying a Kazoo v4.0 cluster" steps 
 ## Intended to speed up configuration after cloning Kazoo configs from git
 ## Written by kirill.sysoev@gmail.com
 #######################################################################################################################################
@@ -23,8 +23,8 @@
 ## In case of cluster add:
 ##
 ##DB2="kz4103.tld.su 192.168.4.103"
-##DB3="kz4104.tld.su 192.168.4.104"
-##DB4="kz4105.tld.su 192.168.4.105"
+##DB_BACKUP1="kz4104.tld.su 192.168.5.104"
+##DB_BACKUP2="kz4105.tld.su 192.168.5.105"
 ##
 ##FS2="kz4101.tld.su"
 ##############################################
@@ -35,10 +35,8 @@ source /etc/kz_vars/kazoo_config_edit.vars
 echo RABBIT_IP: $RABBIT_IP
 echo DB1: $DB1
 echo DB2: $DB2
-echo DB3: $DB3
-echo DB4: $DB4
-echo DB5: $DB5
-echo DB6: $DB6
+echo DB_BACKUP1: $DB_BACKUP1
+echo DB_BACKUP2: $DB_BACKUP2
 echo FS1: $FS1
 echo FS2: $FS2
 echo KZ_COOKIE: $KZ_COOKIE
@@ -97,14 +95,14 @@ else
 sed -i "/db2.zone1.mydomain.com 127.0.0.2/d" /etc/kazoo/haproxy/haproxy.cfg
 fi
 
-if [ -n "$DB3" ]; then
-sed -i "s/db3.zone2.mydomain.com 127.0.0.3/$DB3/g" /etc/kazoo/haproxy/haproxy.cfg
+if [ -n "$DB_BACKUP1" ]; then
+sed -i "s/db3.zone2.mydomain.com 127.0.0.3/$DB_BACKUP1/g" /etc/kazoo/haproxy/haproxy.cfg
 else
 sed -i "/db3.zone2.mydomain.com 127.0.0.3/d" /etc/kazoo/haproxy/haproxy.cfg
 fi
 
-if [ -n "$DB4" ]; then
-sed -i "s/db4.zone2.mydomain.com 127.0.0.4/$DB4/g" /etc/kazoo/haproxy/haproxy.cfg
+if [ -n "$DB_BACKUP2" ]; then
+sed -i "s/db4.zone2.mydomain.com 127.0.0.4/$DB_BACKUP2/g" /etc/kazoo/haproxy/haproxy.cfg
 else
 sed -i "/db4.zone2.mydomain.com 127.0.0.4/d" /etc/kazoo/haproxy/haproxy.cfg
 fi
