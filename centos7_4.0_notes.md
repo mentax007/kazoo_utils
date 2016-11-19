@@ -21,8 +21,11 @@ ACCEPT    net                   $FW     tcp     5555
 ACCEPT    net                   $FW     tcp     7777
 ACCEPT    net                   $FW     tcp     8000
 ACCEPT    net                   $FW     tcp     8443
-ACCEPT    net                   $FW     tcp     5060,5061,5065,7000,7001
-ACCEPT    net                   $FW     udp     5060,5065,7000
+ACCEPT    net                   $FW     tcp     5060,5061,7000,7001
+ACCEPT    net                   $FW     udp     5060,7000
+###################  Kamailio Websockets WS, WSS  ##################
+ACCEPT    net                   $FW     tcp     5064,5065
+ACCEPT    net                   $FW     udp     5064,5065
 ####################################################################
 ```
 - systemctl enable shorewall.service
