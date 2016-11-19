@@ -111,6 +111,20 @@ vi .bashrc
 - sup kazoo_media_maintenance import_prompts /opt/kazoo/sounds/en/us/
 - sup kazoo_media_maintenance import_prompts /opt/kazoo/sounds/ru/ru ru-ru
 
+## Letsencrypt SSL cert
+- yum install certbot
+- certbot certonly --standalone -d \`hostname -f\`
+- mkdir /etc/kazoo/certs
+- cp /etc/letsencrypt/live/\`hostname -f\`/* /etc/kazoo/certs/
+- edit crossbar doc
+```
+"use_ssl": true,
+"ssl_port": "8443",
+"ssl_cert": "/etc/kazoo/certs/cert.pem",
+"ssl_key": "/etc/kazoo/certs/privkey.pem",
+"ssl_ca_cert": "/etc/kazoo/certs/fullchain.pem",
+```
+
 ## SRV notes
 ```
 _sip._udp.sip1.tld.com.  10 10 5060 core1-dc01.tld.com.
