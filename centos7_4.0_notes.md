@@ -82,7 +82,7 @@ enabled=1
 - new dbtext format: 1:1:sip\:fs.tld.com\:11000:0:1: : (check kamailio/local.cfg)
 
 ### Kazoo
-- yum -y install kazoo-core* kazoo-app*
+- yum -y install kazoo-core* kazoo-app* kazoo-sounds-core*
 - yum -y install kazoo-haproxy
 - systemctl enable kazoo-applications.service
 - systemctl enable kazoo-ecallmgr.service
@@ -108,6 +108,8 @@ vi .bashrc
 
 - sup crossbar_maintenance create_account {ACCT NAME} {REALM} {LOGIN} {PASSWORD}
 - sup -n ecallmgr ecallmgr_maintenance add_fs_node freeswitch@...
+- sup kazoo_media_maintenance import_prompts /opt/kazoo/sounds/en/us/
+- sup kazoo_media_maintenance import_prompts /opt/kazoo/sounds/ru/ru ru-ru
 
 ## SRV notes
 ```
