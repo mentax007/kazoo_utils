@@ -118,7 +118,7 @@ vi .bashrc
 ## First steps
 
 - sup crossbar_maintenance create_account {ACCT NAME} {REALM} {LOGIN} {PASSWORD}
-- sup -n ecallmgr ecallmgr_maintenance add_fs_node freeswitch@...
+- sup -n ecallmgr ecallmgr_maintenance add_fs_node freeswitch@... false
 - sup kazoo_media_maintenance import_prompts /opt/kazoo/sounds/en/us/
 - sup kazoo_media_maintenance import_prompts /opt/kazoo/sounds/ru/ru ru-ru
 
