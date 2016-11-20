@@ -124,7 +124,7 @@ vi .bashrc
 
 ## Letsencrypt SSL cert
 - yum install certbot
-- certbot certonly --standalone -d \`hostname -f\` (443 port should be opened at this time for letsencrypt check)
+- certbot certonly --standalone -d \`hostname -f\` (443 port should be opened for check from letsencrypt side)
 - mkdir /etc/kazoo/certs
 - cp /etc/letsencrypt/live/\`hostname -f\`/* /etc/kazoo/certs/
 - edit crossbar doc
