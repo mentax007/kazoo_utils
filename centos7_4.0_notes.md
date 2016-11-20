@@ -81,6 +81,13 @@ enabled=1
 - chkconfig --del kamailio
 - vi /etc/default/kamailio - check startup vars
 - new dbtext format: 1:1:sip\:fs.tld.com\:11000:0:1: : (check kamailio/local.cfg)
+```
+quote from ML:
+also, check that the kamailio servers have the right ip addresses of media servers in dispatcher.
+
+media servers belonging to the same zone of kamailio should be group 1
+media servers belonging to other zones should be group 2
+```
 
 ### Kazoo
 - yum -y install kazoo-core* kazoo-app* kazoo-sounds-core*
