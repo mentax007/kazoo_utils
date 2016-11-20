@@ -43,7 +43,7 @@ echo KZ_COOKIE: $KZ_COOKIE
 
 
 HOSTNAME=`hostname -f`
-HOST_IP=`hostname -I | cut -d' ' -f1`
+HOST_IP=`dig +short $HOSTNAME`
 
 echo Hostname: $HOSTNAME
 echo Host_IP: $HOST_IP
@@ -122,11 +122,11 @@ fi
 if [ -n "$FS2" ]; then
 echo "2:1:sip:$FS2:11000:0:1: : " >> /etc/kazoo/kamailio/dbtext/dispatcher
 fi
-if [ -n "$ZONE2_FS1" ]; then
-echo "3:2:sip:$ZONE2_FS1:11000:0:1: : " >> /etc/kazoo/kamailio/dbtext/dispatcher
+if [ -n "$FS1_GROUP2" ]; then
+echo "3:2:sip:$FS1_GROUP2:11000:0:1: : " >> /etc/kazoo/kamailio/dbtext/dispatcher
 fi
-if [ -n "$ZONE2_FS2" ]; then
-echo "4:2:sip:$ZONE2_FS2:11000:0:1: : " >> /etc/kazoo/kamailio/dbtext/dispatcher
+if [ -n "$FS2_GROUP2" ]; then
+echo "4:2:sip:$FS2_GROUP2:11000:0:1: : " >> /etc/kazoo/kamailio/dbtext/dispatcher
 fi
 
 echo Done
