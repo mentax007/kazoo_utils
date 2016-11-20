@@ -60,7 +60,7 @@ curl -X PUT core5-dc01-dev.sip.local:5986/nodes/bigcouch@core7-dc02-dev.sip.loca
 
 ### Rabbit (it is way better to keep it on separate server(s). it is resources hungry and reboots slowly)
 - yum install https://www.rabbitmq.com/releases/rabbitmq-server/v3.6.0/rabbitmq-server-3.6.0-1.noarch.rpm
-- yum install kazoo-configs-rabbitmq
+- yum install kazoo-rabbitmq
 - rm -rf /etc/rabbitmq
 - ln -s /etc/kazoo/rabbitmq /etc/rabbitmq
 - chkconfig rabbitmq-server on
