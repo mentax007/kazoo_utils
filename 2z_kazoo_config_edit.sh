@@ -117,16 +117,16 @@ echo Done
 echo Step 7
 
 if [ -n "$FS1" ]; then
-echo "1:1:sip:$FS1:11000:0:1: : " >> /etc/kazoo/kamailio/dbtext/dispatcher
+echo "1:1:sip\:$FS1\:11000:0:1: : " >> /etc/kazoo/kamailio/dbtext/dispatcher
 fi
 if [ -n "$FS2" ]; then
-echo "2:1:sip:$FS2:11000:0:1: : " >> /etc/kazoo/kamailio/dbtext/dispatcher
+echo "2:1:sip\:$FS2\:11000:0:1: : " >> /etc/kazoo/kamailio/dbtext/dispatcher
 fi
 if [ -n "$FS1_GROUP2" ]; then
-echo "3:2:sip:$FS1_GROUP2:11000:0:1: : " >> /etc/kazoo/kamailio/dbtext/dispatcher
+echo "3:2:sip\:$FS1_GROUP2\:11000:0:1: : " >> /etc/kazoo/kamailio/dbtext/dispatcher
 fi
 if [ -n "$FS2_GROUP2" ]; then
-echo "4:2:sip:$FS2_GROUP2:11000:0:1: : " >> /etc/kazoo/kamailio/dbtext/dispatcher
+echo "4:2:sip\:$FS2_GROUP2\:11000:0:1: : " >> /etc/kazoo/kamailio/dbtext/dispatcher
 fi
 
 echo Done
