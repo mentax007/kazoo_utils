@@ -15,6 +15,7 @@ gpgcheck=0
 - yum -y install epel-release
 - yum -y install shorewall
 ```
+Web(ACCEPT)     net             $FW
 ###################  Cluster IPs  ##################################
 ACCEPT    net:xxx.xxx.xxx.xxx/xx fw
 ###################  Crossbar HTTP, HTTPS  #########################
