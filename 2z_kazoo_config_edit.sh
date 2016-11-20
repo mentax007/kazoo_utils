@@ -298,8 +298,18 @@ host = "'$ZONE1_APPS1'"\
 zone = "'$ZONE1'"\
 cookie = '$KZ_COOKIE'\
 \
+[kazoo_apps]\
+host = "'$ZONE1_APPS2'"\
+zone = "'$ZONE1'"\
+cookie = '$KZ_COOKIE'\
+\
 [ecallmgr]\
 host = "'$ZONE1_APPS1'"\
+zone = "'$ZONE1'"\
+cookie = '$KZ_COOKIE'\
+\
+[ecallmgr]\
+host = "'$ZONE1_APPS2'"\
 zone = "'$ZONE1'"\
 cookie = '$KZ_COOKIE'\
 ' /etc/kazoo/core/config.ini
@@ -308,17 +318,27 @@ if [ -n "$ZONE2" ]; then
 
 sed -i '$a \
 [zone]\
-name = '$ZONE2'\
+name = "'$ZONE2'"\
 amqp_uri = "amqp://guest:guest@'$ZONE2_RABBIT_IP':5672" \
 \
 [kazoo_apps]\
-host = '$ZONE2_APPS1'\
-zone = '$ZONE2'\
+host = "'$ZONE2_APPS1'"\
+zone = "'$ZONE2'"\
+cookie = '$KZ_COOKIE'\
+\
+[kazoo_apps]\
+host = "'$ZONE2_APPS2'"\
+zone = "'$ZONE2'"\
 cookie = '$KZ_COOKIE'\
 \
 [ecallmgr]\
-host = '$ZONE2_APPS1'\
-zone = '$ZONE2'\
+host = "'$ZONE2_APPS1'"\
+zone = "'$ZONE2'"\
+cookie = '$KZ_COOKIE'\
+\
+[ecallmgr]\
+host = "'$ZONE2_APPS2'"\
+zone = "'$ZONE2'"\
 cookie = '$KZ_COOKIE'\
 ' /etc/kazoo/core/config.ini
 
