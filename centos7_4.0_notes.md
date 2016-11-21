@@ -54,7 +54,8 @@ curl -X PUT core5-dc01-dev.sip.local:5986/nodes/bigcouch@core7-dc02-dev.sip.loca
 - yum -y install kazoo-haproxy
 - yum install -y http://files.freeswitch.org/freeswitch-release-1-6.noarch.rpm epel-release
 - yum install kazoo-freeswitch freeswitch-application-av freeswitch-format-shout kazoo-sounds-freeswitch*
-- systemctl enable epmd.service
+- systemctl disable freeswitch.service
+- systemctl enable kazoo-freeswitch.service
 - systemctl enable kazoo-haproxy.service
 
 ## Rabbit + Kamailio + Kazoo Apps server
