@@ -359,9 +359,9 @@ port = 15984\
 admin_port = 15986\
 \
 [log]\
-syslog = info\
-console = notice\
-file = error' /etc/kazoo/core/config.ini
+syslog = debug\
+console = debug\
+file = debug' /etc/kazoo/core/config.ini
 
 fi
 
