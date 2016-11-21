@@ -297,7 +297,7 @@ sed -i '$a \
 ;\
 [zone]\
 name = "'$ZONE1'"\
-amqp_uri = "amqp://guest:guest@'$RABBIT_IP':5672" \
+amqp_uri = "amqp://guest:guest@'$ZONE1_RABBIT_IP':5672" \
 \
 [kazoo_apps]\
 host = "'$ZONE1_APPS1'"\
