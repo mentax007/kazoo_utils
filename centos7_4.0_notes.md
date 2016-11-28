@@ -1,7 +1,7 @@
 # Some notes for CentOS7 based Kazoo 4.0 installation
 ##Preps
 - selinux permissive
-- yum install -y ntp
+- yum install -y epel-release ntp
 - ln -fs /usr/share/zoneinfo/UTC /etc/localtime
 - timedatectl set-ntp true
 - vi /etc/yum.repos.d/2600hz.repo
@@ -13,7 +13,6 @@ enabled=1
 sslverify=0
 gpgcheck=0
 ```
-- yum -y install epel-release
 - yum -y install shorewall
 ```
 Web(ACCEPT)     net             $FW
