@@ -1,6 +1,7 @@
 # Some notes for CentOS7 based Kazoo 4.0 installation
 ##Preps
 - selinux permissive
+- yum install -y ntp
 - ln -fs /usr/share/zoneinfo/UTC /etc/localtime
 - timedatectl set-ntp true
 - vi /etc/yum.repos.d/2600hz.repo
