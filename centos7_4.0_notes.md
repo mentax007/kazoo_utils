@@ -124,6 +124,7 @@ vi .bashrc
 - sup ecallmgr_maintenance allow_carrier fs-core4-dc02 ip.add.re.ss
 - sup kazoo_media_maintenance import_prompts /opt/kazoo/sounds/en/us/
 - sup kazoo_media_maintenance import_prompts /opt/kazoo/sounds/ru/ru ru-ru
+- sup kapps_maintenance migrate (just in case)
 
 ## Letsencrypt SSL cert
 - yum install certbot
