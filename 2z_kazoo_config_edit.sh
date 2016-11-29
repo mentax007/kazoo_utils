@@ -43,7 +43,7 @@ echo KZ_COOKIE: $KZ_COOKIE
 
 
 HOSTNAME=`hostname -f`
-HOST_IP=`getent hosts $HOSTNAME | cut -d' ' -f1`
+HOST_IP=`getent ahosts $HOSTNAME | cut -d' ' -f1 | head -n1`
 
 echo Hostname: $HOSTNAME
 echo Host_IP: $HOST_IP
