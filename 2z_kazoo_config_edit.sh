@@ -208,20 +208,20 @@ sed -i 's/\/var\/log\/bigcouch.log {/\/var\/log\/bigcouch\/bigcouch.log {/' /etc
 
 ## FRONTIER
 
-sed -i 's/# # #!trydef ACL-ROLE/#!trydef ACL-ROLE/g' /etc/kazoo/kamailio/local.cfg 
-sed -i 's/# # #!trydef RATE_LIMITER-ROLE/#!trydef RATE_LIMITER-ROLE/g' /etc/kazoo/kamailio/local.cfg 
+sed -i 's/# # #!trydef ACL_ROLE/#!trydef ACL_ROLE/g' /etc/kazoo/kamailio/local.cfg 
+sed -i 's/# # #!trydef RATE_LIMITER_ROLE/#!trydef RATE_LIMITER_ROLE/g' /etc/kazoo/kamailio/local.cfg 
 sed -i 's/autoexpire=7200"/autoexpire=120"/g' /etc/kazoo/kamailio/acl-role.cfg 
 
 ## WSS
 
-sed -i 's/# # #!trydef WEBSOCKETS-ROLE/#!trydef WEBSOCKETS-ROLE/g' /etc/kazoo/kamailio/local.cfg 
+sed -i 's/# # #!trydef WEBSOCKETS_ROLE/#!trydef WEBSOCKETS_ROLE/g' /etc/kazoo/kamailio/local.cfg 
 sed -i 's/MY_WEBSOCKET_DOMAIN!2600hz.com/MY_WEBSOCKET_DOMAIN!'$WEBSOCKET_DOMAIN'/g' /etc/kazoo/kamailio/local.cfg
 sed -i 's/TLS_WSS!tls:MY_IP_ADDRESS:8443/TLS_WSS!tls:MY_IP_ADDRESS:9443/g' /etc/kazoo/kamailio/local.cfg
 sed -i 's/UDP_WSS_SIP!udp:MY_IP_ADDRESS:8443/UDP_WSS_SIP!udp:MY_IP_ADDRESS:9443/g' /etc/kazoo/kamailio/local.cfg
 
 ## TLS
 
-sed -i 's/# # #!trydef TLS-ROLE/#!trydef TLS-ROLE/g' /etc/kazoo/kamailio/local.cfg 
+sed -i 's/# # #!trydef TLS_ROLE/#!trydef TLS_ROLE/g' /etc/kazoo/kamailio/local.cfg 
 sed -i 's/<param name="tls" value="false"\/>/<param name="tls" value="true"\/>/g' /etc/kazoo/freeswitch/sip_profiles/sipinterface_1.xml
 cp /etc/kazoo/certs/cert.pem /etc/kazoo/freeswitch/certs/agent.pem
 cp /etc/kazoo/certs/fullchain.pem /etc/kazoo/freeswitch/certs/cacert.pem
@@ -363,6 +363,12 @@ syslog = debug\
 console = debug\
 file = debug' /etc/kazoo/core/config.ini
 
+fi
+
+if [ -n "$LOG_SYSLOG" ]; then
+  sed -i 's/syslog = info/syslog = '$LOG_SYSLOG'/g' /etc/kazoo/core/config.ini
+  sed -i 's/console = notice/console = '$LOG_SYSLOG'/g' /etc/kazoo/core/config.ini
+  sed -i 's/file = error/file = '$LOG_SYSLOG'/g' /etc/kazoo/core/config.ini
 fi
 
 echo Done
