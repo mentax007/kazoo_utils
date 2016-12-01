@@ -78,7 +78,7 @@ gpgcheck=1
 gpgkey=http://download.opensuse.org/repositories/home:/kamailio:/v4.4.x-rpms/CentOS_7//repodata/repomd.xml.key
 enabled=1
 ```
-- yum install kazoo-configs-kamailio kamailio-kazo* kamailio-outbound kamailio-uuid kamailio-presence kamailio-websocket
+- yum install kazoo-configs-kamailio kamailio-kazo* kamailio-outbound kamailio-uuid kamailio-presence kamailio-websocket kamailio-tls
 - rm -rf /etc/kamailio
 - ln -s /etc/kazoo/kamailio /etc/kamailio
 - systemctl enable kazoo-kamailio.service
