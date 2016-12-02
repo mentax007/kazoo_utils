@@ -153,5 +153,6 @@ _sip._udp.sip2.tld.com.  10 10 5060 core2-dc02.tld.com.
 _sip._udp.sip2.tld.com.  20 20 5060 core1-dc01.tld.com.
 _sip._udp.sip2.tld.com.  20 20 5060 core2-dc01.tld.com.
 ```
-## OnNet Kazoo UI (OK UI) installation notes. Live demo: https://okui.info
+## OnNet Kazoo UI (OK UI) installation notes.
+### Live demo: https://okui.info
 https://github.com/onnet/mod_kazoo/blob/master/doc/notes.md
