@@ -209,7 +209,7 @@ sed -i 's/\/var\/log\/bigcouch.log {/\/var\/log\/bigcouch\/bigcouch.log {/' /etc
 ## FRONTIER
 
 sed -i 's/# # #!trydef ACL_ROLE/#!trydef ACL_ROLE/g' /etc/kazoo/kamailio/local.cfg 
-sed -i 's/# # #!trydef RATE_LIMITER_ROLE/#!trydef RATE_LIMITER_ROLE/g' /etc/kazoo/kamailio/local.cfg 
+#sed -i 's/# # #!trydef RATE_LIMITER_ROLE/#!trydef RATE_LIMITER_ROLE/g' /etc/kazoo/kamailio/local.cfg 
 sed -i 's/autoexpire=7200"/autoexpire=120"/g' /etc/kazoo/kamailio/acl-role.cfg 
 
 ## WSS
