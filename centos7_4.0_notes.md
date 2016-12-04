@@ -51,6 +51,7 @@ curl -X PUT core5-dc01-dev.sip.local:5986/nodes/bigcouch@core7-dc02-dev.sip.loca
 - curl localhost:5984/_membership | python -mjson.tool
 
 ## FS server
+- yum -y install tmpwatch
 - yum -y install kazoo-haproxy
 - yum install -y http://files.freeswitch.org/freeswitch-release-1-6.noarch.rpm epel-release
 - yum install kazoo-freeswitch freeswitch-application-av freeswitch-format-shout kazoo-sounds-freeswitch*
@@ -78,7 +79,7 @@ gpgcheck=1
 gpgkey=http://download.opensuse.org/repositories/home:/kamailio:/v4.4.x-rpms/CentOS_7//repodata/repomd.xml.key
 enabled=1
 ```
-- yum install kazoo-configs-kamailio kamailio-kazo* kamailio-outbound kamailio-uuid kamailio-presence kamailio-websocket
+- yum install kazoo-configs-kamailio kamailio-kazo* kamailio-outbound kamailio-uuid kamailio-presence kamailio-websocket kamailio-tls
 - rm -rf /etc/kamailio
 - ln -s /etc/kazoo/kamailio /etc/kamailio
 - systemctl enable kazoo-kamailio.service
@@ -152,5 +153,6 @@ _sip._udp.sip2.tld.com.  10 10 5060 core2-dc02.tld.com.
 _sip._udp.sip2.tld.com.  20 20 5060 core1-dc01.tld.com.
 _sip._udp.sip2.tld.com.  20 20 5060 core2-dc01.tld.com.
 ```
-## Zotonic based Kazoo UI installation notes
-https://github.com/onnet/mod_kazoo/blob/master/doc/notes.md
+## OnNet Kazoo UI (OK UI) installation notes.
+### Live demo: https://okui.info
+Installation notes: https://github.com/onnet/mod_kazoo/blob/master/doc/notes.md
