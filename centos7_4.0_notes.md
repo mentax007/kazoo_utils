@@ -35,6 +35,7 @@ ACCEPT    net                   $FW     tcp     7777
 ####################################################################
 ```
 - systemctl enable shorewall.service
+- systemctl start shorewall.service
 
 
 ## Bigcouch servers
