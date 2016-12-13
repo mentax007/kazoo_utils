@@ -154,6 +154,31 @@ _sip._udp.sip2.tld.com.  10 10 5060 core2-dc02.tld.com.
 _sip._udp.sip2.tld.com.  20 20 5060 core1-dc01.tld.com.
 _sip._udp.sip2.tld.com.  20 20 5060 core2-dc01.tld.com.
 ```
+## Monster UI installation notes
+```
+yum -y install monster-ui* httpd mod_ssl
+sed -i 's/http:\/\/localhost:8000/https:\/\/Your_host_name:8443/' /var/www/html/monster-ui/js/config.js
+sup crossbar_maintenance init_apps /var/www/html/monster-ui/apps https://Your_host_name:8443/v2
+```
+
+vi /etc/httpd/conf.d/Your_host_name.conf
+```
+NameVirtualHost *:80
+<VirtualHost *:80>
+   ServerName Your_host_name
+   Redirect permanent / https://Your_host_name/
+</VirtualHost>
+
+<VirtualHost _default_:443>
+  DocumentRoot "/var/www/html/monster-ui"
+  ServerName Your_host_name
+  SSLEngine On
+  SSLCertificateFile /etc/pki/letsencrypt/cert.pem
+  SSLCertificateKeyFile /etc/pki/letsencrypt/privkey.pem
+  SSLCACertificateFile /etc/pki/letsencrypt/fullchain.pem
+</VirtualHost>
+```
+
 ## OnNet Kazoo UI (OK UI) installation notes.
 ### Live demo: https://okui.info
 Installation notes: https://github.com/onnet/mod_kazoo/blob/master/doc/notes.md
