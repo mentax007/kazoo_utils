@@ -1,0 +1,26 @@
+diff --git a/core/kazoo_number_manager/src/knm_errors.erl b/core/kazoo_number_manager/src/knm_errors.erl
+index 150f68f..bfa7b42 100644
+--- a/core/kazoo_number_manager/src/knm_errors.erl
++++ b/core/kazoo_number_manager/src/knm_errors.erl
+@@ -156,6 +156,8 @@ to_json('not_reconcilable', Num=?NE_BINARY, _) ->
+ to_json('unauthorized', _, Cause) ->
+     Message = <<"requestor is unauthorized to perform operation">>,
+     build_error(403, 'forbidden', Message, Cause);
++to_json('service_restriction', Message, Cause) ->
++    build_error(402, 'service_restriction', kz_util:to_binary(Message), Cause);
+ to_json('no_change_required', _, Cause) ->
+     Message = <<"no change required">>,
+     build_error(400, 'no_change_required', Message, Cause);
+diff --git a/core/kazoo_number_manager/src/knm_number.erl b/core/kazoo_number_manager/src/knm_number.erl
+index 1ea2c8f..8828f5b 100644
+--- a/core/kazoo_number_manager/src/knm_number.erl
++++ b/core/kazoo_number_manager/src/knm_number.erl
+@@ -906,6 +906,8 @@ attempt(Fun, Args) ->
+     catch
+         'throw':{'error', Reason} ->
+             {'error', knm_errors:to_json(Reason)};
++        'throw':{'error', Reason, Message} when is_list(Message) ->
++            {'error', knm_errors:to_json(Reason, Message)};
+         'throw':{'error', Reason, Number} ->
+             {'error', knm_errors:to_json(Reason, num_to_did(Number))};
+         'throw':{'error', Reason, Number, Cause} ->
