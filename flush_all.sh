@@ -8,3 +8,4 @@ sup ecallmgr_config flush
 sup stepswitch_maintenance reload_resources
 sup kazoo_services_maintenance refresh
 sup trunkstore_maintenance flush
+sup jonny5_maintenance flush
