@@ -1,0 +1,16 @@
+diff --git a/applications/crossbar/src/modules/cb_accounts.erl b/applications/crossbar/src/modules/cb_accounts.erl
+index 527e2a9..150ee8a 100644
+--- a/applications/crossbar/src/modules/cb_accounts.erl
++++ b/applications/crossbar/src/modules/cb_accounts.erl
+@@ -816,7 +816,10 @@ leak_trial_time_left(Context) ->
+     leak_trial_time_left(Context, JObj, kz_account:trial_expiration(JObj)).
+ 
+ leak_trial_time_left(Context, _JObj, 'undefined') ->
+-    Context;
++    RespData = kz_json:delete_key(<<"trial_time_left">>
++                                ,cb_context:resp_data(Context)
++                                ),
++    cb_context:set_resp_data(Context, RespData);
+ leak_trial_time_left(Context, JObj, _Expiration) ->
+     RespData = kz_json:set_value(<<"trial_time_left">>
+                                 ,kz_account:trial_time_left(JObj)
