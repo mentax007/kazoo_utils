@@ -371,5 +371,8 @@ if [ -n "$LOG_SYSLOG" ]; then
   sed -i 's/file = error/file = '$LOG_SYSLOG'/g' /etc/kazoo/core/config.ini
 fi
 
+###  Just a hack to run non release
+echo "-name kazoo_apps"  >> /etc/kazoo/core/vm.args
+###
 echo Done
 
