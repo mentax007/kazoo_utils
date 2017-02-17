@@ -114,7 +114,7 @@ kerl build 18.2 r18.2
 kerl install r18.2 /usr/local/erlang
 . /usr/local/erlang/activate
 
-vi .bashrc
+vi ~/.bashrc
 . /usr/local/erlang/activate
 ```
 
@@ -123,7 +123,7 @@ vi .bashrc
 make sup_completion
 cp /opt/kazoo/sup.bash /etc/bash_completion.d/
 
-vi .bashrc
+vi ~/.bashrc
 alias sup='KAZOO_ROOT=/opt/kazoo sup'
 . /etc/bash_completion.d/sup.bash
 . /etc/bash_completion.d/git
