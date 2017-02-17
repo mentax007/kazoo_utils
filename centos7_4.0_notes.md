@@ -124,6 +124,7 @@ make sup_completion
 cp /opt/kazoo/sup.bash /etc/bash_completion.d/
 
 vi .bashrc
+alias sup='KAZOO_ROOT=/opt/kazoo sup'
 . /etc/bash_completion.d/sup.bash
 . /etc/bash_completion.d/git
 
