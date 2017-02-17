@@ -126,6 +126,8 @@ cp /opt/kazoo/sup.bash /etc/bash_completion.d/
 vi .bashrc
 . /etc/bash_completion.d/sup.bash
 . /etc/bash_completion.d/git
+
+sudo ln -s /opt/kazoo/core/sup/priv/sup /usr/bin/sup
 ```
 
 ## First steps
