@@ -118,6 +118,16 @@ vi .bashrc
 . /usr/local/erlang/activate
 ```
 
+## Bash completion
+```
+make sup_completion
+cp /opt/kazoo/sup.bash /etc/bash_completion.d/
+
+vi .bashrc
+. /etc/bash_completion.d/sup.bash
+. /etc/bash_completion.d/git
+```
+
 ## First steps
 
 - sup crossbar_maintenance create_account {ACCT NAME} {REALM} {LOGIN} {PASSWORD}
