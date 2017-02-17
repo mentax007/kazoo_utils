@@ -1,0 +1,204 @@
+From 7aefb7497c7fb9d1d3ade5d8c890491859d1143c Mon Sep 17 00:00:00 2001
+From: Kirill Sysoev <kirill.sysoev@gmail.com>
+Date: Tue, 7 Feb 2017 15:12:48 +0000
+Subject: [PATCH 1/3] 3-d party data for teletype_customer_update
+
+---
+ applications/teletype/src/templates/teletype_customer_update.erl | 6 ++++--
+ core/kazoo_amqp/src/api/kapi_notifications.erl                   | 1 +
+ 2 files changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/applications/teletype/src/templates/teletype_customer_update.erl b/applications/teletype/src/templates/teletype_customer_update.erl
+index afc3a77..bf8fc46 100644
+--- a/applications/teletype/src/templates/teletype_customer_update.erl
++++ b/applications/teletype/src/templates/teletype_customer_update.erl
+@@ -32,6 +32,7 @@
+ -define(TEMPLATE_SUBJECT, <<"Customer update">>).
+ -define(TEMPLATE_CATEGORY, <<"user">>).
+ -define(TEMPLATE_NAME, <<"Customer update">>).
++-define(THIRD_PARTY_DATA, <<"databag">>).
+ 
+ -define(TEMPLATE_TO, ?CONFIGURED_EMAILS(?EMAIL_ORIGINAL)).
+ -define(TEMPLATE_FROM, teletype_util:default_from_address(?MOD_CONFIG_CAT)).
+@@ -110,8 +111,9 @@ select_users_to_update(Users, DataJObj) ->
+ send_update_to_user(UserJObj, DataJObj) ->
+     Macros = [{<<"system">>, teletype_util:system_params()}
+              ,{<<"account">>, teletype_util:account_params(DataJObj)}
+-              | build_macro_data(UserJObj, DataJObj)
+-             ],
++             ]
++        ++ build_macro_data(UserJObj, DataJObj)
++        ++ [{?THIRD_PARTY_DATA, kz_json:get_value(?THIRD_PARTY_DATA, DataJObj, kz_json:new())}],
+ 
+     RenderedTemplates = teletype_templates:render(?TEMPLATE_ID, Macros, DataJObj, 'true'),
+     {'ok', TemplateMetaJObj} = teletype_templates:fetch_notification(?TEMPLATE_ID, teletype_util:find_account_id(DataJObj)),
+diff --git a/core/kazoo_amqp/src/api/kapi_notifications.erl b/core/kazoo_amqp/src/api/kapi_notifications.erl
+index d991052..aa9ae27 100644
+--- a/core/kazoo_amqp/src/api/kapi_notifications.erl
++++ b/core/kazoo_amqp/src/api/kapi_notifications.erl
+@@ -521,6 +521,7 @@
+ -define(CUSTOMER_UPDATE_HEADERS, [<<"Account-ID">>]).
+ -define(OPTIONAL_CUSTOMER_UPDATE_HEADERS, [<<"Recipient-ID">>
+                                           ,<<"User-Type">>
++                                          ,<<"DataBag">>
+                                                | ?DEFAULT_OPTIONAL_HEADERS
+                                           ]).
+ -define(CUSTOMER_UPDATE_VALUES, [{<<"Event-Category">>, <<"notification">>}
+
+From a05c1a14bb026a2c7ecd4391ee339041d48ad958 Mon Sep 17 00:00:00 2001
+From: Kirill Sysoev <kirill.sysoev@gmail.com>
+Date: Thu, 9 Feb 2017 08:00:31 +0000
+Subject: [PATCH 2/3] allow multiple templates for teletype customer_update
+
+---
+ .../crossbar/src/modules/cb_notifications.erl      |  6 +++-
+ .../src/templates/teletype_customer_update.erl     | 35 +++++++++++++++++++---
+ core/kazoo_amqp/src/api/kapi_notifications.erl     |  1 +
+ 3 files changed, 37 insertions(+), 5 deletions(-)
+
+diff --git a/applications/crossbar/src/modules/cb_notifications.erl b/applications/crossbar/src/modules/cb_notifications.erl
+index 54b6632..33c4c86 100644
+--- a/applications/crossbar/src/modules/cb_notifications.erl
++++ b/applications/crossbar/src/modules/cb_notifications.erl
+@@ -383,6 +383,9 @@ post(Context, ?CUSTOMER_UPDATE, ?MESSAGE) ->
+             crossbar_util:response('error', <<"Failed to send message">>, Context)
+     end;
+ 
++post(Context, <<"customer_update_", _/binary>>, ?PREVIEW) ->
++    post(Context, ?CUSTOMER_UPDATE, ?PREVIEW);
++
+ post(Context, Id, ?PREVIEW) ->
+     Notification = cb_context:doc(Context),
+     Preview = build_preview_payload(Context, Notification),
+@@ -425,7 +428,8 @@ build_customer_update_payload(Context) ->
+ -spec build_preview_payload(cb_context:context(), kz_json:object()) -> kz_proplist().
+ build_preview_payload(Context, Notification) ->
+     props:filter_empty(
+-      [{<<"To">>, kz_json:get_value(<<"to">>, Notification)}
++      [{<<"Template-ID">>, kz_json:get_value(<<"id">>, Notification)}
++      ,{<<"To">>, kz_json:get_value(<<"to">>, Notification)}
+       ,{<<"From">>, kz_json:get_value(<<"from">>, Notification)}
+       ,{<<"Cc">>, kz_json:get_value(<<"cc">>, Notification)}
+       ,{<<"Bcc">>, kz_json:get_value(<<"bcc">>, Notification)}
+diff --git a/applications/teletype/src/templates/teletype_customer_update.erl b/applications/teletype/src/templates/teletype_customer_update.erl
+index bf8fc46..bab928a 100644
+--- a/applications/teletype/src/templates/teletype_customer_update.erl
++++ b/applications/teletype/src/templates/teletype_customer_update.erl
+@@ -59,7 +59,7 @@ handle_req(JObj, _Props) ->
+     'true' = kapi_notifications:customer_update_v(JObj),
+     DataJObj = kz_json:normalize(JObj),
+     AccountId = kz_json:get_value(<<"account_id">>, DataJObj),
+-    case teletype_util:is_notice_enabled(AccountId, JObj, ?TEMPLATE_ID) of
++    case teletype_util:is_notice_enabled(AccountId, JObj, maybe_expand_template_id(DataJObj)) of
+         'false' -> lager:debug("notification handling not configured for this account");
+         'true' -> process_req(DataJObj, teletype_util:is_preview(DataJObj))
+     end.
+@@ -115,15 +115,17 @@ send_update_to_user(UserJObj, DataJObj) ->
+         ++ build_macro_data(UserJObj, DataJObj)
+         ++ [{?THIRD_PARTY_DATA, kz_json:get_value(?THIRD_PARTY_DATA, DataJObj, kz_json:new())}],
+ 
+-    RenderedTemplates = teletype_templates:render(?TEMPLATE_ID, Macros, DataJObj, 'true'),
+-    {'ok', TemplateMetaJObj} = teletype_templates:fetch_notification(?TEMPLATE_ID, teletype_util:find_account_id(DataJObj)),
++    RenderedTemplates =
++        teletype_templates:render(maybe_expand_template_id(DataJObj), Macros, DataJObj, maybe_tpls_provided(DataJObj)),
++    {'ok', TemplateMetaJObj} =
++        teletype_templates:fetch_notification(maybe_expand_template_id(DataJObj), teletype_util:find_account_id(DataJObj)),
+ 
+     Subject = teletype_util:render_subject(
+                 kz_json:find(<<"subject">>, [DataJObj, TemplateMetaJObj])
+                                           ,Macros
+                ),
+     Emails = maybe_replace_to_field(
+-               teletype_util:find_addresses(DataJObj, TemplateMetaJObj, ?MOD_CONFIG_CAT)
++               teletype_util:find_addresses(DataJObj, TemplateMetaJObj, maybe_expand_mod_config_cat(DataJObj))
+                                    ,kz_json:get_value(<<"email">>, UserJObj)
+               ),
+     case teletype_util:send_email(Emails, Subject, RenderedTemplates) of
+@@ -164,3 +166,28 @@ maybe_add_user_data(Key, Acc, UserJObj) ->
+             Acc;
+         V -> props:set_value(<<"user">>, [{Key, V} | UserMacros], Acc)
+     end.
++
++-spec maybe_expand_template_id(kz_json:object()) -> ne_binary().
++maybe_expand_template_id(DataJObj) ->
++    case kz_json:get_value(<<"template_id">>, DataJObj) of
++        <<"customer_update_", _/binary>> = TemplateId ->
++            TemplateId;
++        _ ->
++            ?TEMPLATE_ID
++    end.
++
++-spec maybe_expand_mod_config_cat(kz_json:object()) -> ne_binary().
++maybe_expand_mod_config_cat(DataJObj) ->
++    case kz_json:get_value(<<"template_id">>, DataJObj) of
++        <<"customer_update_", _/binary>> = TemplateId ->
++            <<(?NOTIFY_CONFIG_CAT)/binary, ".", TemplateId/binary>>;
++        _ ->
++            ?MOD_CONFIG_CAT
++    end.
++
++-spec maybe_tpls_provided(kz_json:object()) -> boolean().
++maybe_tpls_provided(DataJObj) ->
++    case kz_json:get_first_defined([<<"html">>, <<"text">>], DataJObj) of
++        'undefined' -> false;
++        _ -> 'true'
++    end.
+diff --git a/core/kazoo_amqp/src/api/kapi_notifications.erl b/core/kazoo_amqp/src/api/kapi_notifications.erl
+index aa9ae27..a4ebe1c 100644
+--- a/core/kazoo_amqp/src/api/kapi_notifications.erl
++++ b/core/kazoo_amqp/src/api/kapi_notifications.erl
+@@ -522,6 +522,7 @@
+ -define(OPTIONAL_CUSTOMER_UPDATE_HEADERS, [<<"Recipient-ID">>
+                                           ,<<"User-Type">>
+                                           ,<<"DataBag">>
++                                          ,<<"Template-ID">>
+                                                | ?DEFAULT_OPTIONAL_HEADERS
+                                           ]).
+ -define(CUSTOMER_UPDATE_VALUES, [{<<"Event-Category">>, <<"notification">>}
+
+From 58e41b152b95e53382191314650b901ddc585da3 Mon Sep 17 00:00:00 2001
+From: Kirill Sysoev <kirill.sysoev@gmail.com>
+Date: Thu, 9 Feb 2017 09:40:46 +0000
+Subject: [PATCH 3/3] doc update
+
+---
+ applications/crossbar/doc/notifications.md | 29 +++++++++++++++++++++++++++++
+ 1 file changed, 29 insertions(+)
+
+diff --git a/applications/crossbar/doc/notifications.md b/applications/crossbar/doc/notifications.md
+index 3934f6c..e81f51e 100644
+--- a/applications/crossbar/doc/notifications.md
++++ b/applications/crossbar/doc/notifications.md
+@@ -586,3 +586,32 @@ You can send a message with changed subject, html and plain text templates by pr
+     }
+ }
+ ```
++
++To send an update to a customer from your kapp, you can build payload including you apps data (see <<"DataBag">> field) and send it over amqp using predefined particular template (see <<"Template-ID">> field) or your own hardcoded templates (see <<"HTML">> and <<"Text">> fields):
++
++```
++-spec send_account_update(ne_binary()) -> 'ok'.
++send_account_update(AccountId) ->
++    case kz_amqp_worker:call(build_customer_update_payload(AccountId)
++                            ,fun kapi_notifications:publish_customer_update/1
++                            ,fun kapi_notifications:customer_update_v/1
++                            )
++    of
++        {'ok', _Resp} ->
++            lager:debug("published customer_update notification");
++        {'error', _E} ->
++            lager:debug("failed to publish_customer update notification: ~p", [_E])
++    end.
++
++-spec build_customer_update_payload(cb_context:context()) -> kz_proplist().
++build_customer_update_payload(AccountId) ->
++    props:filter_empty(
++      [{<<"Account-ID">>, kz_services:find_reseller_id(AccountId)}
++      ,{<<"Recipient-ID">>, AccountId}
++      ,{<<"Template-ID">>, <<"customer_update_billing_period">>}
++      ,{<<"DataBag">>, {[{<<"field1">>,<<"value1">>},{<<"field2">>,{[{<<"subfield1">>,<<"subvalue1">>},{<<"subfield2">>,<<"subvalue2">>}]}}]}}
++      ,{<<"HTML">>, base64:encode(<<"Dear {{user.first_name}} {{user.last_name}}. <br /> DataBag test: {{databag.field2.subfield1}} <br /> Kind regards,">>)}
++      ,{<<"Text">>, <<"Oh Dear {{user.first_name}} {{user.last_name}}.\n\nDataBag test: {{databag.field2.subfield2}}\n\nBest regards,">>}
++       | kz_api:default_headers(?APP_NAME, ?APP_VERSION)
++      ]).
++```
