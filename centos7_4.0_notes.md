@@ -37,6 +37,9 @@ ACCEPT    net                   $FW     tcp     7777
 - systemctl enable shorewall.service
 - systemctl start shorewall.service
 
+## Vim notes
+- https://github.com/tpope/vim-pathogen#installation
+- http://vim-erlang.github.io/projects/2014/03/18/project-status.html
 
 ## Bigcouch servers
 - yum install -y kazoo-bigcouch
